@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+PyMuPDF
+pytesseract
+groq
+python-dotenv
+pydantic
+watchfiles
