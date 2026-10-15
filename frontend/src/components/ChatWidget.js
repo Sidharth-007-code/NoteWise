@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { askQuestion, getSubjects } from '../api';
 
-const ChatWidget = () => {
+const ChatWidget = ({ subject: currentSubject, onSubjectChange }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [subject, setSubject] = useState('All');
   const [subjects, setSubjects] = useState(['All']);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef();
@@ -30,6 +29,10 @@ const ChatWidget = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleSubjectChange = (e) => {
+    onSubjectChange(e.target.value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const question = inputValue.trim();
@@ -46,7 +49,7 @@ const ChatWidget = () => {
 
     setLoading(true);
     try {
-      const response = await askQuestion(question, subject);
+      const response = await askQuestion(question, currentSubject);
       const aiMsg = {
         id: Date.now() + 1,
         role: 'assistant',
@@ -82,8 +85,8 @@ const ChatWidget = () => {
         <label htmlFor="subject-select">Subject: </label>
         <select
           id="subject-select"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          value={currentSubject}
+          onChange={handleSubjectChange}
           disabled={loading}
         >
           {subjects.map(subj => (

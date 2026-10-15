@@ -29,3 +29,35 @@ export async function getSubjects() {
   });
   return Array.from(subjects);
 }
+
+export async function getDocuments() {
+  const response = await fetch(`${API_BASE}/documents`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch documents');
+  }
+  return response.json();
+}
+
+export async function uploadPDF(file, subject) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('subject', subject);
+  const response = await fetch(`${API_BASE}/upload`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error('Failed to upload PDF');
+  }
+  return response.json();
+}
+
+export async function deleteDocument(docName) {
+  const response = await fetch(`${API_BASE}/documents/${docName}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete document');
+  }
+  return response.json();
+}
