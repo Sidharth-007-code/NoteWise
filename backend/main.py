@@ -6,9 +6,10 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from typing import Optional, List, Dict, Any
 from database import (
-    init_db, index_pdf, search_notes, get_all_documents, 
-    get_all_subjects, delete_document
+    init_db, index_pdf, search_notes, get_all_documents,
+    get_all_subjects, delete_document, search_context
 )
 
 # --- Auto-load environment variables from .env file ---
@@ -62,6 +63,10 @@ class StudyAssistRequest(BaseModel):
     doc_name: str
     page_num: int
 
+class ChatRequest(BaseModel):
+    question: str
+    subject: Optional[str] = None
+
 def generate_ai_content_groq(prompt: str) -> str:
     """Generates AI content using active Groq models with dynamic model discovery fallback."""
     # Active Groq models
@@ -70,7 +75,7 @@ def generate_ai_content_groq(prompt: str) -> str:
         "openai/gpt-oss-20b",
         "llama-3.1-8b-instant"
     ]
-    
+
     for model_name in models_to_try:
         try:
             response = groq_client.chat.completions.create(
@@ -92,10 +97,10 @@ def generate_ai_content_groq(prompt: str) -> str:
         print("🔍 Querying Groq API for currently active models on your account...")
         available_models = groq_client.models.list()
         text_models = [
-            m.id for m in available_models.data 
+            m.id for m in available_models.data
             if not any(k in m.id for k in ["whisper", "guard", "vision", "embed", "safeguard"])
         ]
-        
+
         for active_model in text_models:
             try:
                 print(f"⚡ Testing dynamic model: {active_model}")
@@ -116,6 +121,7 @@ def generate_ai_content_groq(prompt: str) -> str:
         print(f"❌ Dynamic model discovery error: {list_err}")
 
     raise Exception("No active Groq text models available. Check console.groq.com for active models.")
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "message": "NoteWise API is running."}
@@ -148,7 +154,7 @@ async def upload_pdf(
     clean_name = sanitize_filename(file.filename)
     clean_subject = subject.strip() if subject.strip() else "General"
     file_path = os.path.join(UPLOAD_DIR, clean_name)
-    
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
@@ -235,6 +241,74 @@ Source Text:
             "doc_name": req.doc_name,
             "page_num": req.page_num,
             "content": f"⚡ AI generation error: {str(e)}"
+        }
+
+@app.post("/ai/chat")
+async def chat_endpoint(request: ChatRequest):
+    """
+    Grounded Q&A endpoint that answers questions based on PDF context.
+    Uses retrieval-augmented generation with citations to source documents.
+    """
+    if not groq_client:
+        return {
+            "answer": "⚠️ GROQ_API_KEY not configured. Please set your Groq API key in the .env file.",
+            "sources": [],
+            "context_found": False
+        }
+
+    # Search for relevant context
+    context_results = search_context(request.question, subject=request.subject, limit=5)
+
+    if not context_results:
+        return {
+            "answer": "I couldn't find any relevant information in your notes to answer that question. Try rephrasing or check if you've uploaded PDFs on this topic.",
+            "sources": [],
+            "context_found": False
+        }
+
+    # Build context string for the prompt
+    context_parts = []
+    sources = []
+    for i, ctx in enumerate(context_results, 1):
+        context_part = f"[Source {i}: {ctx['doc_name']}, Page {ctx['page_number']}]\n{ctx['content']}\n"
+        context_parts.append(context_part)
+        sources.append({
+            "doc_name": ctx['doc_name'],
+            "page_number": ctx['page_number'],
+            "snippet": ctx['content'][:200] + "..." if len(ctx['content']) > 200 else ctx['content']
+        })
+
+    context_str = "\n---\n".join(context_parts)
+
+    # Construct grounded prompt
+    prompt = f"""
+You are NoteWise, a precise academic study assistant. Answer the user's question based ONLY on the provided PDF context snippets below.
+When stating facts, cite the source using the format [Source X: document_name, page_number].
+If the context doesn't contain enough information to answer fully, say so and provide what you can from the context.
+Do not make up information or use external knowledge.
+
+Context:
+{context_str}
+
+Question: {request.question}
+
+Answer:"""
+
+    try:
+        # Use the existing generate_ai_content_groq function for the LLM call
+        answer = generate_ai_content_groq(prompt)
+
+        return {
+            "answer": answer,
+            "sources": sources,
+            "context_found": True
+        }
+    except Exception as e:
+        print(f"⚠️ Groq Notice in chat endpoint: {e}")
+        return {
+            "answer": f"⚡ Error generating answer: {str(e)}",
+            "sources": sources,
+            "context_found": True
         }
 
 @app.get("/pdf/{filename}")

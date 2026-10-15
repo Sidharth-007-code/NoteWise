@@ -35,10 +35,10 @@ def init_db():
     """Initializes SQLite database with Full-Text Search (FTS5) enabled, handling schema migrations."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    
+
     cursor.execute("PRAGMA table_info(page_search)")
     columns = [row[1] for row in cursor.fetchall()]
-    
+
     if columns and "subject" not in columns:
         print("🔄 Upgrading SQLite schema: Recreating 'page_search' table with 'subject' column support...")
         cursor.execute("DROP TABLE page_search")
@@ -60,7 +60,7 @@ def ocr_page(page: fitz.Page) -> str:
         return ""
     try:
         pytesseract.pytesseract.tesseract_cmd = TESSERACT_EXE
-        
+
         # 150 DPI brings large slide fonts (28-48pt) into Tesseract's optimal pixel window
         pix = page.get_pixmap(dpi=150)
         img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("L")
@@ -76,7 +76,7 @@ def index_pdf(pdf_path: str, doc_name: str, subject: str = "General"):
     """Extracts text page-by-page and stores it in SQLite FTS5 with OCR fallback."""
     doc = fitz.open(pdf_path)
     page_count = len(doc)
-    
+
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
@@ -116,7 +116,7 @@ def index_pdf(pdf_path: str, doc_name: str, subject: str = "General"):
     conn.commit()
     conn.close()
     doc.close()
-    
+
     if indexed_pages == 0:
         print(f"⚠️ WARNING: Could not index '{doc_name}'. Verify Tesseract OCR installation.")
     else:
@@ -178,6 +178,77 @@ def search_notes(query: str, subject_filter: Optional[str] = None) -> List[Dict[
             "page_num": row[2],
             "snippet": row[3],
             "full_content": row[4]
+        })
+
+    conn.close()
+    return results
+
+def search_context(query: str, subject: Optional[str] = None, limit: int = 5) -> List[Dict[str, Any]]:
+    """
+    Search for relevant PDF context snippets for grounded Q&A.
+
+    Args:
+        query: The search query string
+        subject: Optional subject filter
+        limit: Maximum number of results to return (default 5)
+
+    Returns:
+        List of dictionaries containing doc_name, page_number, subject, and content
+    """
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cleaned_query = query.strip()
+    if not cleaned_query:
+        conn.close()
+        return []
+
+    # Use simple FTS query without stemming for context retrieval
+    # We'll use the query directly with wildcard matching
+    fts_query = f'"{cleaned_query}*"'
+
+    # For multi-word queries, we can also try AND combination
+    words = cleaned_query.split()
+    if len(words) > 1:
+        # Create AND query for better precision
+        and_terms = [f'"{word}*"' for word in words]
+        fts_query_and = " AND ".join(and_terms)
+        # We'll try both approaches
+    else:
+        fts_query_and = fts_query
+
+    def execute_context_search(fts_q):
+        if subject and subject != "All":
+            cursor.execute("""
+                SELECT doc_name, subject, page_num, content
+                FROM page_search
+                WHERE page_search MATCH ? AND subject = ?
+                ORDER BY rank
+                LIMIT ?
+            """, (fts_q, subject, limit))
+        else:
+            cursor.execute("""
+                SELECT doc_name, subject, page_num, content
+                FROM page_search
+                WHERE page_search MATCH ?
+                ORDER BY rank
+                LIMIT ?
+            """, (fts_q, limit))
+        return cursor.fetchall()
+
+    # Try the AND query first for better relevance
+    rows = execute_context_search(fts_query_and)
+    if not rows and len(words) > 1:
+        # Fallback to the original query if AND yields no results
+        rows = execute_context_search(fts_query)
+
+    results = []
+    for row in rows:
+        results.append({
+            "doc_name": row[0],
+            "subject": row[1],
+            "page_number": row[2],  # Note: changed from page_num to page_number for clarity
+            "content": row[3]
         })
 
     conn.close()
