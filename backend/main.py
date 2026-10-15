@@ -43,19 +43,25 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = "uploads"
+UPLOAD_DIR = os.path.abspath("uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 def sanitize_filename(filename: str) -> str:
     """Removes special characters that break URLs and file paths."""
     clean_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', filename)
     return clean_name
+
+def is_safe_path(base_dir: str, target_path: str) -> bool:
+    """Verifies target path resides within the base directory to prevent directory traversal."""
+    abs_base = os.path.abspath(base_dir)
+    abs_target = os.path.abspath(target_path)
+    return os.path.commonpath([abs_base, abs_target]) == abs_base
 
 class StudyAssistRequest(BaseModel):
     tool_type: str  # "summary" or "quiz"
@@ -69,11 +75,10 @@ class ChatRequest(BaseModel):
 
 def generate_ai_content_groq(prompt: str) -> str:
     """Generates AI content using active Groq models with dynamic model discovery fallback."""
-    # Active Groq models
     models_to_try = [
-        "openai/gpt-oss-120b",
-        "openai/gpt-oss-20b",
-        "llama-3.1-8b-instant"
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "openai/gpt-oss-120b"
     ]
 
     for model_name in models_to_try:
@@ -92,9 +97,9 @@ def generate_ai_content_groq(prompt: str) -> str:
         except Exception as e:
             print(f"⚠️ Groq model '{model_name}' notice: {e}. Trying next...")
 
-    # Dynamic Discovery Fallback: Fetch currently active text models directly from Groq API
+    # Dynamic Discovery Fallback: Query active text models directly from Groq API
     try:
-        print("🔍 Querying Groq API for currently active models on your account...")
+        print("🔍 Querying Groq API for active models on account...")
         available_models = groq_client.models.list()
         text_models = [
             m.id for m in available_models.data
@@ -120,7 +125,7 @@ def generate_ai_content_groq(prompt: str) -> str:
     except Exception as list_err:
         print(f"❌ Dynamic model discovery error: {list_err}")
 
-    raise Exception("No active Groq text models available. Check console.groq.com for active models.")
+    raise Exception("No active Groq text models available. Check console.groq.com for account model access.")
 
 @app.get("/health")
 async def health_check():
@@ -136,10 +141,12 @@ async def list_documents():
 
 @app.delete("/documents/{doc_name}")
 async def remove_document(doc_name: str):
-    """Deletes a document from the FTS5 database and removes its file from disk."""
+    """Deletes a document from the FTS5 database and removes its file from disk safely."""
     delete_document(doc_name)
-    file_path = os.path.join(UPLOAD_DIR, doc_name)
-    if os.path.exists(file_path):
+    clean_name = sanitize_filename(doc_name)
+    file_path = os.path.join(UPLOAD_DIR, clean_name)
+    
+    if is_safe_path(UPLOAD_DIR, file_path) and os.path.exists(file_path):
         os.remove(file_path)
     return {"status": "success", "message": f"Deleted {doc_name}"}
 
@@ -218,111 +225,4 @@ Source Text:
 
         elif req.tool_type == "quiz":
             prompt = f"""
-Based strictly on Page {req.page_num} of '{req.doc_name}', generate 3 high-yield conceptual questions with clear, concise model answers.
-Format each item clearly as:
-Q1: [Question]
-A1: [Answer]
-
-Source Text:
-{text}
-            """
-            generated_text = generate_ai_content_groq(prompt)
-            return {
-                "type": "quiz",
-                "doc_name": req.doc_name,
-                "page_num": req.page_num,
-                "content": generated_text
-            }
-
-    except Exception as e:
-        print(f"⚠️ Groq Notice: {e}")
-        return {
-            "type": req.tool_type,
-            "doc_name": req.doc_name,
-            "page_num": req.page_num,
-            "content": f"⚡ AI generation error: {str(e)}"
-        }
-
-@app.post("/ai/chat")
-async def chat_endpoint(request: ChatRequest):
-    """
-    Grounded Q&A endpoint that answers questions based on PDF context.
-    Uses retrieval-augmented generation with citations to source documents.
-    """
-    if not groq_client:
-        return {
-            "answer": "⚠️ GROQ_API_KEY not configured. Please set your Groq API key in the .env file.",
-            "sources": [],
-            "context_found": False
-        }
-
-    # Search for relevant context
-    context_results = search_context(request.question, subject=request.subject, limit=5)
-
-    if not context_results:
-        return {
-            "answer": "I couldn't find any relevant information in your notes to answer that question. Try rephrasing or check if you've uploaded PDFs on this topic.",
-            "sources": [],
-            "context_found": False
-        }
-
-    # Build context string for the prompt
-    context_parts = []
-    sources = []
-    for i, ctx in enumerate(context_results, 1):
-        context_part = f"[Source {i}: {ctx['doc_name']}, Page {ctx['page_number']}]\n{ctx['content']}\n"
-        context_parts.append(context_part)
-        sources.append({
-            "doc_name": ctx['doc_name'],
-            "page_number": ctx['page_number'],
-            "snippet": ctx['content'][:200] + "..." if len(ctx['content']) > 200 else ctx['content']
-        })
-
-    context_str = "\n---\n".join(context_parts)
-
-    # Construct grounded prompt
-    prompt = f"""
-You are NoteWise, a precise academic study assistant. Answer the user's question based ONLY on the provided PDF context snippets below.
-When stating facts, cite the source using the format [Source X: document_name, page_number].
-If the context doesn't contain enough information to answer fully, say so and provide what you can from the context.
-Do not make up information or use external knowledge.
-
-Context:
-{context_str}
-
-Question: {request.question}
-
-Answer:"""
-
-    try:
-        # Use the existing generate_ai_content_groq function for the LLM call
-        answer = generate_ai_content_groq(prompt)
-
-        return {
-            "answer": answer,
-            "sources": sources,
-            "context_found": True
-        }
-    except Exception as e:
-        print(f"⚠️ Groq Notice in chat endpoint: {e}")
-        return {
-            "answer": f"⚡ Error generating answer: {str(e)}",
-            "sources": sources,
-            "context_found": True
-        }
-
-@app.get("/pdf/{filename}")
-async def get_pdf(filename: str):
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="PDF file not found.")
-
-    return FileResponse(
-        file_path,
-        media_type="application/pdf",
-        headers={"Content-Disposition": "inline"}
-    )
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+Based strictly on Page {req.page_num} of '{req.doc_name}', generate 3 high-yield conceptual questions with clear,
