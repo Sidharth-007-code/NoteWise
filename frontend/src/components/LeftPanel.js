@@ -1,184 +1,171 @@
-import React, { useState, useEffect } from 'react';
-import { getDocuments, uploadPDF, deleteDocument, getSubjects } from '../api';
+import React, { useState } from 'react';
+import { uploadPDF, deleteDocument } from '../api';
 
-const LeftPanel = ({ onDocumentSelect, onSubjectChange, selectedSubject, selectedDocument }) => {
-  const [documents, setDocuments] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(null);
-  const [subjects, setSubjects] = useState(['All']);
-  const [filterSubject, setFilterSubject] = useState('All');
-  const [selectedFile, setSelectedFile] = useState(null);
+export default function LeftPanel({
+  documents,
+  selectedDocument,
+  subjectFilter,
+  onDocumentSelect,
+  onSubjectChange,
+  onRefreshData,
+  mode = 'sidebar'
+}) {
+  const [file, setFile] = useState(null);
   const [subjectInput, setSubjectInput] = useState('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const docs = await getDocuments();
-        setDocuments(docs.documents || []);
-        const subj = await getSubjects();
-        setSubjects(subj);
-      } catch (err) {
-        console.error('Failed to load initial data:', err);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    // Sync the filter subject with the prop from App (if we want to control it from App)
-    // We'll let the App control the filter subject via the onSubjectChange callback.
-    // We'll also update the local state when the prop changes.
-    setFilterSubject(selectedSubject);
-  }, [selectedSubject]);
+  const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
     }
-  };
-
-  const handleSubjectChange = (e) => {
-    setSubjectInput(e.target.value);
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!selectedFile) {
-      setUploadError('Please select a PDF file');
-      return;
-    }
-    if (!subjectInput.trim()) {
-      setUploadError('Please enter a subject');
-      return;
-    }
+    if (!file) return;
+
     setUploading(true);
-    setUploadError(null);
     try {
-      await uploadPDF(selectedFile, subjectInput.trim());
-      // Refresh documents and subjects
-      const docs = await getDocuments();
-      setDocuments(docs.documents || []);
-      const subj = await getSubjects();
-      setSubjects(subj);
-      setSelectedFile(null);
+      await uploadPDF(file, subjectInput || 'General');
+      setFile(null);
       setSubjectInput('');
-      // Optionally, notify parent that subjects may have changed
-      onSubjectChange && onSubjectChange('All'); // Reset filter to All after upload? Or keep current?
+      if (onRefreshData) onRefreshData();
     } catch (err) {
-      setUploadError(err.message);
+      console.error('Upload failed:', err);
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = async (docName) => {
-    if (window.confirm(`Delete document "${docName}"?`)) {
-      try {
-        await deleteDocument(docName);
-        // Refresh documents and subjects
-        const docs = await getDocuments();
-        setDocuments(docs.documents || []);
-        const subj = await getSubjects();
-        setSubjects(subj);
-        // If the deleted document was the currently selected one, clear selection
-        if (selectedDocument && selectedDocument.doc_name === docName) {
-          onDocumentSelect(null);
-        }
-      } catch (err) {
-        alert(`Failed to delete document: ${err.message}`);
-      }
+  const handleDelete = async (e, docName) => {
+    e.stopPropagation();
+    try {
+      await deleteDocument(docName);
+      if (onRefreshData) onRefreshData();
+    } catch (err) {
+      console.error('Delete failed:', err);
     }
   };
 
-  const handleDocumentClick = (doc) => {
-    onDocumentSelect(doc);
-  };
+  const filteredDocs = subjectFilter === 'All'
+    ? documents
+    : documents.filter(d => d.subject === subjectFilter);
 
-  const filteredDocuments = documents.filter(
-    doc => filterSubject === 'All' || doc.subject === filterSubject
-  );
+  const uniqueSubjects = ['All', ...Array.from(new Set(documents.map(d => d.subject)))];
 
-  return (
-    <div className="left-panel">
-      <h2>Upload PDF</h2>
-      <form onSubmit={handleUpload} className="upload-form">
-        <div>
-          <label htmlFor="pdf-input">PDF File:</label>
-          <input
-            type="file"
-            id="pdf-input"
-            accept=".pdf"
-            onChange={handleFileChange}
-            required
-            disabled={uploading}
-          />
-        </div>
-        <div>
-          <label htmlFor="subject-input">Subject:</label>
+  // Mode 1: Render Center Upload Dropzone
+  if (mode === 'upload') {
+    return (
+      <div className="upload-box-wrapper">
+        <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div 
+            style={{
+              border: '2px dashed var(--border-color)',
+              borderRadius: '10px',
+              padding: '32px 16px',
+              textAlign: 'center',
+              backgroundColor: 'var(--bg-surface)',
+              cursor: 'pointer'
+            }}
+            onClick={() => document.getElementById('pdf-file-input').click()}
+          >
+            <input 
+              id="pdf-file-input"
+              type="file" 
+              accept=".pdf" 
+              onChange={handleFileChange} 
+              style={{ display: 'none' }} 
+            />
+            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📂</div>
+            <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>
+              {file ? file.name : 'Choose PDF File'}
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              Click or drag to upload local notes
+            </div>
+          </div>
+
           <input
             type="text"
-            id="subject-input"
+            placeholder="Subject Tag (e.g. AIML, DSA, OS)"
             value={subjectInput}
-            onChange={handleSubjectChange}
-            required
-            disabled={uploading}
+            onChange={(e) => setSubjectInput(e.target.value)}
           />
-        </div>
-        <button type="submit" disabled={uploading || !selectedFile || !subjectInput.trim()}>
-          {uploading ? 'Uploading...' : 'Upload'}
-        </button>
-        {uploadError && <div className="error">{uploadError}</div>}
-      </form>
 
-      <h2>Documents</h2>
+          <button type="submit" disabled={!file || uploading}>
+            {uploading ? 'Indexing PDF...' : 'Upload & Index PDF'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Mode 2: Render Sidebar History & Filter List
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div>
-        <label htmlFor="subject-filter">Filter by Subject:</label>
-        <select
-          id="subject-filter"
-          value={filterSubject}
-          onChange={(e) => {
-            setFilterSubject(e.target.value);
-            onSubjectChange && onSubjectChange(e.target.value);
-          }}
-          disabled={uploading}
-        >
-          {subjects.map(subj => (
-            <option key={subj} value={subj}>
-              {subj}
-            </option>
+        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
+          FILTER BY SUBJECT
+        </label>
+        <select value={subjectFilter} onChange={(e) => onSubjectChange(e.target.value)}>
+          {uniqueSubjects.map((subj) => (
+            <option key={subj} value={subj}>{subj}</option>
           ))}
         </select>
       </div>
 
-      <ul className="document-list">
-        {filteredDocuments.length === 0 ? (
-          <li>No documents found.</li>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {filteredDocs.length === 0 ? (
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>
+            No indexed documents found.
+          </div>
         ) : (
-          filteredDocuments.map(doc => (
-            <li
-              key={doc.doc_name}
-              className={`doc-item ${selectedDocument && selectedDocument.doc_name === doc.doc_name ? 'selected' : ''}`}
-              onClick={() => handleDocumentClick(doc)}
-            >
-              <span className="doc-info">
-                <strong>{doc.doc_name}</strong> ({doc.subject || 'No subject'})
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent triggering document select
-                  handleDelete(doc.doc_name);
+          filteredDocs.map((doc) => {
+            const isSelected = selectedDocument?.doc_name === doc.doc_name;
+            return (
+              <div
+                key={doc.doc_name}
+                onClick={() => onDocumentSelect(doc)}
+                style={{
+                  padding: '12px',
+                  borderRadius: '8px',
+                  backgroundColor: isSelected ? 'var(--bg-surface-elevated)' : 'var(--bg-surface)',
+                  border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-color)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  transition: 'all 0.2s ease'
                 }}
-                className="delete-btn"
-                title="Delete"
               >
-                ×
-              </button>
-            </li>
-          ))
+                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '8px' }}>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-main)', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                    📄 {doc.doc_name}
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', backgroundColor: 'rgba(56, 189, 248, 0.1)', padding: '1px 6px', borderRadius: '4px' }}>
+                    {doc.subject}
+                  </span>
+                </div>
+                <button
+                  onClick={(e) => handleDelete(e, doc.doc_name)}
+                  style={{
+                    height: '24px',
+                    width: '24px',
+                    padding: 0,
+                    fontSize: '0.75rem',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-muted)',
+                    border: 'none'
+                  }}
+                  title="Delete Document"
+                >
+                  ✕
+                </button>
+              </div>
+            );
+          })
         )}
-      </ul>
+      </div>
     </div>
   );
-};
-
-export default LeftPanel;
+}

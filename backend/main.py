@@ -1,228 +1,232 @@
 import os
 import shutil
-import re
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
+from typing import List, Optional
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
-from database import (
-    init_db, index_pdf, search_notes, get_all_documents,
-    get_all_subjects, delete_document, search_context
-)
+import pypdf
+from openai import OpenAI
 
-# --- Auto-load environment variables from .env file ---
-from dotenv import load_dotenv
-load_dotenv()
+app = FastAPI(title="NoteWise RAG Backend (Groq Powered with KaTeX)")
 
-# --- Initialize Groq API Client ---
-from groq import Groq
-
-groq_client = None
-if os.getenv("GROQ_API_KEY"):
-    try:
-        groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        print("⚡ Groq AI Engine initialized successfully.")
-    except Exception as e:
-        print(f"⚠️ Failed to initialize Groq client: {e}")
-else:
-    print("⚠️ GROQ_API_KEY not found in environment or .env file.")
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    init_db()
-    yield
-
-app = FastAPI(
-    title="NoteWise API",
-    description="Source-first PDF search, retrieval, and active study API",
-    version="2.0.0",
-    lifespan=lifespan
-)
-
+# Enable CORS for React frontend cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = os.path.abspath("uploads")
+# Groq API Key Setup
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "***REDACTED***")
+
+client = OpenAI(
+    api_key=GROQ_API_KEY,
+    base_url="https://api.groq.com/openai/v1",
+)
+
+# Multi-Model Fallback Queue
+MODELS_TO_TRY = [
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "llama-3.1-8b-instant"
+]
+
+uploaded_documents = []
+UPLOAD_DIR = "./uploaded_pdfs"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-def sanitize_filename(filename: str) -> str:
-    """Removes special characters that break URLs and file paths."""
-    clean_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', filename)
-    return clean_name
 
-def is_safe_path(base_dir: str, target_path: str) -> bool:
-    """Verifies target path resides within the base directory to prevent directory traversal."""
-    abs_base = os.path.abspath(base_dir)
-    abs_target = os.path.abspath(target_path)
-    return os.path.commonpath([abs_base, abs_target]) == abs_base
+# --- Schemas ---
 
-class StudyAssistRequest(BaseModel):
-    tool_type: str  # "summary" or "quiz"
-    page_text: str
-    doc_name: str
-    page_num: int
-
-class ChatRequest(BaseModel):
+class QueryRequest(BaseModel):
     question: str
-    subject: Optional[str] = None
+    subject: Optional[str] = "General"
 
-def generate_ai_content_groq(prompt: str) -> str:
-    """Generates AI content using active Groq models with dynamic model discovery fallback."""
-    models_to_try = [
-        "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
-        "openai/gpt-oss-120b"
-    ]
+class SourceCitation(BaseModel):
+    doc_name: str
+    page_number: int
 
-    for model_name in models_to_try:
+class QueryResponse(BaseModel):
+    answer: str
+    sources: List[SourceCitation]
+
+class StudyToolRequest(BaseModel):
+    tool_type: str
+    prompt: Optional[str] = ""
+    doc_name: Optional[str] = "General Context"
+    count: Optional[int] = 1
+
+
+# --- Dynamic PDF Extractor ---
+
+def extract_text_from_pdf(file_path: str) -> tuple[str, int]:
+    text = ""
+    page_count = 1
+    try:
+        reader = pypdf.PdfReader(file_path)
+        page_count = len(reader.pages)
+        for i, page in enumerate(reader.pages):
+            extracted = page.extract_text()
+            if extracted:
+                text += f"\n--- Page {i+1} ---\n" + extracted
+    except Exception as e:
+        print(f"Error reading PDF: {e}")
+    return text, page_count
+
+
+def process_and_index_pdf(file_path: str, filename: str, subject: str):
+    text, page_count = extract_text_from_pdf(file_path)
+
+    doc_entry = {
+        "doc_name": filename,
+        "subject": subject,
+        "page_count": page_count,
+        "file_path": file_path,
+        "content": text
+    }
+    
+    global uploaded_documents
+    uploaded_documents = [d for d in uploaded_documents if d["doc_name"] != filename]
+    uploaded_documents.append(doc_entry)
+    return doc_entry
+
+
+def generate_groq_answer_with_fallback(question: str, subject: str):
+    if not uploaded_documents:
+        return (
+            "No PDF document is currently indexed. Please upload a PDF using the '+' button in the input bar.",
+            []
+        )
+
+    active_doc = uploaded_documents[-1]
+    doc_name = active_doc["doc_name"]
+    doc_text = active_doc.get("content", "")[:12000]
+
+    system_prompt = (
+        f"You are NoteWise AI, an intelligent academic tutor.\n"
+        f"You are provided with text extracted from the student's study document: '{doc_name}'.\n"
+        f"Answer the user's question accurately, clearly, and concisely using the document context when relevant.\n\n"
+        f"CRITICAL LATEX FORMATTING RULES:\n"
+        f"1. EVERY mathematical formula, fraction, probability symbol, or set operation MUST be wrapped in standard LaTeX delimiters:\n"
+        f"   - Use '$' for inline math (e.g., $P(A) = \\frac{{13}}{{52}}$, $P(A \\cap B) = P(A)P(B)$).\n"
+        f"   - Use '$$' for standalone block equations (e.g., $$P(A \\cup B) = \\frac{{13}}{{52}} + \\frac{{4}}{{52}} - \\frac{{1}}{{52}} = \\frac{{16}}{{52}}$$).\n"
+        f"2. NEVER output raw unformatted bracket blocks like '[ P(A) ]' or plain unescaped fraction strings."
+    )
+
+    user_prompt = f"Document Context:\n{doc_text}\n\nStudent Question: {question}"
+
+    answer = None
+    last_error = None
+
+    for model_id in MODELS_TO_TRY:
         try:
-            response = groq_client.chat.completions.create(
-                model=model_name,
+            completion = client.chat.completions.create(
+                model=model_id,
                 messages=[
-                    {"role": "system", "content": "You are NoteWise, a precise academic study assistant and exam tutor."},
-                    {"role": "user", "content": prompt}
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
                 ],
                 temperature=0.3,
-                max_tokens=1000
             )
-            if response.choices and response.choices[0].message.content:
-                return response.choices[0].message.content
+            answer = completion.choices[0].message.content
+            break
         except Exception as e:
-            print(f"⚠️ Groq model '{model_name}' notice: {e}. Trying next...")
+            print(f"Model {model_id} failed: {e}. Trying fallback model...")
+            last_error = e
 
-    # Dynamic Discovery Fallback: Query active text models directly from Groq API
-    try:
-        print("🔍 Querying Groq API for active models on account...")
-        available_models = groq_client.models.list()
-        text_models = [
-            m.id for m in available_models.data
-            if not any(k in m.id for k in ["whisper", "guard", "vision", "embed", "safeguard"])
-        ]
+    if not answer:
+        answer = f"Error generating answer after trying all fallback models. Last Error: {str(last_error)}"
 
-        for active_model in text_models:
-            try:
-                print(f"⚡ Testing dynamic model: {active_model}")
-                response = groq_client.chat.completions.create(
-                    model=active_model,
-                    messages=[
-                        {"role": "system", "content": "You are NoteWise, a precise academic study assistant and exam tutor."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.3,
-                    max_tokens=1000
-                )
-                if response.choices and response.choices[0].message.content:
-                    return response.choices[0].message.content
-            except Exception:
-                continue
-    except Exception as list_err:
-        print(f"❌ Dynamic model discovery error: {list_err}")
+    sources = [{"doc_name": doc_name, "page_number": 1}]
+    return answer, sources
 
-    raise Exception("No active Groq text models available. Check console.groq.com for account model access.")
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "message": "NoteWise API is running."}
+# --- API Endpoints ---
+
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "NoteWise Groq Engine Active"}
+
 
 @app.get("/documents")
-async def list_documents():
-    """Returns list of currently indexed documents and available subjects."""
-    return {
-        "documents": get_all_documents(),
-        "subjects": get_all_subjects()
-    }
+def get_documents():
+    return {"documents": uploaded_documents}
 
-@app.delete("/documents/{doc_name}")
-async def remove_document(doc_name: str):
-    """Deletes a document from the FTS5 database and removes its file from disk safely."""
-    delete_document(doc_name)
-    clean_name = sanitize_filename(doc_name)
-    file_path = os.path.join(UPLOAD_DIR, clean_name)
-    
-    if is_safe_path(UPLOAD_DIR, file_path) and os.path.exists(file_path):
-        os.remove(file_path)
-    return {"status": "success", "message": f"Deleted {doc_name}"}
 
 @app.post("/upload")
-async def upload_pdf(
-    file: UploadFile = File(...),
-    subject: str = Form("General")
-):
+async def upload_pdf(file: UploadFile = File(...), subject: str = Form("General")):
     if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
+        raise HTTPException(status_code=400, detail="Only PDF files supported.")
 
-    clean_name = sanitize_filename(file.filename)
-    clean_subject = subject.strip() if subject.strip() else "General"
-    file_path = os.path.join(UPLOAD_DIR, clean_name)
-
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    index_pdf(file_path, clean_name, subject=clean_subject)
+    doc = process_and_index_pdf(file_path, file.filename, subject)
+    return {"message": "Indexed successfully", "document": doc}
 
-    return {
-        "status": "success",
-        "filename": clean_name,
-        "subject": clean_subject,
-        "message": f"Successfully indexed '{clean_name}' under [{clean_subject}]"
-    }
 
-@app.get("/search")
-async def search(
-    q: str = Query(..., min_length=1, description="Search query string"),
-    subject: str = Query("All", description="Filter search by subject tag")
-):
-    results = search_notes(q, subject_filter=subject)
-    return {
-        "query": q,
-        "subject_filter": subject,
-        "total_results": len(results),
-        "results": results
-    }
-
-@app.post("/ai/study-tools")
-@app.post("/ai/study-tools/")
-async def study_tools(req: StudyAssistRequest):
-    """Generates AI revision summaries or active-recall quiz questions via Groq."""
-    text = req.page_text.strip()
-    if not text:
-        return {"result": "No text content available on this page to analyze."}
-
-    if not groq_client:
-        clean_lines = [line.strip() for line in text.split("\n") if len(line.strip()) > 15 and not line.strip().startswith("Page")]
-        fallback_bullets = "\n".join([f"• {line}" for line in clean_lines[:5]])
-        return {
-            "type": req.tool_type,
-            "doc_name": req.doc_name,
-            "page_num": req.page_num,
-            "content": f"⚠️ (Set GROQ_API_KEY in .env for full AI generation)\n\nPage Excerpt:\n{fallback_bullets}"
-        }
-
+@app.post("/ask", response_model=QueryResponse)
+async def ask_question(req: QueryRequest):
     try:
-        if req.tool_type == "summary":
-            prompt = f"""
-Analyze the following source text from Page {req.page_num} of '{req.doc_name}'.
-Synthesize a structured, bulleted revision summary focusing ONLY on key concepts, definitions, and technical rules.
-Ignore running headers, footers, page numbers, and slide metadata.
+        answer, sources = generate_groq_answer_with_fallback(req.question, req.subject)
+        return QueryResponse(answer=answer, sources=sources)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-Source Text:
-{text}
-            """
-            generated_text = generate_ai_content_groq(prompt)
-            return {
-                "type": "summary",
-                "doc_name": req.doc_name,
-                "page_num": req.page_num,
-                "content": generated_text
-            }
 
-        elif req.tool_type == "quiz":
-            prompt = f"""
-Based strictly on Page {req.page_num} of '{req.doc_name}', generate 3 high-yield conceptual questions with clear,
+@app.post("/ai/chat", response_model=QueryResponse)
+async def ask_question_alias(req: QueryRequest):
+    try:
+        answer, sources = generate_groq_answer_with_fallback(req.question, req.subject)
+        return QueryResponse(answer=answer, sources=sources)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/documents/{doc_name}")
+def delete_document(doc_name: str):
+    global uploaded_documents
+    uploaded_documents = [d for d in uploaded_documents if d["doc_name"] != doc_name]
+    file_path = os.path.join(UPLOAD_DIR, doc_name)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    return {"message": f"Deleted {doc_name}"}
+
+
+@app.post("/study-tools")
+async def study_tools(req: StudyToolRequest):
+    doc = req.doc_name or "your indexed notes"
+    quiz_content = None
+
+    for model_id in MODELS_TO_TRY:
+        try:
+            completion = client.chat.completions.create(
+                model=model_id,
+                messages=[
+                    {"role": "system", "content": "You are an AI study coach generating active recall quizzes."},
+                    {"role": "user", "content": f"Generate 3 challenging active recall quiz questions testing core concepts from {doc}."}
+                ],
+                temperature=0.5,
+            )
+            quiz_content = f"⚡ Active Recall Practice for {doc}:\n\n" + completion.choices[0].message.content
+            break
+        except Exception as e:
+            print(f"Quiz model {model_id} failed: {e}. Trying fallback...")
+
+    if not quiz_content:
+        quiz_content = (
+            f"⚡ Active Recall Practice for {doc}:\n\n"
+            f"1. Summarize the main topics covered in {doc}.\n"
+            f"2. Define key terms or algorithms introduced in the text.\n"
+            f"3. Type your answer from memory in the input bar below!"
+        )
+
+    return {"tool_type": req.tool_type, "content": quiz_content}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
