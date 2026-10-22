@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown';
+import MarkdownAnswer from './MarkdownAnswer';
 import { askQuestion, getSubjects } from '../api';
 
 const ChatWidget = ({ subject: currentSubject, onSubjectChange }) => {
@@ -129,7 +129,7 @@ const ChatWidget = ({ subject: currentSubject, onSubjectChange }) => {
                 {isUser ? (
                   msg.content
                 ) : (
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <MarkdownAnswer>{msg.content}</MarkdownAnswer>
                 )}
               </div>
 

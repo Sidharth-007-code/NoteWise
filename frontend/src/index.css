@@ -1,11 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   box-sizing: border-box;
 }
 
-body {
+body, html, #root {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #0f131d;
+  color: #dfe2f1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.markdown-answer { min-width: 0; overflow-wrap: anywhere; }
+.markdown-answer > :first-child { margin-top: 0; }
+.markdown-answer > :last-child { margin-bottom: 0; }
+.markdown-answer p, .markdown-answer ul, .markdown-answer ol, .markdown-answer blockquote { margin: 0.55em 0; }
+.markdown-answer ul, .markdown-answer ol { padding-left: 1.35em; }
+.markdown-answer h1, .markdown-answer h2, .markdown-answer h3, .markdown-answer h4 { margin: 0.9em 0 0.4em; font-weight: 700; }
+.markdown-answer h1 { font-size: 1.35em; }
+.markdown-answer h2 { font-size: 1.2em; }
+.markdown-answer h3, .markdown-answer h4 { font-size: 1.08em; }
+.markdown-answer a { color: #4cd7f6; text-decoration: underline; }
+.markdown-answer pre { overflow-x: auto; padding: 0.75em; border-radius: 0.5rem; background: #0a0e18; }
+.markdown-answer code { font-family: 'JetBrains Mono', monospace; }
+.markdown-answer :not(pre) > code { padding: 0.1em 0.3em; border-radius: 0.25rem; background: #0a0e18; }
+.markdown-table-scroll { width: 100%; overflow-x: auto; margin: 0.8em 0; border: 1px solid rgba(70,69,84,.55); border-radius: 0.5rem; }
+.markdown-table-scroll table { width: max-content; min-width: 100%; border-collapse: collapse; }
+.markdown-table-scroll th, .markdown-table-scroll td { padding: 0.45rem 0.65rem; border: 1px solid rgba(70,69,84,.45); vertical-align: top; }
+.markdown-table-scroll [align="left"] { text-align: left; }
+.markdown-table-scroll [align="center"] { text-align: center; }
+.markdown-table-scroll [align="right"] { text-align: right; }
+.markdown-table-scroll th { background: rgba(128,131,255,.14); color: #c0c1ff; font-weight: 700; }
+.markdown-answer blockquote { border-left: 2px solid #8083ff; padding-left: 0.8em; color: #c7c4d7; }
+
+/* Custom Scrollbar for Sidebar List */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(192, 193, 255, 0.35);
+}
+
+/* 3D Active Recall Flip Card Engine */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
 }

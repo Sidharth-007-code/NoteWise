@@ -27,7 +27,9 @@ coverage.xml
 # Secrets
 .env
 .env.*
-
+!.env.example
+# ChromaDB persistent data
+backend/chroma_db/*
 # Databases
 notewise.db
 *.sqlite

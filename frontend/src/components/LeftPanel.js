@@ -1,171 +1,211 @@
-import React, { useState } from 'react';
-import { uploadPDF, deleteDocument } from '../api';
+import React, { useRef, useState } from 'react';
+import { uploadPDF } from '../api';
 
 export default function LeftPanel({
-  documents,
-  selectedDocument,
-  subjectFilter,
-  onDocumentSelect,
-  onSubjectChange,
-  onRefreshData,
-  mode = 'sidebar'
+  uploadedFiles,
+  setUploadedFiles,
+  activeSubject,
+  setActiveSubject,
+  selectedFile,
+  setSelectedFile
 }) {
-  const [file, setFile] = useState(null);
-  const [subjectInput, setSubjectInput] = useState('');
+  const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!file) return;
-
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setUploading(true);
+    setUploadError('');
     try {
-      await uploadPDF(file, subjectInput || 'General');
-      setFile(null);
-      setSubjectInput('');
-      if (onRefreshData) onRefreshData();
-    } catch (err) {
-      console.error('Upload failed:', err);
+      for (const file of files) {
+        if (!file.name.toLowerCase().endsWith('.pdf')) throw new Error('Only PDF files can be processed.');
+        const filename = file.name.toLowerCase();
+        const subject = filename.includes('dms') ? 'DMS' : filename.includes('prob') ? 'Prob Theory' : filename.includes('os') ? 'OS' : 'General';
+        const result = await uploadPDF(file, subject);
+        const newEntry = {
+          id: result.document_id || result.id,
+          name: result.filename || file.name,
+          rawBytes: file.size,
+          size: file.size < 1024 * 1024 ? `${(file.size / 1024).toFixed(1)} KB` : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          subject: result.subject || 'General',
+          status: result.overview ? 'Processed' : 'Overview pending',
+          extractedContent: result.text || '',
+          pageCount: result.page_count || result.pages || 0,
+          ocrUsed: Boolean(result.ocr_used),
+          overview: result.overview || null,
+          overviewError: result.overview_error || '',
+        };
+        setUploadedFiles((previous) => [...previous.filter((entry) => entry.id !== newEntry.id), newEntry]);
+        setSelectedFile(newEntry);
+      }
+    } catch (error) {
+      setUploadError(error.message || 'PDF upload failed.');
     } finally {
       setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
-  const handleDelete = async (e, docName) => {
-    e.stopPropagation();
-    try {
-      await deleteDocument(docName);
-      if (onRefreshData) onRefreshData();
-    } catch (err) {
-      console.error('Delete failed:', err);
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange({ target: { files: e.dataTransfer.files } });
     }
   };
 
-  const filteredDocs = subjectFilter === 'All'
-    ? documents
-    : documents.filter(d => d.subject === subjectFilter);
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-  const uniqueSubjects = ['All', ...Array.from(new Set(documents.map(d => d.subject)))];
+  const filteredFiles =
+    activeSubject === 'All'
+      ? uploadedFiles
+      : uploadedFiles.filter((f) => f.subject === activeSubject);
 
-  // Mode 1: Render Center Upload Dropzone
-  if (mode === 'upload') {
-    return (
-      <div className="upload-box-wrapper">
-        <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div 
-            style={{
-              border: '2px dashed var(--border-color)',
-              borderRadius: '10px',
-              padding: '32px 16px',
-              textAlign: 'center',
-              backgroundColor: 'var(--bg-surface)',
-              cursor: 'pointer'
-            }}
-            onClick={() => document.getElementById('pdf-file-input').click()}
-          >
-            <input 
-              id="pdf-file-input"
-              type="file" 
-              accept=".pdf" 
-              onChange={handleFileChange} 
-              style={{ display: 'none' }} 
-            />
-            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📂</div>
-            <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>
-              {file ? file.name : 'Choose PDF File'}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Click or drag to upload local notes
-            </div>
-          </div>
+  const totalMaxGB = 10;
+  const totalBytes = uploadedFiles.reduce((acc, f) => acc + (f.rawBytes || 0), 0);
+  const totalMB = totalBytes / (1024 * 1024);
+  const totalGB = totalBytes / (1024 * 1024 * 1024);
 
-          <input
-            type="text"
-            placeholder="Subject Tag (e.g. AIML, DSA, OS)"
-            value={subjectInput}
-            onChange={(e) => setSubjectInput(e.target.value)}
-          />
+  const formattedUsage =
+    totalGB >= 0.1 ? `${totalGB.toFixed(2)} GB` : `${totalMB.toFixed(1)} MB`;
 
-          <button type="submit" disabled={!file || uploading}>
-            {uploading ? 'Indexing PDF...' : 'Upload & Index PDF'}
-          </button>
-        </form>
-      </div>
-    );
-  }
+  const storagePercentage = Math.min((totalGB / totalMaxGB) * 100, 100);
 
-  // Mode 2: Render Sidebar History & Filter List
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div>
-        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
-          FILTER BY SUBJECT
-        </label>
-        <select value={subjectFilter} onChange={(e) => onSubjectChange(e.target.value)}>
-          {uniqueSubjects.map((subj) => (
-            <option key={subj} value={subj}>{subj}</option>
-          ))}
-        </select>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {filteredDocs.length === 0 ? (
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>
-            No indexed documents found.
+    <aside className="bg-[#171b26] backdrop-blur-xl border-r border-[#464554]/30 shadow-xl w-80 lg:w-[340px] flex flex-col justify-between p-4 shrink-0 h-full overflow-hidden transition-all duration-300">
+      <div className="flex flex-col gap-3">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-2 border-b border-[#464554]/20">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-md bg-[#8083ff]/20 border border-[#c0c1ff]/30 flex items-center justify-center text-[#c0c1ff]">
+              <span className="material-symbols-outlined text-[18px]">auto_stories</span>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-[#dfe2f1] leading-tight">Cognitive Library</h2>
+              <p className="text-[10px] font-bold text-[#c0c1ff]/80 uppercase tracking-wider">
+                {uploadedFiles.length} {uploadedFiles.length === 1 ? 'SOURCE' : 'SOURCES'} SYNCED
+              </p>
+            </div>
           </div>
-        ) : (
-          filteredDocs.map((doc) => {
-            const isSelected = selectedDocument?.doc_name === doc.doc_name;
-            return (
-              <div
-                key={doc.doc_name}
-                onClick={() => onDocumentSelect(doc)}
-                style={{
-                  padding: '12px',
-                  borderRadius: '8px',
-                  backgroundColor: isSelected ? 'var(--bg-surface-elevated)' : 'var(--bg-surface)',
-                  border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border-color)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  transition: 'all 0.2s ease'
-                }}
+        </div>
+
+        {/* Dropzone */}
+        <div
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className="relative cursor-pointer border border-dashed border-[#464554]/60 hover:border-[#c0c1ff] rounded-xl p-4 bg-[#1c1f2a]/40 hover:bg-[#262a35]/40 transition-all duration-200 text-center flex flex-col items-center justify-center gap-1.5 group"
+        >
+          <div className="w-10 h-10 rounded-full bg-[#c0c1ff]/10 border border-[#c0c1ff]/20 flex items-center justify-center text-[#c0c1ff] group-hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-[20px]">upload_file</span>
+          </div>
+          <p className="text-[#dfe2f1] text-xs font-semibold">{uploading ? 'Processing PDF…' : 'Drop a PDF or browse'}</p>
+          <p className="text-[#908fa0] text-[11px] leading-tight">Extracted and indexed with OCR when needed</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept=".pdf,application/pdf"
+            className="hidden"
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+        </div>
+        {uploadError && <p role="alert" className="text-[11px] text-rose-300">{uploadError}</p>}
+
+        {/* Subject Filter Tag Pills */}
+        {uploadedFiles.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {['All', 'DMS', 'Prob Theory', 'OS', 'General'].map((subj) => (
+              <button
+                key={subj}
+                onClick={() => setActiveSubject(subj)}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors flex items-center gap-1 ${
+                  activeSubject === subj
+                    ? 'bg-[#8083ff] text-[#0d0096] border border-[#c0c1ff]'
+                    : 'bg-[#1c1f2a] text-[#c7c4d7] border border-[#464554]/30 hover:bg-[#262a35]'
+                }`}
               >
-                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: '8px' }}>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-main)', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                    📄 {doc.doc_name}
-                  </div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', backgroundColor: 'rgba(56, 189, 248, 0.1)', padding: '1px 6px', borderRadius: '4px' }}>
-                    {doc.subject}
-                  </span>
-                </div>
-                <button
-                  onClick={(e) => handleDelete(e, doc.doc_name)}
-                  style={{
-                    height: '24px',
-                    width: '24px',
-                    padding: 0,
-                    fontSize: '0.75rem',
-                    backgroundColor: 'transparent',
-                    color: 'var(--text-muted)',
-                    border: 'none'
-                  }}
-                  title="Delete Document"
-                >
-                  ✕
-                </button>
-              </div>
-            );
-          })
+                {subj}
+              </button>
+            ))}
+          </div>
         )}
       </div>
-    </div>
+
+      {/* Indexed File List */}
+      <div className="flex-1 overflow-y-auto py-3 space-y-2 pr-1 my-1 custom-sidebar-scroll">
+        {uploadedFiles.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center p-4 text-[#908fa0]">
+            <span className="material-symbols-outlined text-[32px] opacity-40 mb-2">folder_off</span>
+            <p className="text-xs">No documents uploaded yet.</p>
+            <p className="text-[10px] opacity-70 mt-1">Upload a PDF or note to start querying.</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between text-[11px] font-bold text-[#908fa0] px-1">
+              <span>INDEXED SOURCES ({filteredFiles.length})</span>
+            </div>
+
+            {filteredFiles.map((file) => {
+              const isSelected = selectedFile?.id === file.id;
+              return (
+                <div
+                  key={file.id}
+                  onClick={() => setSelectedFile(file)}
+                  className={`group p-2.5 rounded-lg border cursor-pointer transition-all flex flex-col gap-2 ${
+                    isSelected
+                      ? 'bg-[#313540] border-l-4 border-l-[#8083ff] border-[#c0c1ff]/60 shadow-[0_0_12px_rgba(128,131,255,0.2)]'
+                      : 'bg-[#1c1f2a]/40 border-[#464554]/25 hover:border-[#464554]/60 hover:bg-[#262a35]/40'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={`material-symbols-outlined text-[18px] shrink-0 ${isSelected ? 'text-[#8083ff]' : 'text-[#c0c1ff]'}`}>
+                        description
+                      </span>
+                      <span className="font-mono text-xs text-[#dfe2f1] truncate font-medium">
+                        {file.name}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#908fa0] shrink-0">{file.size}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-0.5">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#1c1f2a] text-[#c0c1ff] border border-[#464554]/30">
+                      {file.subject}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/50 border border-emerald-500/30 text-emerald-300 text-[10px]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      {isSelected ? 'Active Context' : file.status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </div>
+
+      {/* ChromaDB Storage Meter */}
+      <div className="pt-3 border-t border-[#464554]/30 flex flex-col gap-2.5">
+        <div className="bg-[#1c1f2a]/60 p-2.5 rounded-lg border border-[#464554]/20">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="text-[#908fa0] font-semibold">ChromaDB Storage</span>
+            <span className="font-mono text-[11px] text-[#c0c1ff]">
+              {formattedUsage} / {totalMaxGB} GB
+            </span>
+          </div>
+          <div className="w-full h-1.5 bg-[#313540] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#c0c1ff] via-[#8083ff] to-[#4cd7f6] rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(128,131,255,0.6)]"
+              style={{ width: `${storagePercentage}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </aside>
   );
 }
