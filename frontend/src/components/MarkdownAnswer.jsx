@@ -7,6 +7,17 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import './MarkdownAnswer.css';
 
+export function normalizeMarkdownAnswer(value) {
+  return String(value || '')
+    .split('\n')
+    .map((line) => {
+      // A newline inside a GFM pipe row would split the table; keep the cell intact.
+      const replacement = line.includes('|') ? ' ' : '  \n';
+      return line.replace(/<br\s*\/?\s*>/gi, replacement);
+    })
+    .join('\n');
+}
+
 function normalizeMathDelimiters(value) {
   if (typeof value !== 'string') {
     return '';
@@ -25,9 +36,11 @@ function normalizeMathDelimiters(value) {
 
 export default function MarkdownAnswer({ children, className = '' }) {
   const content = normalizeMathDelimiters(
-    typeof children === 'string' || typeof children === 'number'
-      ? String(children)
-      : ''
+    normalizeMarkdownAnswer(
+      typeof children === 'string' || typeof children === 'number'
+        ? String(children)
+        : ''
+    )
   );
 
   return (
