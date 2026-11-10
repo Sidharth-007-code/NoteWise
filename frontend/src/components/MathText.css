@@ -1,0 +1,60 @@
+
+.math-content {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+.math-content p {
+  margin-top: 0;
+  margin-bottom: 0.6rem;
+}
+
+.math-content p:last-child {
+  margin-bottom: 0;
+}
+
+.math-content .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.6rem 0;
+}
+
+.math-content .katex {
+  font-size: 1em;
+}
+
+.math-content pre,
+.math-content table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.math-content ul,
+.math-content ol {
+  padding-left: 1.4rem;
+  margin: 0.5rem 0;
+}
+
+.math-content li {
+  margin: 0.25rem 0;
+}
+
+.math-content h1,
+.math-content h2,
+.math-content h3,
+.math-content h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0.8rem 0 0.4rem;
+}
+
+.math-content code {
+  overflow-wrap: anywhere;
+}
+
+.math-content .katex-error {
+  color: #ff8b8b;
+}

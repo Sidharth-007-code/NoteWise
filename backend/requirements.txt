@@ -3,8 +3,8 @@ uvicorn
 python-multipart
 PyMuPDF
 pytesseract
+Pillow
 PyPDF2
-pdf2image
 chromadb
 groq
 python-dotenv
