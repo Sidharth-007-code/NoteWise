@@ -43,5 +43,14 @@ For each width (1440, 1280, 1024, 768, 390) and each theme (Light, Dark):
 
 ### Visual screenshots
 
-**Not captured in automated form.** The browser agent was not reliably available for multi-width capture during this session. No placeholder screenshots were created. The dev servers were confirmed healthy (HTTP 200 on both `localhost:3000` and `localhost:8000`) but automated screenshot capture at all required widths and both themes did not complete. This must be verified manually before Phase 2 is approved.
+**Browser agent blocked — Chrome remote debugging unavailable.** No `DevToolsActivePort` file was present at the expected path, meaning Chrome was not running with `--remote-debugging-port=9222`. To unblock: launch `chrome.exe --remote-debugging-port=9222`, then re-run the browser QA agent.
+
+Screenshots NOT captured: light-1440, dark-1440, light-1280, light-1024, light-768, light-390, dark-390, focus-ring, tutor-chat, maximized, no-storage-meter.
+
+No placeholder screenshots were created.
+
+### Known layout issue at mobile widths (not a Phase 1 regression)
+
+The existing `LeftPanel.js` uses `w-80 lg:w-[340px]` (Tailwind fixed width). The AppShell nav rail adds another 64 px. At 768 px and especially 390 px, the combined fixed widths will produce horizontal overflow. **This is expected Phase 1 behaviour** — responsive breakpoints and panel collapsing are out of Phase 1 scope (see `docs/redesign-plan.md`). The overflow check at 768 px and 390 px is therefore expected to fail until a future phase addresses it. This must be explicitly re-tested and resolved in the phase that introduces responsive layout.
+
 
