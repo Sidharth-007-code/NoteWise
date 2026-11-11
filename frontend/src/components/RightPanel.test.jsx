@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
 import RightPanel from './RightPanel';
-import { getDocumentFlashcards } from '../api';
+import { askDocumentQuestion, getDocumentFlashcards } from '../api';
 
 jest.mock('../api', () => ({
   askDocumentQuestion: jest.fn(),
@@ -184,5 +184,33 @@ test('flashcard reveal state survives switching tabs', async () => {
     expect(host.querySelector('.nw-tab-pane[hidden]')).toBeTruthy();
     await act(async () => root.render(<RightPanel activeTab="recall" setActiveTab={jest.fn()} initialPrompt="" selectedFile={{ id: 'persist', name: 'Persist.pdf' }} setSelectedFile={jest.fn()} />));
     expect(host.textContent).toContain('Persistent answer');
+  } finally { await act(async () => root.unmount()); host.remove(); }
+});
+
+test('scrolls the tutor message list to its newest message without scrolling ancestors', async () => {
+  const host = document.createElement('div'); document.body.appendChild(host);
+  const root = createRoot(host);
+  askDocumentQuestion.mockResolvedValue({ answer: 'A grounded reply.' });
+  try {
+    await act(async () => root.render(<RightPanel activeTab="tutor" setActiveTab={jest.fn()} initialPrompt="" selectedFile={null} setSelectedFile={jest.fn()} />));
+    const list = host.querySelector('[data-testid="tutor-message-list"]');
+    Object.defineProperty(list, 'scrollHeight', { configurable: true, value: 640 });
+    const scrollTo = jest.fn(({ top }) => { list.scrollTop = top; });
+    Object.defineProperty(list, 'scrollTo', { configurable: true, value: scrollTo });
+
+    for (const question of ['First question', 'Second question']) {
+      const input = host.querySelector('textarea');
+      await act(async () => {
+        Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(input, question);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      await act(async () => host.querySelector('[aria-label="Send message"]').dispatchEvent(new MouseEvent('click', { bubbles: true })));
+    }
+
+    expect(host.textContent).toContain('First question');
+    expect(host.textContent).toContain('Second question');
+    expect(scrollTo).toHaveBeenCalled();
+    expect(scrollTo.mock.calls.at(-1)[0]).toEqual(expect.objectContaining({ top: 640 }));
+    expect(list.scrollTop).toBe(640);
   } finally { await act(async () => root.unmount()); host.remove(); }
 });

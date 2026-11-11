@@ -35,7 +35,7 @@ export default function RightPanel({
   const [cardsError, setCardsError] = useState('');
   const [maximized, setMaximized] = useState(false);
 
-  const chatEndRef = useRef(null);
+  const messageListRef = useRef(null);
   const completionGuardRef = useRef(false);
   const previousDocumentId = useRef(selectedFile?.id || null);
 
@@ -131,7 +131,15 @@ export default function RightPanel({
 
   // Scroll to the newest chat message.
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const list = messageListRef.current;
+    if (list) {
+      const behavior = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ? 'auto' : 'smooth';
+      if (typeof list.scrollTo === 'function') {
+        list.scrollTo({ top: list.scrollHeight, behavior });
+      } else {
+        list.scrollTop = list.scrollHeight;
+      }
+    }
   }, [messages, isTyping]);
 
   const moveCard = (offset) => {
@@ -381,7 +389,7 @@ export default function RightPanel({
       </div>
       <div className="nw-tab-pane" data-tab-pane="tutor" hidden={activeTab !== 'tutor'} style={paneLayoutStyle(activeTab === 'tutor')}>
         <div className="nw-tutor flex flex-col overflow-hidden min-w-0" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
-          <div className="nw-message-area flex-1 overflow-y-auto p-4 space-y-4 min-w-0" style={{ flex: '1 1 0', minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+          <div ref={messageListRef} data-testid="tutor-message-list" className="nw-message-area flex-1 overflow-y-auto p-4 space-y-4 min-w-0" style={{ flex: '1 1 0', minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -431,7 +439,6 @@ export default function RightPanel({
               </div>
             )}
 
-            <div ref={chatEndRef} />
           </div>
 
           {/* Tutor input */}
