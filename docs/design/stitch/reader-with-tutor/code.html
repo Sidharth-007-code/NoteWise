@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — Reader &amp; Docked AI Tutor</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#0e1f19",
+            "secondary-fixed-dim": "#ebbda2",
+            "secondary-fixed": "#ffdbc8",
+            "tertiary": "#172413",
+            "inverse-on-surface": "#f1f1ed",
+            "background": "#f9f9f6",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#2e1505",
+            "tertiary-fixed": "#d6e8cc",
+            "on-secondary-fixed-variant": "#603f2b",
+            "outline": "#737875",
+            "surface": "#f9f9f6",
+            "secondary-container": "#fdcdb2",
+            "tertiary-container": "#2c3a27",
+            "primary-fixed-dim": "#b8cbc2",
+            "surface-container": "#eeeeeb",
+            "on-tertiary-fixed-variant": "#3c4b36",
+            "error": "#ba1a1a",
+            "outline-variant": "#c2c8c4",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-highest": "#e2e3df",
+            "tertiary-fixed-dim": "#baccb1",
+            "primary-container": "#293a34",
+            "on-primary-fixed-variant": "#394a44",
+            "primary": "#14241f",
+            "on-tertiary-container": "#93a48b",
+            "on-primary-container": "#91a49c",
+            "on-background": "#1a1c1a",
+            "surface-container-low": "#f4f4f0",
+            "inverse-primary": "#b8cbc2",
+            "surface-bright": "#f9f9f6",
+            "on-surface": "#1a1c1a",
+            "secondary": "#7a5641",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "surface-variant": "#e2e3df",
+            "on-surface-variant": "#424845",
+            "surface-dim": "#dadad7",
+            "primary-fixed": "#d3e7de",
+            "on-secondary-container": "#795540",
+            "surface-tint": "#50625b",
+            "on-error": "#ffffff",
+            "inverse-surface": "#2f312f",
+            "on-tertiary-fixed": "#111f0e",
+            "surface-container-high": "#e8e8e5",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-mobile": "1rem",
+            "margin": "3rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1.25rem",
+            "margin-tablet": "2rem"
+          },
+          "fontFamily": {
+            "body-lg": ["DM Sans"],
+            "body-sm": ["DM Sans"],
+            "label-sm": ["DM Sans"],
+            "reading-md": ["\"Source Serif 4\""],
+            "label-md": ["DM Sans"],
+            "headline-md": ["Playfair Display"],
+            "headline-lg-mobile": ["Playfair Display"],
+            "headline-sm": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"],
+            "display-lg-mobile": ["Playfair Display"],
+            "code-md": ["JetBrains Mono"],
+            "reading-lg": ["\"Source Serif 4\""],
+            "body-md": ["DM Sans"],
+            "display-lg": ["Playfair Display"]
+          },
+          "fontSize": {
+            "body-lg": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "400" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "reading-md": ["1.0625rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "headline-md": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "500" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "500" }],
+            "headline-lg": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg-mobile": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "code-md": ["0.875rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "reading-lg": ["1.1875rem", { "lineHeight": "1.9rem", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "display-lg": ["3rem", { "lineHeight": "3.5rem", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.15rem;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #D8CDBA;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased overflow-hidden h-screen w-screen selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT 1: SideNavBar (Fixed Left Rail)                          -->
+<!-- ========================================================================= -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container text-on-primary border-r border-outline-variant select-none">
+<div class="flex flex-col gap-6">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 pt-2">
+<div class="w-8 h-8 rounded bg-primary-fixed-dim/20 border border-primary-fixed-dim/30 flex items-center justify-center text-surface-container-lowest">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-medium text-surface-container-lowest tracking-tight leading-tight">NoteWise</span>
+<span class="font-label-sm text-label-sm text-on-primary-container tracking-wider uppercase">Academic Folio</span>
+</div>
+</div>
+<!-- Navigation Tabs (Active Item: "Reader" autonomously selected based on page intent) -->
+<nav class="flex flex-col gap-1">
+<!-- 1. Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- 2. Library -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="local_library">local_library</span>
+<span>Library</span>
+</a>
+<!-- 3. Reader (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-surface-container-lowest bg-primary font-medium border-l-2 border-secondary-fixed-dim font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span>Reader</span>
+</a>
+<!-- 4. AI Tutor -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span>AI Tutor</span>
+</a>
+<!-- 5. Active Recall -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span>Active Recall</span>
+</a>
+<!-- 6. Quiz -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+<span>Quiz</span>
+</a>
+<!-- 7. Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span>Progress</span>
+</a>
+<!-- 8. Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Action Section -->
+<div class="flex flex-col gap-3 pt-4 border-t border-outline-variant/30">
+<button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-primary text-surface-container-lowest rounded font-label-md text-label-md hover:bg-primary/80 transition-colors border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span>New Note</span>
+</button>
+<div class="flex items-center justify-between px-2 pt-2 text-on-primary-container font-label-sm text-label-sm">
+<span class="font-code-md text-code-md opacity-70">v2.4.1-oxford</span>
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary-fixed"></span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT 2: TopNavBar (Fixed Shelf Across Main Canvas)            -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 right-0 left-64 h-16 z-30 flex items-center justify-between px-6 bg-surface-container-lowest border-b border-outline-variant">
+<!-- Breadcrumbs / Document Route -->
+<div class="flex items-center gap-2 font-body-sm text-body-sm text-outline">
+<span class="font-label-md text-label-md text-on-surface hover:text-secondary cursor-pointer transition-colors">STAT 210</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface hover:text-secondary cursor-pointer transition-colors">Unit 2 DMS</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-medium bg-surface-container-low px-2 py-0.5 rounded border border-outline-variant/40 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="description">description</span>
+        Tutorial-3.pdf
+      </span>
+</div>
+<!-- Reader Specialized Tooling Bar (Slim Embedded Centered Controls) -->
+<div class="flex items-center gap-4 bg-surface-container-low px-3 py-1.5 rounded border border-outline-variant/60">
+<!-- Page Navigation -->
+<div class="flex items-center gap-1">
+<button class="p-1 hover:bg-surface-container text-on-surface-variant rounded transition-colors" title="Previous page">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<span class="font-code-md text-code-md text-on-surface px-1">Page 14 of 24</span>
+<button class="p-1 hover:bg-surface-container text-on-surface-variant rounded transition-colors" title="Next page">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="w-px h-4 bg-outline-variant"></div>
+<!-- Zoom Controls -->
+<div class="flex items-center gap-1">
+<button class="p-1 hover:bg-surface-container text-on-surface-variant rounded transition-colors" title="Zoom out">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="font-code-md text-code-md text-on-surface px-1">100%</span>
+<button class="p-1 hover:bg-surface-container text-on-surface-variant rounded transition-colors" title="Zoom in">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+<div class="w-px h-4 bg-outline-variant"></div>
+<!-- Fit Actions -->
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors">Fit Width</button>
+<button class="px-2 py-0.5 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors">Fit Page</button>
+</div>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 border-r border-outline-variant pr-3">
+<button class="p-1.5 text-outline hover:text-primary hover:bg-surface-container-low rounded transition-colors" title="Bookmark folio">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-surface-container-low rounded transition-colors" title="Export folio">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-surface-container-low rounded transition-colors" title="More options">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<button class="px-3 py-1.5 text-secondary hover:text-on-surface font-label-md text-label-md transition-colors border-b border-secondary/40 hover:border-secondary">
+        Cite
+      </button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container text-surface-container-lowest rounded font-label-md text-label-md hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit_note">edit_note</span>
+<span>Annotate</span>
+</button>
+<!-- Researcher Avatar -->
+<div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden ml-1">
+<img class="w-full h-full object-cover" data-alt="Introspective close-up portrait of a university mathematics researcher seated in an archival library bathed in warm directional northern sunlight, with deep scholarly greens and off-white linen tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_FSjjfxhwTjX2jnnszsdjeTlTlEbh7rsJocf2P2xpMGRMIMfFwfVM5kG7-wKxVtks08runOY-LHOsFU0Xtk96eglFcARIQNIIIkXJ-qgJ0Zwbtv_oLd0W8mrbpr6a_Ho0oOnlulj1Z_59q-lCtYzcF31rTJRH14vjybLV_vX-_1E-anKpR2W1L4f-EZH-e0yBV-6hvzAWNmcwGX7T7SA4MqsKQA6L2akDC6lBYII"/>
+</div>
+</div>
+</header>
+<!-- Reading Progress Strip (Sage colored line #A5B69C) -->
+<div class="fixed top-16 left-64 right-0 h-1 bg-surface-container-highest z-30">
+<div class="h-full bg-tertiary-fixed-dim" style="width: 58.33%;"></div>
+</div>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE: Three-Column Distraction-Free Composition                  -->
+<!-- ========================================================================= -->
+<main class="fixed top-[4.25rem] right-0 left-64 bottom-0 flex overflow-hidden bg-background">
+<!-- ----------------------------------------------------------------------- -->
+<!-- COLUMN 1: Collapsible Table of Contents (~240px)                       -->
+<!-- ----------------------------------------------------------------------- -->
+<aside class="w-60 flex-shrink-0 h-full bg-surface-container-low border-r border-outline-variant flex flex-col select-none">
+<!-- Section Header -->
+<div class="px-4 py-3 border-b border-outline-variant/60 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="toc">toc</span>
+<span class="font-label-md text-label-md text-on-surface tracking-wide uppercase font-semibold">Table of Contents</span>
+</div>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded transition-colors" title="Collapse index">
+<span class="material-symbols-outlined text-xs" data-icon="keyboard_double_arrow_left">keyboard_double_arrow_left</span>
+</button>
+</div>
+<!-- Index List -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
+<!-- Item 1 -->
+<div class="group flex items-center justify-between px-2.5 py-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-start gap-2 pr-1">
+<span class="font-code-md text-code-md text-outline">§1</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface leading-tight">Introduction &amp; Definitions</span>
+</div>
+<span class="font-code-md text-code-md text-outline text-[0.7rem]">p. 1–5</span>
+</div>
+<!-- Item 2 -->
+<div class="group flex items-center justify-between px-2.5 py-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-start gap-2 pr-1">
+<span class="font-code-md text-code-md text-outline">§2</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface leading-tight">Probability Density &amp; CDF</span>
+</div>
+<span class="font-code-md text-code-md text-outline text-[0.7rem]">p. 6–12</span>
+</div>
+<!-- Item 3: ACTIVE SECTION -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-2.5 shadow-sm space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-code-md text-code-md text-secondary font-medium">§3</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">The Memoryless Property</span>
+</div>
+<span class="font-code-md text-code-md text-secondary font-medium text-[0.7rem] bg-secondary-fixed/50 px-1.5 py-0.5 rounded">p. 13–18</span>
+</div>
+<!-- Subsections of §3 -->
+<div class="pl-4 border-l border-outline-variant/80 space-y-1.5 pt-1">
+<div class="text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm cursor-pointer py-0.5 transition-colors">
+              3.1 Mathematical Formulation
+            </div>
+<div class="flex items-center justify-between text-secondary font-medium text-body-sm font-body-sm bg-surface-container-low px-1.5 py-1 rounded">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                3.2 Theorem 3.2 &amp; Proof
+              </span>
+<span class="font-code-md text-code-md text-[0.7rem] text-secondary">p. 14</span>
+</div>
+<div class="text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm cursor-pointer py-0.5 transition-colors">
+              3.3 Reliability Engineering Application
+            </div>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="group flex items-center justify-between px-2.5 py-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex items-start gap-2 pr-1">
+<span class="font-code-md text-code-md text-outline">§4</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface leading-tight">Worked Problem Sets</span>
+</div>
+<span class="font-code-md text-code-md text-outline text-[0.7rem]">p. 19–24</span>
+</div>
+</div>
+<!-- Quick Metadata Tag -->
+<div class="p-3 border-t border-outline-variant/60 bg-surface-container-low">
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm">
+<span>Corpus: Oxford DMS-2024</span>
+<span class="font-code-md text-code-md text-outline">PDF/A-1b</span>
+</div>
+</div>
+</aside>
+<!-- ----------------------------------------------------------------------- -->
+<!-- COLUMN 2: Central Paper Reading Surface                                -->
+<!-- ----------------------------------------------------------------------- -->
+<section class="flex-1 h-full overflow-y-auto custom-scrollbar p-8 flex justify-center relative bg-background">
+<!-- High-Fidelity Paper Folio Document (max-w 72ch equivalent) -->
+<article class="w-full max-w-[760px] bg-surface-container-lowest border border-outline-variant rounded p-12 relative my-4 shadow-[0_1px_2px_rgba(41,43,41,0.04),0_4px_12px_rgba(126,90,68,0.06)] min-h-[980px] flex flex-col justify-between">
+<!-- Hovering Inline Marginalia Action (Anchored to current paragraph) -->
+<div class="absolute -right-3 top-44 translate-x-full hidden xl:flex items-center">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest border border-outline-variant text-primary font-label-sm text-label-sm shadow-[0_2px_4px_rgba(41,43,41,0.04),0_12px_28px_rgba(41,58,52,0.08)] hover:bg-surface-container-low transition-all duration-150">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="spark">auto_awesome</span>
+<span>Ask about this page</span>
+</button>
+</div>
+<div>
+<!-- Folio Header -->
+<div class="border-b border-outline-variant pb-4 mb-8 flex items-center justify-between">
+<div class="space-y-0.5">
+<p class="font-label-sm text-label-sm uppercase tracking-widest text-outline">STAT 210: Discrete &amp; Mathematical Statistics</p>
+<p class="font-code-md text-code-md text-secondary text-xs">Module: Continuous Distributions · Unit 2 DMS</p>
+</div>
+<div class="text-right">
+<span class="font-code-md text-code-md text-outline text-xs">Doc. Ref. 210-U2-T3</span>
+</div>
+</div>
+<!-- Document Section Title -->
+<div class="mb-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-surface-container font-code-md text-code-md text-outline text-xs rounded border border-outline-variant">Section 3.2</span>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-wider">Core Analytical Lemma</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Theorem 3.2: Conditional Invariance of the Exponential Distribution</h1>
+<p class="font-body-sm text-body-sm text-outline mt-1 italic">Formal proof of the continuous memoryless characteristic and preservation of survivor probability under translation.</p>
+</div>
+<!-- Primary Exposition (Source Serif 4) -->
+<div class="space-y-5 text-on-surface font-reading-md text-reading-md leading-relaxed text-justify">
+<p>
+              Let <span class="font-code-md text-code-md text-primary">$X$</span> be a continuous random variable having support over the non-negative real numbers <span class="font-code-md text-code-md text-primary">$[0, \infty)$</span>. The random variable is distributed exponentially with parameter <span class="font-code-md text-code-md text-primary">$\lambda &gt; 0$</span>, denoted as <span class="font-code-md text-code-md text-primary">$X \sim \text{Exp}(\lambda)$</span>, possessing probability density function <span class="font-code-md text-code-md text-primary">$f(x) = \lambda e^{-\lambda x}$</span>.
+            </p>
+<!-- Formal Theorem Block -->
+<div class="bg-surface-container-low border-l-4 border-secondary p-5 my-6 rounded-r">
+<div class="font-label-md text-label-md text-secondary font-semibold mb-2">STATEMENT OF THEOREM 3.2 (Memoryless Property)</div>
+<p class="font-reading-md text-reading-md italic text-on-surface">
+                For any strictly positive scalar constants <span class="font-code-md text-code-md not-italic">$s, t &gt; 0$</span>, the conditional probability that the random process persists beyond duration <span class="font-code-md text-code-md not-italic">$s + t$</span>, conditioned upon surviving elapsed threshold <span class="font-code-md text-code-md not-italic">$s$</span>, depends exclusively upon duration <span class="font-code-md text-code-md not-italic">$t$</span>:
+              </p>
+<!-- Formula Block 1 -->
+<div class="my-4 py-3 px-4 bg-surface-container-lowest border border-outline-variant rounded font-code-md text-code-md text-primary text-center">
+                P(X &gt; s + t | X &gt; s) = P(X &gt; t)
+              </div>
+</div>
+<!-- Proof Steps -->
+<h2 class="font-headline-sm text-headline-sm text-primary pt-2">Analytical Derivation &amp; Proof</h2>
+<p>
+              By the elementary definition of conditional probability for continuous cumulative distribution envelopes:
+            </p>
+<!-- Mathematical Typesetting Block (JetBrains Mono) -->
+<div class="bg-surface-container-low border border-outline-variant p-4 rounded font-code-md text-code-md text-on-surface space-y-2">
+<div class="flex items-center justify-between text-outline text-xs border-b border-outline-variant pb-1">
+<span>DERIVATION STEPS</span>
+<span>EQ. 3.2.4</span>
+</div>
+<p class="leading-relaxed">
+                P(X &gt; s + t | X &gt; s) = <span class="text-secondary font-medium">P({X &gt; s + t} ∩ {X &gt; s}) / P(X &gt; s)</span>
+</p>
+<p class="text-outline text-xs italic pl-4">
+                Since {X &gt; s + t} ⊆ {X &gt; s}, the joint intersection simplifies strictly to {X &gt; s + t}:
+              </p>
+<p class="leading-relaxed pl-4">
+                = P(X &gt; s + t) / P(X &gt; s)
+              </p>
+<p class="text-outline text-xs italic pl-4">
+                Recalling the complementary cumulative survival distribution S(x) = e^(-λx):
+              </p>
+<p class="leading-relaxed pl-4">
+                = e^(-λ(s + t)) / e^(-λs)
+              </p>
+<p class="leading-relaxed pl-4">
+                = e^(-λs) · e^(-λt) / e^(-λs)
+              </p>
+<div class="border-t border-outline-variant/60 pt-2 flex items-center justify-between font-semibold text-primary">
+<span>= e^(-λt) = P(X &gt; t)</span>
+<span class="text-xs font-normal text-outline">Q.E.D. ∎</span>
+</div>
+</div>
+<p class="pt-2">
+              In reliability engineering contexts, this algebraic closure dictates that an operational component which has survived <span class="font-code-md text-code-md text-primary">$s$</span> operational hours functions mathematically as if brand new with regards to its remaining lifespan expectancy.
+            </p>
+</div>
+</div>
+<!-- Folio Footer / Signature -->
+<div class="border-t border-outline-variant pt-6 mt-12 flex items-center justify-between text-outline font-label-sm text-label-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span>Archival Repository Copy: Bodleian Academic Registry</span>
+</div>
+<div class="font-code-md text-code-md text-xs">
+            Folio 14 / 24
+          </div>
+</div>
+</article>
+</section>
+<!-- ----------------------------------------------------------------------- -->
+<!-- COLUMN 3: Docked AI Study Companion (~340px)                           -->
+<!-- ----------------------------------------------------------------------- -->
+<aside class="w-[340px] flex-shrink-0 h-full bg-surface-container-lowest border-l border-outline-variant flex flex-col justify-between">
+<!-- Dock Header -->
+<div class="p-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-primary-container text-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-xs" data-icon="smart_toy">smart_toy</span>
+</div>
+<div>
+<h2 class="font-label-md text-label-md font-semibold text-primary leading-tight">AI Tutor</h2>
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-sm text-label-sm text-outline">Anchored to p. 14</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded transition-colors" title="Anchor options">
+<span class="material-symbols-outlined text-sm" data-icon="pin_drop">pin_drop</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded transition-colors" title="Collapse companion">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+</div>
+</div>
+<!-- Dialogue & Study Synthesis Canvas -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+<!-- Socratic Card (Synthesis Block with left accent border) -->
+<div class="bg-surface-container-low border-l-2 border-secondary p-3.5 rounded-r space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-semibold">Socratic Prompt</span>
+<span class="material-symbols-outlined text-xs text-secondary" data-icon="psychology">psychology</span>
+</div>
+<p class="font-reading-md text-reading-md text-primary font-medium leading-snug">
+            "Why is memorylessness considered unrealistic for structural fatigue?"
+          </p>
+<p class="font-body-sm text-body-sm text-outline leading-normal">
+            Reflect on whether micro-fissures in aircraft alloys accumulate wear over time. If failure rate remains strictly flat (<span class="font-code-md text-code-md">h(t) = λ</span>), what critical physical phenomenon is mathematically ignored?
+          </p>
+</div>
+<!-- Student Working Slate / Reflection -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<label class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Synthesis Notes</label>
+<span class="font-code-md text-code-md text-[0.7rem] text-outline">Auto-saved to §3</span>
+</div>
+<div class="border border-outline-variant rounded bg-surface-container-lowest p-3 focus-within:border-primary transition-colors">
+<textarea class="w-full bg-transparent border-0 p-0 text-on-surface font-body-sm text-body-sm focus:ring-0 resize-none placeholder:text-outline/70" placeholder="Record your formal deduction or hypothesis here..." rows="4"></textarea>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/40 mt-2">
+<span class="font-code-md text-code-md text-xs text-outline">LaTeX supported: $h(t)$</span>
+<button class="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high text-primary font-label-sm text-label-sm rounded transition-colors border border-outline-variant">
+                Evaluate
+              </button>
+</div>
+</div>
+</div>
+<!-- Contextual Follow-up Chips -->
+<div class="space-y-2 pt-2">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider block font-semibold">Recommended Exploration</span>
+<div class="flex flex-col gap-1.5">
+<button class="text-left px-3 py-2 rounded bg-surface-container-low hover:bg-surface-container border border-outline-variant/60 font-body-sm text-body-sm text-on-surface transition-colors flex items-center justify-between group">
+<span>Derive hazard function</span>
+<span class="material-symbols-outlined text-xs text-outline group-hover:text-primary" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="text-left px-3 py-2 rounded bg-surface-container-low hover:bg-surface-container border border-outline-variant/60 font-body-sm text-body-sm text-on-surface transition-colors flex items-center justify-between group">
+<span>Compare with Weibull</span>
+<span class="material-symbols-outlined text-xs text-outline group-hover:text-primary" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="text-left px-3 py-2 rounded bg-surface-container-low hover:bg-surface-container border border-outline-variant/60 font-body-sm text-body-sm text-on-surface transition-colors flex items-center justify-between group">
+<span>Explain failure rate intuition</span>
+<span class="material-symbols-outlined text-xs text-outline group-hover:text-primary" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dock Chat Input -->
+<div class="p-3 border-t border-outline-variant bg-surface-container-low">
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded pl-3 pr-10 py-2 text-on-surface font-body-sm text-body-sm focus:border-primary focus:ring-0 placeholder:text-outline" placeholder="Ask AI Tutor regarding Theorem 3.2..." type="text"/>
+<button class="absolute right-2 p-1 text-primary hover:text-secondary transition-colors" title="Send question">
+<span class="material-symbols-outlined text-base" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

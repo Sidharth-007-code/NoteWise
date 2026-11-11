@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — Concept Quiz</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#F1F0E9",
+            "surface-dim": "#171D1A",
+            "on-error-container": "#ffdad6",
+            "on-secondary-container": "#fdcdb2",
+            "surface-container-low": "#1C231F",
+            "inverse-on-surface": "#1a1c1a",
+            "surface-container-high": "#263028",
+            "secondary": "#7a5641",
+            "background": "#171D1A",
+            "tertiary-fixed": "#d6e8cc",
+            "on-background": "#F1F0E9",
+            "surface": "#202923",
+            "outline-variant": "#3B473E",
+            "inverse-surface": "#f1f1ed",
+            "surface-tint": "#A5B69C",
+            "primary": "#293A34",
+            "on-primary": "#F1F0E9",
+            "inverse-primary": "#293A34",
+            "secondary-fixed": "#ffdbc8",
+            "primary-fixed-dim": "#A5B69C",
+            "tertiary": "#A5B69C",
+            "on-tertiary-fixed": "#111f0e",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#2e1505",
+            "surface-container-highest": "#333D35",
+            "tertiary-fixed-dim": "#baccb1",
+            "surface-bright": "#2B352E",
+            "tertiary-container": "#2c3a27",
+            "on-secondary-fixed-variant": "#603f2b",
+            "on-surface-variant": "#B6B9AE",
+            "secondary-fixed-dim": "#ebbda2",
+            "on-tertiary": "#14241f",
+            "outline": "#737875",
+            "surface-container-lowest": "#171D1A",
+            "on-tertiary-container": "#A5B69C",
+            "primary-container": "#293A34",
+            "on-primary-fixed-variant": "#394a44",
+            "secondary-container": "#483223",
+            "on-primary-container": "#B6B9AE",
+            "surface-variant": "#202923",
+            "error-container": "#4d1010",
+            "primary-fixed": "#d3e7de",
+            "surface-container": "#2B352E",
+            "error": "#E57373",
+            "on-primary-fixed": "#0e1f19"
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          spacing: {
+            "space-sm": "0.5rem",
+            "gutter-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.25rem",
+            "margin": "3rem",
+            "space-xl": "2.5rem",
+            "margin-tablet": "2rem",
+            "margin-mobile": "1.25rem"
+          },
+          fontFamily: {
+            "label-md": ["DM Sans"],
+            "code-md": ["JetBrains Mono"],
+            "body-lg": ["DM Sans"],
+            "body-sm": ["DM Sans"],
+            "body-md": ["DM Sans"],
+            "reading-md": ["\"Source Serif 4\""],
+            "reading-lg": ["\"Source Serif 4\""],
+            "display-lg-mobile": ["Playfair Display"],
+            "display-lg": ["Playfair Display"],
+            "headline-sm": ["Playfair Display"],
+            "headline-md": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"],
+            "label-sm": ["DM Sans"],
+            "headline-lg-mobile": ["Playfair Display"]
+          },
+          fontSize: {
+            "label-md": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "500" }],
+            "code-md": ["0.875rem", { lineHeight: "1.5rem", fontWeight: "400" }],
+            "body-lg": ["1.125rem", { lineHeight: "1.625rem", fontWeight: "400" }],
+            "body-sm": ["0.8125rem", { lineHeight: "1.25rem", fontWeight: "400" }],
+            "body-md": ["0.9375rem", { lineHeight: "1.5rem", fontWeight: "400" }],
+            "reading-md": ["1.0625rem", { lineHeight: "1.75rem", fontWeight: "400" }],
+            "reading-lg": ["1.1875rem", { lineHeight: "1.9rem", fontWeight: "400" }],
+            "display-lg-mobile": ["2.25rem", { lineHeight: "2.75rem", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "display-lg": ["3rem", { lineHeight: "3.5rem", letterSpacing: "-0.02em", fontWeight: "600" }],
+            "headline-sm": ["1.25rem", { lineHeight: "1.75rem", fontWeight: "500" }],
+            "headline-md": ["1.625rem", { lineHeight: "2.125rem", fontWeight: "500" }],
+            "headline-lg": ["2.25rem", { lineHeight: "2.75rem", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "label-sm": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.04em", fontWeight: "600" }],
+            "headline-lg-mobile": ["1.75rem", { lineHeight: "2.25rem", letterSpacing: "-0.01em", fontWeight: "600" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased font-body-md min-h-screen flex selection:bg-tertiary selection:text-primary">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: SideNavBar (Strictly mapped from JSON with 'Quiz' active) -->
+<!-- ========================================================================= -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container border-r border-outline-variant">
+<div class="flex flex-col gap-6">
+<!-- Header Brand Cluster -->
+<div class="flex items-center gap-3 px-2 pt-1">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center border border-outline-variant text-tertiary">
+<span class="material-symbols-outlined text-lg" data-icon="menu_book">menu_book</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-medium text-on-surface tracking-tight leading-none">NoteWise</span>
+<span class="font-label-sm text-label-sm text-on-primary-container tracking-wider uppercase mt-1">Academic Folio</span>
+</div>
+</div>
+<!-- Action Button CTA -->
+<button class="w-full flex items-center justify-center gap-2 bg-surface hover:bg-surface-bright text-on-surface border border-outline-variant font-label-md text-label-md py-2 px-3 rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span>New Note</span>
+</button>
+<!-- Navigation Links List (from Shared Components JSON) -->
+<nav class="flex flex-col gap-1">
+<!-- 0: Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<!-- 1: Library -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="local_library">local_library</span>
+<span class="font-label-md text-label-md">Library</span>
+</a>
+<!-- 2: Reader -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="menu_book">menu_book</span>
+<span class="font-label-md text-label-md">Reader</span>
+</a>
+<!-- 3: AI Tutor -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="smart_toy">smart_toy</span>
+<span class="font-label-md text-label-md">AI Tutor</span>
+</a>
+<!-- 4: Active Recall -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">Active Recall</span>
+</a>
+<!-- 5: Quiz (ACTIVE DESTINATION) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface bg-surface border border-outline-variant font-medium" href="#">
+<span class="material-symbols-outlined text-[1.15rem] text-tertiary" data-icon="quiz">quiz</span>
+<span class="font-label-md text-label-md text-on-surface">Quiz</span>
+<span class="ml-auto w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+</a>
+<!-- 6: Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md">Progress</span>
+</a>
+<!-- 7: Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-on-surface transition-colors hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined text-[1.15rem]" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Archival User Profile Footnote -->
+<div class="pt-4 border-t border-outline-variant flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded border border-outline-variant bg-surface flex items-center justify-center font-code-md text-code-md text-on-surface-variant">
+          JS
+        </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface leading-tight">J. Schopen</span>
+<span class="font-code-md text-[0.7rem] text-on-surface-variant">MSc Statistics</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-sm" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE CANVAS -->
+<!-- ========================================================================= -->
+<main class="pl-64 flex-1 flex flex-col min-h-screen bg-background">
+<!-- Top Examination Nav Bar -->
+<header class="sticky top-0 z-30 h-16 bg-surface/90 backdrop-blur-sm border-b border-outline-variant flex items-center justify-between px-8">
+<div class="flex items-center gap-4">
+<span class="font-code-md text-code-md text-tertiary">STAT 210</span>
+<span class="text-outline-variant font-code-md">/</span>
+<h1 class="font-headline-sm text-headline-sm text-on-surface truncate">
+          Continuous Random Variables &amp; Poisson Processes
+        </h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 font-code-md text-code-md text-on-surface-variant">
+<span class="material-symbols-outlined text-base" data-icon="hourglass_empty">hourglass_empty</span>
+<span>Question 3 of 8</span>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded border border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="close">close</span>
+<span>Exit Quiz</span>
+</button>
+</div>
+</header>
+<!-- Restrained Academic Progress Rule (37.5% complete) -->
+<div class="w-full bg-outline-variant h-[2px]">
+<div class="bg-tertiary h-[2px] transition-all duration-300" style="width: 37.5%;"></div>
+</div>
+<!-- Central Quiz Question Folio -->
+<div class="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+<div class="w-full max-w-[840px] flex flex-col gap-6 my-auto">
+<!-- Question Meta & Header Folio Plate -->
+<div class="bg-surface border border-outline-variant p-6 rounded">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant mb-5">
+<span class="font-label-sm text-label-sm tracking-widest text-tertiary font-code-md uppercase">
+              CONCEPTUAL DIAGNOSTIC · THEOREM 3.2
+            </span>
+<span class="font-code-md text-[0.75rem] text-on-surface-variant">
+              [Tutorial-3.pdf · Page 15, Equation 3.7]
+            </span>
+</div>
+<!-- Academic Statement -->
+<h2 class="font-headline-md text-headline-md text-on-surface leading-snug">
+            Under what condition does the hazard function 
+            <span class="font-code-md text-[1.15rem] text-tertiary px-1">h(t) = f(t) / S(t)</span> 
+            remain strictly constant for all 
+            <span class="font-code-md text-[1.15rem] text-tertiary px-1">t ≥ 0</span>?
+          </h2>
+</div>
+<!-- Multiple Choice Options Cluster -->
+<div class="flex flex-col gap-3">
+<!-- Option A (Default Unselected) -->
+<div class="group relative flex items-start gap-4 p-4 rounded bg-surface border border-outline-variant hover:border-on-surface-variant/60 cursor-pointer transition-all">
+<div class="mt-1 w-4 h-4 rounded-full border border-outline flex items-center justify-center group-hover:border-on-surface transition-colors flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md font-semibold text-on-surface-variant mr-3">A</span>
+<p class="font-reading-md text-reading-md text-on-surface flex-1">
+                  When the survival function <span class="font-code-md text-code-md">S(t)</span> decreases according to a power law <span class="font-code-md text-code-md">t<sup>-α</sup></span>.
+                </p>
+</div>
+</div>
+</div>
+<!-- Option B (Correct & Selected State with Pedagogical Marginalia) -->
+<div class="flex flex-col rounded bg-surface-container border border-tertiary">
+<div class="flex items-start gap-4 p-4">
+<div class="mt-1 w-4 h-4 rounded-full border border-tertiary flex items-center justify-center flex-shrink-0">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md font-semibold text-tertiary mr-3">B</span>
+<p class="font-reading-md text-reading-md text-on-surface flex-1 font-medium">
+                    When <span class="font-code-md text-code-md">X</span> is exponentially distributed with constant arrival rate <span class="font-code-md text-code-md">λ</span>, yielding <span class="font-code-md text-code-md">h(t) = λ</span>.
+                  </p>
+</div>
+</div>
+<span class="font-code-md text-xs px-2 py-0.5 rounded border border-tertiary text-tertiary bg-primary">
+                VERIFIED
+              </span>
+</div>
+<!-- Inline Pedagogical Explanation Block -->
+<div class="mx-4 mb-4 mt-1 border-l-2 border-tertiary bg-surface-container-low p-4 rounded-r">
+<div class="flex items-center gap-2 mb-1.5">
+<span class="material-symbols-outlined text-sm text-tertiary" data-icon="check_circle">check_circle</span>
+<span class="font-code-md text-xs tracking-wider uppercase text-tertiary font-medium">Archival Explanation</span>
+</div>
+<p class="font-reading-md text-reading-md text-on-surface leading-relaxed">
+                Correct. Since <span class="font-code-md text-sm">f(t) = λe<sup>-λt</sup></span> and <span class="font-code-md text-sm">S(t) = e<sup>-λt</sup></span>, their quotient <span class="font-code-md text-sm">h(t) = λ</span> is independent of elapsed time <span class="font-code-md text-sm">t</span>. This is the continuous manifestation of memorylessness.
+              </p>
+</div>
+</div>
+<!-- Option C (Incorrect Evaluated State) -->
+<div class="flex flex-col rounded bg-surface border border-outline-variant opacity-80">
+<div class="flex items-start gap-4 p-4">
+<div class="mt-1 w-4 h-4 rounded-full border border-outline-variant flex items-center justify-center flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md font-semibold text-on-surface-variant mr-3">C</span>
+<p class="font-reading-md text-reading-md text-on-surface flex-1 line-through decoration-outline-variant text-on-surface-variant">
+                    When the probability density function is symmetric around the expectation <span class="font-code-md text-code-md">μ</span>.
+                  </p>
+</div>
+</div>
+</div>
+<!-- Subdued Error Context without loud red alarms -->
+<div class="mx-4 mb-3 border-l-2 border-outline-variant bg-surface-container-low px-3 py-2 rounded-r">
+<p class="font-reading-md text-body-sm text-on-surface-variant italic">
+                Incorrect. Symmetry implies variable hazard rates unless variance is degenerate.
+              </p>
+</div>
+</div>
+<!-- Option D (Default Unselected) -->
+<div class="group relative flex items-start gap-4 p-4 rounded bg-surface border border-outline-variant hover:border-on-surface-variant/60 cursor-pointer transition-all">
+<div class="mt-1 w-4 h-4 rounded-full border border-outline flex items-center justify-center group-hover:border-on-surface transition-colors flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-transparent"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md font-semibold text-on-surface-variant mr-3">D</span>
+<p class="font-reading-md text-reading-md text-on-surface flex-1">
+                  When the cumulative distribution function satisfies <span class="font-code-md text-code-md">F(2t) = 2F(t)</span>.
+                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Tally & Navigation Control Bar -->
+<footer class="h-18 bg-surface border-t border-outline-variant px-8 py-3 flex items-center justify-between">
+<!-- Previous Action -->
+<button class="flex items-center gap-2 px-4 py-2 rounded border border-outline-variant bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="arrow_back">arrow_back</span>
+<span>Previous Question</span>
+</button>
+<!-- Academic Score Tally (Sober status indicator) -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 font-code-md text-code-md text-on-surface">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>2 / 2 Correct so far</span>
+</div>
+<span class="text-outline-variant font-code-md">·</span>
+<span class="font-code-md text-xs text-on-surface-variant">Continuous Markov Chain Context</span>
+</div>
+<!-- Advance / Next Question Trigger -->
+<button class="flex items-center gap-2 px-5 py-2.5 rounded bg-surface-container border border-tertiary text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all">
+<span>Next Question (Question 4)</span>
+<span class="material-symbols-outlined text-base text-tertiary" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</footer>
+</main>
+</body></html>

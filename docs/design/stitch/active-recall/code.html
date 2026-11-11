@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — Active Recall</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=JetBrains+Mono:wght@400;500&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#F1F0E9",
+            "surface-dim": "#171D1A",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#795540",
+            "surface-container-low": "#1C231F",
+            "inverse-on-surface": "#171D1A",
+            "surface-container-high": "#263029",
+            "secondary": "#7a5641",
+            "background": "#171D1A",
+            "tertiary-fixed": "#d6e8cc",
+            "on-background": "#F1F0E9",
+            "surface": "#202923",
+            "outline-variant": "#3B473E",
+            "inverse-surface": "#f1f1ed",
+            "surface-tint": "#A5B69C",
+            "primary": "#14241f",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#b8cbc2",
+            "secondary-fixed": "#ffdbc8",
+            "primary-fixed-dim": "#b8cbc2",
+            "tertiary": "#172413",
+            "on-tertiary-fixed": "#111f0e",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#2e1505",
+            "surface-container-highest": "#2B352E",
+            "tertiary-fixed-dim": "#A5B69C",
+            "surface-bright": "#2B352E",
+            "tertiary-container": "#2c3a27",
+            "on-tertiary-fixed-variant": "#3c4b36",
+            "on-surface-variant": "#B6B9AE",
+            "secondary-fixed-dim": "#ebbda2",
+            "on-tertiary": "#ffffff",
+            "outline": "#737875",
+            "surface-container-lowest": "#141916",
+            "on-tertiary-container": "#A5B69C",
+            "primary-container": "#293A34",
+            "on-primary-container": "#91a49c",
+            "surface-variant": "#202923",
+            "error-container": "#441a1a",
+            "primary-fixed": "#d3e7de",
+            "surface-container": "#202923",
+            "error": "#ba1a1a",
+            "on-primary-fixed": "#0e1f19"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "gutter-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.25rem",
+            "margin": "3rem",
+            "space-xl": "2.5rem",
+            "margin-tablet": "2rem",
+            "margin-mobile": "1.25rem"
+          },
+          "fontFamily": {
+            "label-md": ["DM Sans"],
+            "code-md": ["JetBrains Mono"],
+            "body-lg": ["DM Sans"],
+            "body-sm": ["DM Sans"],
+            "body-md": ["DM Sans"],
+            "reading-md": ["\"Source Serif 4\""],
+            "reading-lg": ["\"Source Serif 4\""],
+            "display-lg-mobile": ["Playfair Display"],
+            "display-lg": ["Playfair Display"],
+            "headline-sm": ["Playfair Display"],
+            "headline-md": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"],
+            "label-sm": ["DM Sans"],
+            "headline-lg-mobile": ["Playfair Display"]
+          },
+          "fontSize": {
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "code-md": ["0.875rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "400" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "reading-md": ["1.0625rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "reading-lg": ["1.1875rem", { "lineHeight": "1.9rem", "fontWeight": "400" }],
+            "display-lg-mobile": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg": ["3rem", { "lineHeight": "3.5rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "500" }],
+            "headline-md": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "500" }],
+            "headline-lg": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .custom-folio-shadow {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(10, 15, 12, 0.55);
+    }
+    /* Custom scrollbar for dark archival layout */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #171D1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3B473E;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex selection:bg-tertiary-fixed-dim selection:text-primary">
+<!-- ========================================================================= -->
+<!-- LEFT SIDE NAVIGATION RAIL (Shared Component: SideNavBar)                  -->
+<!-- ========================================================================= -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container border-r border-outline-variant select-none">
+<!-- Brand & Folio Emblem -->
+<div class="space-y-6">
+<div class="flex items-center gap-3 px-2 pt-1">
+<div class="w-8 h-8 rounded-sm bg-surface-container-high border border-outline-variant flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+</div>
+<div>
+<span class="font-headline-md text-headline-md text-surface-container-lowest tracking-tight font-medium block leading-tight">NoteWise</span>
+<span class="font-label-sm text-label-sm text-on-primary-container tracking-wider uppercase">Academic Folio</span>
+</div>
+</div>
+<!-- Quick Action CTA -->
+<button class="w-full flex items-center justify-center gap-2 py-2 px-3 bg-surface-container-highest hover:bg-surface border border-outline-variant text-on-surface font-label-md text-label-md rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="add">add</span>
+<span>New Note</span>
+</button>
+<!-- Navigation Tabs -->
+<nav class="space-y-1">
+<!-- Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Library -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="local_library">local_library</span>
+<span>Library</span>
+</a>
+<!-- Reader -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span>Reader</span>
+</a>
+<!-- AI Tutor -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span>AI Tutor</span>
+</a>
+<!-- Active Recall (ACTIVE ITEM) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-surface-container-lowest bg-primary border-l-2 border-tertiary-fixed-dim font-medium font-label-md text-label-md shadow-sm" href="#">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="psychology" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span>Active Recall</span>
+</a>
+<!-- Quiz -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+<span>Quiz</span>
+</a>
+<!-- Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span>Progress</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Archival Footprint & User Session -->
+<div class="pt-4 border-t border-outline-variant/60">
+<div class="flex items-center justify-between px-2 py-1 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-surface border border-outline-variant flex items-center justify-center text-xs font-code-md text-on-surface">
+            RL
+          </div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">Prof. Lin Lab</span>
+<span class="font-code-md text-xs text-on-surface-variant">STAT-210 Session</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="more_horiz">more_horiz</span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE                                                           -->
+<!-- ========================================================================= -->
+<div class="pl-64 flex-1 flex flex-col min-h-screen">
+<!-- Top Study Bar (Shared Component: TopNavBar adaptation) -->
+<header class="fixed top-0 right-0 left-64 h-16 z-30 flex items-center justify-between px-8 bg-surface-container-low border-b border-outline-variant backdrop-blur-sm">
+<!-- Deck Metadata / Breadcrumb -->
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md text-on-surface-variant">STAT 210</span>
+<span class="text-outline-variant text-xs">/</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Discrete &amp; Mathematical Statistics</span>
+<span class="text-outline-variant text-xs">/</span>
+<span class="font-label-md text-label-md text-on-surface font-medium">Unit 2 Variance &amp; Exponential Laws</span>
+</div>
+<!-- Center Progress Indicator -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface font-medium">Card 4 of 10</span>
+<span class="font-code-md text-xs text-on-surface-variant">(40%)</span>
+</div>
+<div class="w-36 h-1 bg-surface-container-highest rounded-full overflow-hidden border border-outline-variant/50">
+<div class="h-full bg-tertiary-fixed-dim transition-all duration-300" style="width: 40%;"></div>
+</div>
+</div>
+<!-- Study Session Action Icons -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" title="Bookmark card">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" title="Export study set">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<button class="px-3 py-1.5 text-label-sm font-label-sm text-on-surface-variant border border-outline-variant rounded hover:text-on-surface hover:bg-surface-container transition-colors">
+          Exit Session
+        </button>
+</div>
+</header>
+<!-- Main Study Viewport: Clean, Nocturnal, Analytical Space -->
+<main class="flex-1 mt-16 p-8 flex flex-col items-center justify-center relative overflow-y-auto">
+<!-- Top Context Tag -->
+<div class="w-full max-w-[760px] flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">Active Recall Slate</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-code-md text-xs text-on-surface-variant">SRS Schedule: Leech Protection Active</span>
+</div>
+</div>
+<!-- Centered Large Study Card (760px x auto, min 440px) -->
+<article class="w-full max-w-[760px] min-h-[440px] bg-surface-container rounded-sm border border-outline-variant custom-folio-shadow flex flex-col justify-between relative transition-all">
+<!-- Subtle Top accent ruler denoting state -->
+<div class="h-0.5 w-full bg-outline-variant flex">
+<div class="w-1/3 bg-tertiary-fixed-dim"></div>
+</div>
+<!-- Card Content Area -->
+<div class="p-8 space-y-6">
+<!-- Card Header / Taxonomy & Citation Source -->
+<div class="flex items-center justify-between border-b border-outline-variant pb-4">
+<div class="flex items-center gap-2.5">
+<span class="px-2 py-0.5 bg-surface-container-highest border border-outline-variant rounded text-tertiary-fixed-dim font-label-sm text-xs font-semibold tracking-wider uppercase">
+                Theorem Derivation
+              </span>
+<span class="font-code-md text-xs text-on-surface-variant">
+                [Tutorial-3.pdf · Section 3.2 · Lemma 4]
+              </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-code-md text-xs text-tertiary-fixed-dim bg-surface-container-highest px-2 py-0.5 rounded border border-outline-variant">
+                Interval: 24h
+              </span>
+<button class="text-on-surface-variant hover:text-on-surface p-1" title="Mark card flag">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span>
+</button>
+</div>
+</div>
+<!-- Question / Prompt Section -->
+<div class="space-y-3">
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-medium leading-relaxed">
+              Prove the Variance Formula for an Exponential Random Variable
+            </h1>
+<!-- Mathematical Problem Formulation -->
+<div class="p-3.5 bg-surface-container-lowest rounded border border-outline-variant font-code-md text-code-md text-on-surface leading-relaxed overflow-x-auto">
+              For X ~ Exp(λ), show that Var(X) = 1 / λ<sup>2</sup> starting from E[X<sup>2</sup>] = ∫<sub>0</sub><sup>∞</sup> x<sup>2</sup> λ e<sup>-λx</sup> dx.
+            </div>
+</div>
+<!-- Marginalia / Synthesis Step (Analytical Breakdown / Solution) -->
+<div class="pt-2">
+<div class="border-l-2 border-tertiary-fixed-dim pl-4 py-1 space-y-2 bg-surface-container-low/40 rounded-r">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-tertiary-fixed-dim uppercase tracking-wider font-semibold">Proof Analytical Steps</span>
+<span class="font-code-md text-xs text-on-surface-variant">Step 1 &amp; 2 Verification</span>
+</div>
+<p class="font-reading-md text-reading-md text-on-surface leading-relaxed">
+                Integration by parts yields E[X<sup>2</sup>] = 2 / λ<sup>2</sup>. Consequently, Var(X) = E[X<sup>2</sup>] − (E[X])<sup>2</sup> = 2 / λ<sup>2</sup> − 1 / λ<sup>2</sup> = 1 / λ<sup>2</sup>.
+              </p>
+</div>
+</div>
+<!-- Marginal Context Note Chip -->
+<div class="pt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant italic">
+              Flagged from yesterday's reading session
+            </span>
+</div>
+</div>
+<!-- Card Footer / Internal Utility Strip -->
+<div class="px-8 py-3 bg-surface-container-low border-t border-outline-variant flex items-center justify-between text-xs text-on-surface-variant">
+<span class="font-code-md">Mastery Index: 68%</span>
+<span class="font-body-sm">Press <kbd class="px-1.5 py-0.5 bg-surface-container-highest border border-outline-variant rounded font-code-md text-[11px] text-on-surface">Space</kbd> to inspect alternate proof derivation</span>
+</div>
+</article>
+<!-- Action Response Controls (Scholarly Spaced Interval Rating) -->
+<section class="w-full max-w-[760px] mt-6 flex flex-col items-center gap-4">
+<!-- Primary Interval Decision Row -->
+<div class="grid grid-cols-3 gap-4 w-full">
+<!-- Review Again -->
+<button class="flex flex-col items-center justify-center py-2.5 px-4 rounded bg-surface-container-low border border-outline-variant hover:border-on-surface-variant text-on-surface-variant hover:text-on-surface transition-all group">
+<span class="font-label-md text-label-md font-medium text-on-surface-variant group-hover:text-on-surface">Review Again</span>
+<span class="font-code-md text-xs text-outline group-hover:text-on-surface-variant mt-0.5">1 day</span>
+</button>
+<!-- Hard -->
+<button class="flex flex-col items-center justify-center py-2.5 px-4 rounded bg-surface-container-low border border-outline-variant hover:border-on-surface-variant text-on-surface-variant hover:text-on-surface transition-all group">
+<span class="font-label-md text-label-md font-medium text-on-surface-variant group-hover:text-on-surface">Hard</span>
+<span class="font-code-md text-xs text-outline group-hover:text-on-surface-variant mt-0.5">3 days</span>
+</button>
+<!-- Remembered -->
+<button class="flex flex-col items-center justify-center py-2.5 px-4 rounded bg-surface border border-tertiary-fixed-dim text-tertiary-fixed-dim hover:bg-surface-container-high transition-all shadow-sm">
+<span class="font-label-md text-label-md font-semibold text-tertiary-fixed-dim">Remembered</span>
+<span class="font-code-md text-xs text-tertiary-fixed-dim/80 mt-0.5">7 days</span>
+</button>
+</div>
+<!-- Secondary Sub-Actions -->
+<div class="flex items-center justify-between w-full px-2 pt-1">
+<button class="inline-flex items-center gap-1.5 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors py-1">
+<span class="material-symbols-outlined text-sm" data-icon="swap_horiz">swap_horiz</span>
+<span>Flip Card (Spacebar)</span>
+</button>
+<div class="flex items-center gap-6">
+<button class="inline-flex items-center gap-1.5 font-label-md text-label-md text-secondary-fixed-dim hover:text-secondary-fixed transition-colors py-1 border-b border-secondary/40">
+<span class="material-symbols-outlined text-sm" data-icon="edit_note">edit_note</span>
+<span>Flag for Seminar with Prof. Lin</span>
+</button>
+<button class="inline-flex items-center gap-1.5 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors py-1">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+<span>Run Octave Verification</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Side Panel / Drawer Snippet: Deck Overview -->
+<aside class="w-full max-w-[760px] mt-8 pt-5 border-t border-outline-variant">
+<div class="bg-surface-container-low border border-outline-variant rounded p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-base" data-icon="view_stream">view_stream</span>
+<span class="font-label-md text-label-md font-medium text-on-surface">Deck Overview: Unit 2 Variance</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              10 cards total: 4 Mastered, 2 Flagged, 4 Pending review today.
+            </p>
+</div>
+<!-- Micro Mini Progress Dots -->
+<div class="flex items-center gap-1.5">
+<!-- 4 Mastered -->
+<div class="w-2.5 h-2.5 rounded-sm bg-tertiary-fixed-dim" title="Card 1: Mastered"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-tertiary-fixed-dim" title="Card 2: Mastered"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-tertiary-fixed-dim" title="Card 3: Mastered"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-tertiary-fixed-dim ring-1 ring-tertiary-fixed-dim ring-offset-2 ring-offset-background" title="Card 4: Current"></div>
+<!-- 2 Flagged -->
+<div class="w-2.5 h-2.5 rounded-sm bg-secondary" title="Card 5: Flagged"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-secondary" title="Card 6: Flagged"></div>
+<!-- 4 Pending -->
+<div class="w-2.5 h-2.5 rounded-sm bg-surface-container-highest border border-outline-variant" title="Card 7: Pending"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-surface-container-highest border border-outline-variant" title="Card 8: Pending"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-surface-container-highest border border-outline-variant" title="Card 9: Pending"></div>
+<div class="w-2.5 h-2.5 rounded-sm bg-surface-container-highest border border-outline-variant" title="Card 10: Pending"></div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

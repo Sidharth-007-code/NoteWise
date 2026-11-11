@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — AI Tutor Studio</title>
+<!-- Google Fonts: Playfair Display, DM Sans, Source Serif 4, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#F1F0E9",
+            "surface-dim": "#171D1A",
+            "surface-container-low": "#1C231F",
+            "surface-container": "#202923",
+            "surface-container-high": "#27312A",
+            "surface-container-highest": "#2B352E",
+            "surface-container-lowest": "#141A17",
+            "outline": "#737875",
+            "outline-variant": "#3B473E",
+            "primary": "#14241F",
+            "primary-container": "#293A34",
+            "on-primary": "#FFFFFF",
+            "on-primary-container": "#B6B9AE",
+            "secondary": "#A5B69C",
+            "secondary-container": "#2E3B33",
+            "on-secondary-container": "#E3E7DE",
+            "tertiary": "#7E5A44",
+            "inverse-primary": "#A5B69C",
+            "inverse-surface": "#F1F0E9",
+            "inverse-on-surface": "#1A1C1A"
+          },
+          fontFamily: {
+            "headline-sm": ["Playfair Display", "serif"],
+            "headline-md": ["Playfair Display", "serif"],
+            "headline-lg": ["Playfair Display", "serif"],
+            "label-sm": ["DM Sans", "sans-serif"],
+            "label-md": ["DM Sans", "sans-serif"],
+            "body-sm": ["DM Sans", "sans-serif"],
+            "body-md": ["DM Sans", "sans-serif"],
+            "body-lg": ["DM Sans", "sans-serif"],
+            "reading-md": ["\"Source Serif 4\"", "serif"],
+            "reading-lg": ["\"Source Serif 4\"", "serif"],
+            "code-md": ["\"JetBrains Mono\"", "monospace"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Archival tactile custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #171D1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3B473E;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A5B69C;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 22;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-[#171D1A] text-[#F1F0E9] font-body-md antialiased min-h-screen flex selection:bg-[#2E3B33] selection:text-[#A5B69C]">
+<!-- ========================================================================= -->
+<!-- SIDE NAVIGATION RAIL (Shared Component: SideNavBar)                      -->
+<!-- ========================================================================= -->
+<aside aria-label="Folio Navigation" class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container border-r border-outline-variant select-none">
+<div class="flex flex-col gap-6">
+<!-- Brand & Emblem -->
+<div class="flex items-center gap-3 px-2 pt-1">
+<div class="w-9 h-9 rounded bg-[#171D1A] border border-outline-variant flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]" data-icon="history_edu">history_edu</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-medium text-surface-container-lowest tracking-tight leading-none">NoteWise</span>
+<span class="font-label-sm text-label-sm text-on-primary-container tracking-wider mt-1 text-[11px] uppercase">Academic Folio</span>
+</div>
+</div>
+<!-- Action CTA -->
+<button class="w-full flex items-center justify-center gap-2 bg-[#171D1A] hover:bg-[#202923] text-[#F1F0E9] border border-outline-variant font-label-md text-label-md py-2.5 px-4 rounded transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+<span>New Note</span>
+</button>
+<!-- Nav Items: 8 tabs strictly from JSON with 'AI Tutor' active -->
+<nav aria-label="Main Navigation" class="flex flex-col gap-1">
+<!-- Tab 1: Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#overview">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Tab 2: Library -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#library">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="local_library">local_library</span>
+<span>Library</span>
+</a>
+<!-- Tab 3: Reader -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#reader">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="menu_book">menu_book</span>
+<span>Reader</span>
+</a>
+<!-- Tab 4: AI Tutor (ACTIVE) -->
+<a aria-current="page" class="flex items-center gap-3 px-3 py-2 rounded text-surface-container-lowest bg-primary font-medium border border-[#3B473E] font-label-md text-label-md shadow-sm" href="#aitutor">
+<span class="material-symbols-outlined text-[20px] text-secondary" data-icon="smart_toy">smart_toy</span>
+<span>AI Tutor</span>
+<span class="ml-auto w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</a>
+<!-- Tab 5: Active Recall -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#recall">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="psychology">psychology</span>
+<span>Active Recall</span>
+</a>
+<!-- Tab 6: Quiz -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#quiz">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="quiz">quiz</span>
+<span>Quiz</span>
+</a>
+<!-- Tab 7: Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#progress">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="trending_up">trending_up</span>
+<span>Progress</span>
+</a>
+<!-- Tab 8: Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md group" href="#settings">
+<span class="material-symbols-outlined text-[20px] group-hover:text-surface-container-lowest" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Archival Status & Session Info -->
+<div class="pt-4 border-t border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between text-[#B6B9AE] font-body-sm text-body-sm px-1">
+<span class="flex items-center gap-1.5 font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary inline-block"></span>
+          Corpus Synced
+        </span>
+<span class="font-code-md text-code-md text-xs text-[#B6B9AE]">v2.4.9</span>
+</div>
+<div class="p-2.5 rounded bg-[#171D1A] border border-outline-variant text-xs text-[#B6B9AE]">
+<div class="flex items-center justify-between text-[#F1F0E9] font-medium mb-1 font-label-sm text-label-sm">
+<span>STAT 210 Master Corpus</span>
+<span class="text-secondary font-code-md">88%</span>
+</div>
+<div class="w-full bg-[#202923] h-1 rounded-sm overflow-hidden">
+<div class="bg-secondary h-full w-[88%]"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE                                                            -->
+<!-- ========================================================================= -->
+<div class="pl-64 flex-1 flex flex-col min-h-screen">
+<!-- TOP NAVIGATION BAR (Shared Component: TopNavBar) -->
+<header class="h-16 border-b border-outline-variant bg-[#202923] sticky top-0 z-30 flex items-center justify-between px-8">
+<!-- Breadcrumbs navigation strictly matching specification -->
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 font-body-sm text-body-sm text-[#B6B9AE]">
+<span class="flex items-center gap-1 text-[#B6B9AE] hover:text-[#F1F0E9] transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[16px]" data-icon="folder_open">folder_open</span>
+<span>Folio</span>
+</span>
+<span class="text-[#3B473E]">/</span>
+<a class="hover:text-[#F1F0E9] transition-colors" href="#">STAT 210</a>
+<span class="text-[#3B473E]">/</span>
+<a class="hover:text-[#F1F0E9] transition-colors" href="#">Unit 2 DMS</a>
+<span class="text-[#3B473E]">/</span>
+<span class="font-medium text-[#F1F0E9] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-secondary" data-icon="description">description</span>
+          Tutorial-3.pdf
+        </span>
+</nav>
+<!-- Trailing Action Cluster & Session Metrics -->
+<div class="flex items-center gap-3">
+<!-- Status chips -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#171D1A] border border-outline-variant font-label-sm text-label-sm text-[#B6B9AE]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          Continuous Law
+        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#171D1A] border border-outline-variant font-code-md text-code-md text-xs text-[#B6B9AE]">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+          42m active
+        </span>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<!-- Trailing actions from Shared Component JSON: Annotate, Cite, and Icons -->
+<button class="px-3 py-1.5 rounded text-sm font-label-md text-label-md text-[#F1F0E9] bg-surface-container-highest hover:bg-[#344038] border border-outline-variant transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit_note">edit_note</span>
+<span>Annotate</span>
+</button>
+<button class="px-3 py-1.5 rounded text-sm font-label-md text-label-md text-[#F1F0E9] bg-[#171D1A] hover:bg-surface-container border border-outline-variant transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="format_quote">format_quote</span>
+<span>Cite</span>
+</button>
+<!-- Icon actions -->
+<div class="flex items-center text-[#B6B9AE]">
+<button class="p-1.5 hover:text-[#F1F0E9] rounded hover:bg-surface-container transition-colors" title="Bookmark folio" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="bookmark">bookmark</span>
+</button>
+<button class="p-1.5 hover:text-[#F1F0E9] rounded hover:bg-surface-container transition-colors" title="Share study trace" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="ios_share">ios_share</span>
+</button>
+<button class="p-1.5 hover:text-[#F1F0E9] rounded hover:bg-surface-container transition-colors" title="Catalog options" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<!-- Academic Profile Avatar -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<div class="w-8 h-8 rounded border border-outline-variant bg-[#2E3B33] flex items-center justify-center font-code-md text-xs text-[#A5B69C] font-medium" title="Portrait of university researcher avatar">
+            DR
+          </div>
+</div>
+</div>
+</header>
+<!-- ======================================================================= -->
+<!-- MAIN STUDY CANVASES (Scrollable area)                                   -->
+<!-- ======================================================================= -->
+<main class="flex-1 overflow-y-auto px-8 pt-8 pb-40">
+<!-- Strictly 900px wide centred reading column -->
+<div class="max-w-[900px] mx-auto flex flex-col gap-6">
+<!-- DOCUMENT SCOPE PILL HEADER -->
+<div class="w-full bg-[#202923] border border-outline-variant rounded p-3.5 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="w-7 h-7 rounded bg-[#171D1A] border border-outline-variant flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="filter_center_focus">filter_center_focus</span>
+</div>
+<div class="flex items-center gap-2 truncate">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-[#A5B69C] font-semibold">Scope:</span>
+<span class="font-body-md text-body-md text-[#F1F0E9] font-medium truncate">Tutorial-3.pdf — Continuous Distributions &amp; Exponential Law</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 ml-4">
+<button class="text-xs font-label-sm text-[#B6B9AE] hover:text-[#F1F0E9] px-2 py-1 rounded transition-colors" title="Clear current scope context" type="button">
+              Clear scope
+            </button>
+<div class="h-3 w-px bg-outline-variant"></div>
+<button class="text-xs font-label-md text-label-md bg-[#2B352E] hover:bg-[#344038] text-[#F1F0E9] border border-outline-variant px-2.5 py-1 rounded flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]" data-icon="swap_horiz">swap_horiz</span>
+<span>Switch Scope</span>
+</button>
+</div>
+</div>
+<!-- =================================================================== -->
+<!-- Socratic Study Article Folio                                        -->
+<!-- =================================================================== -->
+<article class="bg-[#202923] border border-outline-variant rounded p-8 sm:p-10 shadow-sm flex flex-col gap-6">
+<!-- Header zone demarked by hairline rule -->
+<div class="border-b border-outline-variant pb-6 flex flex-col gap-3">
+<!-- Context and Source chips -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1 text-xs font-code-md text-code-md px-2.5 py-0.5 rounded bg-[#171D1A] border border-outline-variant text-[#A5B69C]">
+<span class="material-symbols-outlined text-[13px]" data-icon="article">article</span>
+                Tutorial-3.pdf · Page 14
+              </span>
+<span class="inline-flex items-center gap-1 text-xs font-code-md text-code-md px-2.5 py-0.5 rounded bg-[#171D1A] border border-outline-variant text-[#B6B9AE]">
+<span class="material-symbols-outlined text-[13px]" data-icon="tag">tag</span>
+                Definition 3.1
+              </span>
+<span class="inline-flex items-center gap-1 text-xs font-code-md text-code-md px-2.5 py-0.5 rounded bg-[#171D1A] border border-outline-variant text-[#B6B9AE]">
+<span class="material-symbols-outlined text-[13px]" data-icon="functions">functions</span>
+                Eq 2.14
+              </span>
+<span class="ml-auto font-label-sm text-label-sm text-[#B6B9AE] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="auto_awesome">auto_awesome</span>
+                Synthesized 4m ago
+              </span>
+</div>
+<!-- Primary Headline -->
+<h1 class="font-headline-lg text-headline-lg font-medium text-[#F1F0E9] tracking-tight leading-tight mt-2">
+              Socratic Analysis: The Memoryless Property &amp; Hazard Rate Invariance
+            </h1>
+</div>
+<!-- Academic Discourse Body in Source Serif 4 -->
+<div class="font-reading-lg text-reading-lg text-[#F1F0E9] leading-relaxed flex flex-col gap-5">
+<p>
+              In probability theory and stochastic modeling, the <em class="text-[#A5B69C] not-italic font-medium">memoryless property</em> denotes a unique characteristic possessed strictly among continuous distributions by the exponential family. Mathematically, it formalizes the condition that the remaining lifetime of an entity or arrival process does not depend upon the elapsed duration for which it has already survived.
+            </p>
+<!-- Marginalia Synthesis Block -->
+<div class="border-l-[3px] border-[#A5B69C] bg-[#171D1A] pl-5 pr-4 py-3.5 rounded-r my-1">
+<div class="flex items-center gap-2 text-xs font-label-sm text-[#A5B69C] uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[15px]" data-icon="lightbulb">lightbulb</span>
+                Physical Intuition &amp; Archival Context
+              </div>
+<p class="font-reading-md text-reading-md text-[#B6B9AE] leading-normal">
+                Consider an unexcited atom undergoing radioactive decay. The probability that the unstable isotope decomposes within the next millisecond remains identical whether the sample was synthesized ten seconds ago or during the formation of the solar nebula. The atom does not "wear out" or accumulate fatigue; its hazard quotient remains constant over all temporal domains.
+              </p>
+</div>
+<p>
+              When applied to queueing systems (<span class="font-code-md text-code-md text-[0.95em] text-[#A5B69C]">M/M/1</span> specifications), if service times obey an exponential distribution with parameter <span class="font-code-md text-code-md text-[0.95em]">\lambda &gt; 0</span>, customer waiting durations are mathematically detached from previous service states. Formally, for all real numbers <span class="font-code-md text-code-md text-[0.95em]">s, t \ge 0</span>, the conditional probability statement asserts:
+            </p>
+<!-- JetBrains Mono Styled Mathematical Block 1 -->
+<div class="bg-[#171D1A] border border-outline-variant rounded p-4 my-2 overflow-x-auto">
+<div class="flex items-center justify-between text-xs font-code-md text-[#B6B9AE] border-b border-[#27312A] pb-2 mb-3">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="functions">functions</span>
+                  The Fundamental Survival Invariance Formula
+                </span>
+<span class="text-[#737875]">Probability Identity [3.1a]</span>
+</div>
+<pre class="font-code-md text-code-md text-[#F1F0E9] tracking-wide select-all text-sm leading-relaxed"><code>P(X &gt; s + t | X &gt; s) = P(X &gt; t)</code></pre>
+</div>
+<p>
+              To establish this algebraically from the survival function <span class="font-code-md text-code-md text-[0.95em]">S(t) = P(X &gt; t) = e^{-\lambda t}</span>, we evaluate the definition of conditional probability over the joint intersection:
+            </p>
+<!-- JetBrains Mono Styled Mathematical Block 2 -->
+<div class="bg-[#171D1A] border border-outline-variant rounded p-4 my-2 overflow-x-auto">
+<div class="flex items-center justify-between text-xs font-code-md text-[#B6B9AE] border-b border-[#27312A] pb-2 mb-3">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="terminal">terminal</span>
+                  Analytical Derivation
+                </span>
+<span class="text-[#737875]">Tutorial-3 · Step 2.14</span>
+</div>
+<pre class="font-code-md text-code-md text-[#A5B69C] tracking-wide select-all text-sm leading-relaxed"><code>\frac{P(X &gt; s + t \cap X &gt; s)}{P(X &gt; s)} = \frac{P(X &gt; s + t)}{P(X &gt; s)} = \frac{e^{-\lambda(s+t)}}{e^{-\lambda s}} = \frac{e^{-\lambda s} \cdot e^{-\lambda t}}{e^{-\lambda s}} = e^{-\lambda t} = P(X &gt; t)</code></pre>
+</div>
+<p>
+              Hence, the conditional survival probability simplifies exactly to the unconditional survival probability over interval <span class="font-code-md text-code-md text-[0.95em]">t</span>. In continuous reliability engineering, this translates to a state of <strong class="text-[#F1F0E9] font-medium">zero mechanical aging</strong>: the hazard function <span class="font-code-md text-code-md text-[0.95em]">h(t) = f(t)/S(t) = \lambda</span> is completely time-invariant.
+            </p>
+</div>
+<!-- Direct Action Toolbar on the response -->
+<div class="pt-5 border-t border-outline-variant flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-[#171D1A] hover:bg-[#27312A] border border-outline-variant font-label-sm text-label-sm text-[#F1F0E9] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-secondary" data-icon="menu_book">menu_book</span>
+<span>Copy BibTeX Citation</span>
+</button>
+<button class="px-3 py-1.5 rounded bg-[#171D1A] hover:bg-[#27312A] border border-outline-variant font-label-sm text-label-sm text-[#F1F0E9] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-secondary" data-icon="bookmark_add">bookmark_add</span>
+<span>Save to Folio Notebook</span>
+</button>
+<button class="px-3 py-1.5 rounded bg-[#171D1A] hover:bg-[#27312A] border border-outline-variant font-label-sm text-label-sm text-[#F1F0E9] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-secondary" data-icon="code">code</span>
+<span>Copy LaTeX Formula</span>
+</button>
+</div>
+<!-- Scholar feedback controls -->
+<div class="flex items-center gap-1 text-[#B6B9AE]">
+<span class="text-xs font-label-sm mr-1">Tutor evaluation:</span>
+<button class="p-1 rounded hover:text-[#F1F0E9] hover:bg-[#171D1A] transition-colors" title="Accurate derivation" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="thumb_up">thumb_up</span>
+</button>
+<button class="p-1 rounded hover:text-[#F1F0E9] hover:bg-[#171D1A] transition-colors" title="Flag anomaly" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="thumb_down">thumb_down</span>
+</button>
+</div>
+</div>
+</article>
+<!-- =================================================================== -->
+<!-- Socratic Follow-up Question Prompts                                 -->
+<!-- =================================================================== -->
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center gap-2 text-xs font-label-sm text-label-sm uppercase tracking-wider text-[#B6B9AE] px-1">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="psychology_alt">psychology_alt</span>
+<span>Recommended Dialectical Inquiries</span>
+</div>
+<div class="grid grid-cols-1 gap-2">
+<!-- Suggestion Chip 1 -->
+<button class="text-left w-full p-3.5 bg-[#202923] hover:bg-[#27312A] border border-outline-variant rounded flex items-center justify-between gap-4 transition-colors group" type="button">
+<div class="flex items-start gap-3">
+<span class="font-code-md text-code-md text-xs text-[#A5B69C] mt-0.5">01</span>
+<span class="font-body-md text-body-md text-[#F1F0E9] group-hover:text-[#FFFFFF] transition-colors">
+                  How does the memoryless property differentiate Poisson arrivals from renewal processes?
+                </span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-[#B6B9AE] group-hover:text-secondary group-hover:translate-x-0.5 transition-all shrink-0" data-icon="north_east">north_east</span>
+</button>
+<!-- Suggestion Chip 2 -->
+<button class="text-left w-full p-3.5 bg-[#202923] hover:bg-[#27312A] border border-outline-variant rounded flex items-center justify-between gap-4 transition-colors group" type="button">
+<div class="flex items-start gap-3">
+<span class="font-code-md text-code-md text-xs text-[#A5B69C] mt-0.5">02</span>
+<span class="font-body-md text-body-md text-[#F1F0E9] group-hover:text-[#FFFFFF] transition-colors">
+                  Derive the expectation <span class="font-code-md text-code-md text-xs text-[#A5B69C]">E[X]</span> using integration by parts on the survival function.
+                </span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-[#B6B9AE] group-hover:text-secondary group-hover:translate-x-0.5 transition-all shrink-0" data-icon="north_east">north_east</span>
+</button>
+<!-- Suggestion Chip 3 -->
+<button class="text-left w-full p-3.5 bg-[#202923] hover:bg-[#27312A] border border-outline-variant rounded flex items-center justify-between gap-4 transition-colors group" type="button">
+<div class="flex items-start gap-3">
+<span class="font-code-md text-code-md text-xs text-[#A5B69C] mt-0.5">03</span>
+<span class="font-body-md text-body-md text-[#F1F0E9] group-hover:text-[#FFFFFF] transition-colors">
+                  Explain why mechanical failure rates follow Weibull distributions instead.
+                </span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-[#B6B9AE] group-hover:text-secondary group-hover:translate-x-0.5 transition-all shrink-0" data-icon="north_east">north_east</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- ======================================================================= -->
+<!-- PINNED BOTTOM INPUT CONTAINER (Centred strictly within 900px column)    -->
+<!-- ======================================================================= -->
+<div class="fixed bottom-0 right-0 left-64 pointer-events-none z-30 pb-6 px-8 flex justify-center">
+<div class="w-full max-w-[900px] pointer-events-auto">
+<!-- Input Slate -->
+<div class="bg-[#202923] border border-outline-variant rounded p-3 shadow-lg flex flex-col gap-2">
+<!-- Text Input Area -->
+<div class="relative flex items-center">
+<textarea class="w-full bg-[#171D1A] text-[#F1F0E9] placeholder-[#B6B9AE] text-sm font-body-md rounded p-3 pr-14 border border-outline-variant focus:outline-none focus:border-[#A5B69C] resize-none transition-colors" placeholder="Ask AI Tutor about Tutorial-3.pdf or enter a derivation query (LaTeX supported with $)..." rows="2"></textarea>
+<!-- Send Action Icon Button -->
+<button class="absolute right-3.5 top-3 p-2 rounded bg-primary-container hover:bg-[#34463F] border border-outline-variant text-[#A5B69C] hover:text-[#F1F0E9] transition-colors shadow-sm" title="Submit inquiry to AI Tutor" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+</button>
+</div>
+<!-- Bottom Meta Controls & Shortcut Hint -->
+<div class="flex items-center justify-between px-1 text-xs text-[#B6B9AE]">
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 hover:text-[#F1F0E9] cursor-pointer">
+<span class="material-symbols-outlined text-[15px]" data-icon="attach_file">attach_file</span>
+                Attach Excerpt
+              </span>
+<span class="text-[#3B473E]">|</span>
+<span class="flex items-center gap-1 hover:text-[#F1F0E9] cursor-pointer">
+<span class="material-symbols-outlined text-[15px]" data-icon="spellcheck">spellcheck</span>
+                Rigour: Strict Socratic
+              </span>
+</div>
+<!-- Mandatory Keyboard Shortcut Hint -->
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm">
+<kbd class="px-1.5 py-0.5 rounded bg-[#171D1A] border border-outline-variant font-code-md text-code-md text-[11px] text-[#A5B69C]">⌘ + Return</kbd>
+<span>to inquire</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>
