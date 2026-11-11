@@ -1005,6 +1005,27 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
 # ============================================================
 # OVERVIEW ENDPOINT
 # ============================================================
+@app.delete("/api/documents/{document_id}")
+def delete_document(document_id: str):
+    if not document_id or len(document_id) > 128 or not re.fullmatch(r"[A-Za-z0-9_-]+", document_id):
+        raise HTTPException(status_code=400, detail="Invalid document ID.")
+    try:
+        chunks = collection.get(where={"document_id": document_id}, include=[])
+        deleted_chunks = len(chunks.get("ids") or [])
+        row = get_insight_row(document_id)
+        if not deleted_chunks and not row:
+            raise HTTPException(status_code=404, detail="Document was not found.")
+        collection.delete(where={"document_id": document_id})
+        with sqlite3.connect(INSIGHTS_DB) as connection:
+            connection.execute("DELETE FROM document_insights WHERE document_id = ?", (document_id,))
+        return {"success": True, "document_id": document_id, "deleted_chunks": deleted_chunks}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Failed to delete document %s", document_id)
+        raise HTTPException(status_code=500, detail="Could not remove the document.") from exc
+
+
 @app.get("/api/documents/{document_id}/overview")
 def document_overview(document_id: str):
     row = get_insight_row(document_id)

@@ -1,17 +1,18 @@
 import React, { useRef, useState } from 'react';
-import { uploadPDF } from '../api';
+import { deleteDocument, uploadPDF } from '../api';
 
 export default function LeftPanel({
   uploadedFiles,
   setUploadedFiles,
-  activeSubject,
-  setActiveSubject,
   selectedFile,
   setSelectedFile
 }) {
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -21,15 +22,12 @@ export default function LeftPanel({
     try {
       for (const file of files) {
         if (!file.name.toLowerCase().endsWith('.pdf')) throw new Error('Only PDF files can be processed.');
-        const filename = file.name.toLowerCase();
-        const subject = filename.includes('dms') ? 'DMS' : filename.includes('prob') ? 'Prob Theory' : filename.includes('os') ? 'OS' : 'General';
-        const result = await uploadPDF(file, subject);
+        const result = await uploadPDF(file);
         const newEntry = {
           id: result.document_id || result.id,
           name: result.filename || file.name,
           rawBytes: file.size,
           size: file.size < 1024 * 1024 ? `${(file.size / 1024).toFixed(1)} KB` : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-          subject: result.subject || 'General',
           status: result.overview ? 'Processed' : 'Overview pending',
           extractedContent: result.text || '',
           pageCount: result.page_count || result.pages || 0,
@@ -59,10 +57,20 @@ export default function LeftPanel({
     e.preventDefault();
   };
 
-  const filteredFiles =
-    activeSubject === 'All'
-      ? uploadedFiles
-      : uploadedFiles.filter((f) => f.subject === activeSubject);
+  const filteredFiles = uploadedFiles;
+
+  const confirmDelete = async (file) => {
+    setDeleting(file.id);
+    setDeleteError('');
+    try {
+      await deleteDocument(file.id);
+      setUploadedFiles((files) => files.filter((entry) => entry.id !== file.id));
+      if (selectedFile?.id === file.id) setSelectedFile(null);
+      setPendingDelete(null);
+    } catch (error) {
+      setDeleteError(error.message || 'Could not remove this document.');
+    } finally { setDeleting(null); }
+  };
 
   const totalMaxGB = 10;
   const totalBytes = uploadedFiles.reduce((acc, f) => acc + (f.rawBytes || 0), 0);
@@ -116,24 +124,7 @@ export default function LeftPanel({
         </div>
         {uploadError && <p role="alert" className="text-[11px] text-rose-300">{uploadError}</p>}
 
-        {/* Subject Filter Tag Pills */}
-        {uploadedFiles.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {['All', 'DMS', 'Prob Theory', 'OS', 'General'].map((subj) => (
-              <button
-                key={subj}
-                onClick={() => setActiveSubject(subj)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors flex items-center gap-1 ${
-                  activeSubject === subj
-                    ? 'bg-[#8083ff] text-[#0d0096] border border-[#c0c1ff]'
-                    : 'bg-[#1c1f2a] text-[#c7c4d7] border border-[#464554]/30 hover:bg-[#262a35]'
-                }`}
-              >
-                {subj}
-              </button>
-            ))}
-          </div>
-        )}
+        {deleteError && <p role="alert" className="text-[11px] text-rose-300">{deleteError}</p>}
       </div>
 
       {/* Indexed File List */}
@@ -171,12 +162,10 @@ export default function LeftPanel({
                         {file.name}
                       </span>
                     </div>
+                    <button type="button" aria-label={`Remove ${file.name}`} disabled={deleting === file.id} onClick={(event) => { event.stopPropagation(); setPendingDelete(file); }} className="text-rose-300 p-1 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c0c1ff]">{deleting === file.id ? '…' : '🗑'}</button>
                     <span className="text-[10px] font-mono text-[#908fa0] shrink-0">{file.size}</span>
                   </div>
                   <div className="flex items-center justify-between pt-0.5">
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#1c1f2a] text-[#c0c1ff] border border-[#464554]/30">
-                      {file.subject}
-                    </span>
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/50 border border-emerald-500/30 text-emerald-300 text-[10px]">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                       {isSelected ? 'Active Context' : file.status}
@@ -206,6 +195,7 @@ export default function LeftPanel({
           </div>
         </div>
       </div>
+      {pendingDelete && <div role="dialog" aria-modal="true" className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4"><div className="max-w-md rounded-xl bg-[#171b26] border border-[#464554] p-5"><p className="text-sm text-[#dfe2f1]">Remove {pendingDelete.name}? This deletes its text, overview, flashcards and quiz from this app. Your original PDF is not affected.</p><div className="flex justify-end gap-2 mt-4"><button onClick={() => setPendingDelete(null)} className="px-3 py-2 text-sm">Cancel</button><button disabled={Boolean(deleting)} onClick={() => confirmDelete(pendingDelete)} className="px-3 py-2 text-sm bg-rose-900 rounded disabled:opacity-50">{deleting ? 'Removing…' : 'Remove'}</button></div></div></div>}
     </aside>
   );
 }

@@ -13,10 +13,9 @@ export async function getDocuments() {
   return [];
 }
 
-export async function uploadPDF(file, subject = 'General') {
+export async function uploadPDF(file) {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('subject', subject);
 
   const response = await fetch(`${API_BASE_URL}/api/ingest`, {
     method: 'POST',
@@ -57,12 +56,13 @@ export async function askDocumentQuestion(question, documentId) {
   return data;
 }
 
-export async function deleteDocument(docName) {
-  const response = await fetch(`${API_BASE_URL}/documents/${encodeURIComponent(docName)}`, {
+export async function deleteDocument(documentId) {
+  const response = await fetch(`${API_BASE_URL}/api/documents/${encodeURIComponent(documentId)}`, {
     method: 'DELETE',
   });
-  if (!response.ok) throw new Error('Failed to delete document');
-  return await response.json();
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || 'Failed to delete document');
+  return data;
 }
 
 export async function askQuestion(question, subject = 'General') {
