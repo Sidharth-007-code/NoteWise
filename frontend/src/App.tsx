@@ -1,10 +1,13 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import MathText from './components/MathText';
 import LeftPanel from './components/LeftPanel';
 import RightPanel from './components/RightPanel';
-import './App.css';
+import { AppShell } from './components/ui/AppShell';
+import { Button } from './components/ui/Button';
+import { Folder } from 'lucide-react';
 import { getDocumentOverview } from './api';
+import './App.css';
+import './OverviewPane.css';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('tutor');
@@ -15,20 +18,6 @@ export default function App() {
   const [overviewLoading, setOverviewLoading] = useState(false);
   const [overviewError, setOverviewError] = useState('');
   const [showExcerpt, setShowExcerpt] = useState(false);
-  const headerRef = useRef(null);
-
-  useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return undefined;
-    const updateHeaderHeight = () => {
-      document.documentElement.style.setProperty('--nw-header-h', `${header.getBoundingClientRect().height}px`);
-    };
-    updateHeaderHeight();
-    if (typeof ResizeObserver === 'undefined') return undefined;
-    const observer = new ResizeObserver(updateHeaderHeight);
-    observer.observe(header);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,55 +105,13 @@ export default function App() {
   };
 
   return (
-    <div className="bg-[#0f131d] text-[#dfe2f1] font-sans min-h-screen relative overflow-hidden flex flex-col h-screen antialiased">
-      {/* Header */}
-      <header ref={headerRef} style={{ height: 'var(--nw-header-h, 64px)', boxSizing: 'border-box' }} className="bg-[#0a0e18]/80 backdrop-blur-md text-[#c0c1ff] sticky top-0 z-50 border-b border-[#464554]/30 flex justify-between items-center w-full px-8 h-16 shrink-0">
-        <div
-          className="flex items-center gap-3 cursor-pointer"
-          onClick={() => setActiveTab('tutor')}
-        >
-          <div className="w-9 h-9 rounded-lg bg-[#262a35] border border-[#464554]/40 flex items-center justify-center text-[#c0c1ff]">
-            <span className="material-symbols-outlined text-[20px]">
-              hub
-            </span>
-          </div>
-
-          <span className="text-xl font-bold tracking-tight text-[#c0c1ff]">
-            NoteWise
-          </span>
-
-          <span className="text-xs px-2 py-0.5 rounded-full bg-[#c0c1ff]/10 text-[#c0c1ff] border border-[#c0c1ff]/20 font-mono">
-            1.0 test
-          </span>
-        </div>
-
-        <nav className="flex items-center gap-7 text-sm font-semibold">
-          <button
-            onClick={() => setActiveTab('tutor')}
-            className={`transition-colors ${
-              activeTab === 'tutor'
-                ? 'text-[#c0c1ff] border-b-2 border-[#c0c1ff] pb-1'
-                : 'text-[#c7c4d7] hover:text-[#dfe2f1]'
-            }`}
-          >
-            AI Tutor
-          </button>
-
-          <button
-            onClick={() => setActiveTab('recall')}
-            className={`transition-colors ${
-              activeTab === 'recall'
-                ? 'text-[#c0c1ff] border-b-2 border-[#c0c1ff] pb-1'
-                : 'text-[#c7c4d7] hover:text-[#dfe2f1]'
-            }`}
-          >
-            Active Recall (3D)
-          </button>
-        </nav>
-      </header>
-
-      {/* Main workspace */}
-      <div className="flex-1 flex overflow-hidden z-10">
+    <AppShell
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      selectedFileName={selectedFile ? selectedFile.name : null}
+    >
+      <div className="flex-1 flex overflow-hidden z-10 w-full h-full" style={{ backgroundColor: 'var(--nw-bg)' }}>
+        {/* Left Cognitive Library Panel */}
         <LeftPanel
           uploadedFiles={uploadedFiles}
           setUploadedFiles={setUploadedFiles}
@@ -172,47 +119,39 @@ export default function App() {
           setSelectedFile={setSelectedFile}
         />
 
-        {/* Document overview */}
-        <section className="flex-1 flex flex-col border-r border-[#464554]/30 overflow-hidden bg-[#0a0e18]/40 backdrop-blur-sm">
-          <div className="h-14 border-b border-[#464554]/25 px-6 flex items-center justify-between bg-[#171b26]/50 shrink-0">
-            <div className="flex items-center gap-3 text-xs">
-              <span className="material-symbols-outlined text-purple-300 text-[20px]">
-                folder
+        {/* Center Document Overview Workspace Pane */}
+        <section className="nw-overview-pane">
+          <div className="nw-overview-topbar">
+            <div className="nw-overview-breadcrumb">
+              <span className="nw-overview-breadcrumb__icon">
+                <Folder size={16} />
               </span>
-
-              <span className="text-[#908fa0]">
-                {selectedFile ? 'Selected document' : 'Document workspace'}
-              </span>
-
-              <span className="text-[#464554]">/</span>
-
-              <span className="font-medium text-[#dfe2f1]">
+              <span>{selectedFile ? 'Selected document' : 'Document workspace'}</span>
+              <span className="nw-overview-breadcrumb__divider">/</span>
+              <span className="nw-overview-breadcrumb__name">
                 {selectedFile ? selectedFile.name : 'No document selected'}
               </span>
             </div>
 
-            <span className="px-2 py-0.5 rounded bg-[#1c1f2a] text-xs font-mono text-[#908fa0] border border-[#464554]/40">
+            <span className="nw-overview-page-badge">
               {selectedFile
                 ? `Extracted ${overview?.extracted_pages ?? '—'} of ${overview?.page_count ?? selectedFile.pageCount ?? '—'} pages`
                 : 'No document'}
             </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            <div className="p-5 rounded-xl bg-[#171b26]/80 border border-[#464554]/30">
-              <div className="flex items-start justify-between gap-3">
+          <div className="nw-overview-scroll">
+            <div className="nw-overview-card">
+              <div className="nw-overview-header">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#8083ff]/20 text-[#c0c1ff] border border-[#c0c1ff]/30">
-                      DOCUMENT OVERVIEW
-                    </span>
-
+                  <div className="nw-overview-status">
+                    <span className="nw-overview-badge">DOCUMENT OVERVIEW</span>
                     {selectedFile && (
                       <span
-                        className={`text-[10px] ${
+                        className={`nw-overview-status-text ${
                           overview?.processing_status === 'partial'
-                            ? 'text-amber-300'
-                            : 'text-emerald-300'
+                            ? 'nw-overview-status--partial'
+                            : 'nw-overview-status--processed'
                         }`}
                       >
                         {overview?.processing_status === 'partial'
@@ -224,7 +163,7 @@ export default function App() {
                     )}
                   </div>
 
-                  <h1 className="text-xl font-bold text-[#dfe2f1] tracking-tight">
+                  <h1 className="nw-overview-title">
                     {overview?.title ||
                       selectedFile?.name ||
                       'Upload a PDF to view its context'}
@@ -235,7 +174,7 @@ export default function App() {
                   <button
                     onClick={retryOverview}
                     disabled={overviewLoading}
-                    className="text-xs text-[#c0c1ff] underline disabled:opacity-50"
+                    className="nw-overview-retry-btn"
                   >
                     {overviewLoading ? 'Retrying…' : 'Retry'}
                   </button>
@@ -243,21 +182,21 @@ export default function App() {
               </div>
 
               {overviewLoading && (
-                <p className="text-sm text-[#908fa0] mt-4">
+                <p className="nw-overview-loading">
                   Building an overview from the extracted document text…
                 </p>
               )}
 
               {overviewError && (
-                <p role="alert" className="text-sm text-rose-300 mt-4">
+                <p role="alert" className="nw-overview-error">
                   {overviewError}
                 </p>
               )}
 
               {!selectedFile && (
-                <p className="text-sm text-[#908fa0] mt-3">
-                  Select or upload a PDF to see its full document summary,
-                  key topics, and extracted text.
+                <p className="nw-overview-empty">
+                  Select or upload a PDF to see its full document summary, key
+                  topics, and extracted text.
                 </p>
               )}
 
@@ -265,42 +204,41 @@ export default function App() {
                 <>
                   {/* Full document summary: supports math */}
                   {overview.summary && (
-                    <div className="text-sm text-[#dfe2f1] mt-4 leading-relaxed">
+                    <div className="nw-overview-summary">
                       <MathText>{overview.summary}</MathText>
                     </div>
                   )}
 
                   {/* Topic-by-topic study guide */}
                   {overview.topic_summaries?.length > 0 && (
-                    <section className="mt-6">
-                      <div className="flex items-center justify-between gap-3 mb-3">
-                        <p className="text-[10px] uppercase tracking-wider font-bold text-[#908fa0]">
+                    <section className="nw-topics-section">
+                      <div className="nw-topics-header">
+                        <h2 className="nw-topics-title">
                           Topic-by-topic study guide
-                        </p>
-
-                        <span className="text-[10px] text-[#908fa0]">
+                        </h2>
+                        <span className="nw-topics-count">
                           {overview.topic_summaries.length} topics
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                      <div className="nw-topics-grid">
                         {overview.topic_summaries.map((item, index) => (
                           <article
                             key={`${item.topic}-${index}`}
-                            className="rounded-xl bg-[#101521] border border-[#55556d]/70 p-4 shadow-sm"
+                            className="nw-topic-card"
                           >
-                            <div className="flex items-start gap-3">
-                              <span className="shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-[#8083ff]/15 border border-[#8083ff]/35 text-[#c0c1ff] text-xs font-bold">
+                            <div className="nw-topic-header">
+                              <span className="nw-topic-number">
                                 {index + 1}
                               </span>
 
-                              <div className="min-w-0 flex-1">
-                                <h3 className="text-sm font-bold text-[#dfe2f1] leading-snug">
+                              <div className="nw-topic-info">
+                                <h3 className="nw-topic-name">
                                   <MathText>{item.topic || 'Untitled topic'}</MathText>
                                 </h3>
 
                                 {item.pages?.length > 0 && (
-                                  <p className="text-[10px] text-[#908fa0] mt-1">
+                                  <p className="nw-topic-pages">
                                     Page{item.pages.length > 1 ? 's' : ''}{' '}
                                     {item.pages.join(', ')}
                                   </p>
@@ -309,20 +247,17 @@ export default function App() {
                             </div>
 
                             {item.summary && (
-                              <div className="text-xs text-[#dfe2f1] leading-relaxed mt-3">
+                              <div className="nw-topic-summary">
                                 <MathText>{item.summary}</MathText>
                               </div>
                             )}
 
                             {item.key_points?.length > 0 && (
-                              <ul className="mt-3 space-y-1.5">
+                              <ul className="nw-topic-points">
                                 {item.key_points.map((point, pointIndex) => (
-                                  <li
-                                    key={pointIndex}
-                                    className="flex gap-2 text-xs text-[#c7c4d7] leading-relaxed"
-                                  >
-                                    <span className="text-[#4cd7f6]">•</span>
-                                    <div className="min-w-0 flex-1">
+                                  <li key={pointIndex} className="nw-topic-point">
+                                    <span className="nw-topic-bullet">•</span>
+                                    <div style={{ minWidth: 0, flex: 1 }}>
                                       <MathText>{point}</MathText>
                                     </div>
                                   </li>
@@ -331,12 +266,11 @@ export default function App() {
                             )}
 
                             {item.example && (
-                              <div className="mt-3 rounded-lg bg-[#1b2230] border border-[#464554]/70 p-3">
-                                <p className="text-[9px] uppercase tracking-wider font-bold text-[#4cd7f6] mb-1">
+                              <div className="nw-topic-example">
+                                <p className="nw-topic-example-label">
                                   Example / application
                                 </p>
-
-                                <div className="text-xs text-[#c7c4d7] leading-relaxed">
+                                <div className="nw-topic-example-content">
                                   <MathText>{item.example}</MathText>
                                 </div>
                               </div>
@@ -350,17 +284,11 @@ export default function App() {
                   {/* Fallback for documents without topic summaries */}
                   {!overview.topic_summaries?.length &&
                     overview.key_topics?.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-[10px] uppercase tracking-wider font-bold text-[#908fa0] mb-2">
-                          Key topics
-                        </p>
-
-                        <div className="flex flex-wrap gap-2">
+                      <div className="nw-fallback-topics">
+                        <p className="nw-topics-title">Key topics</p>
+                        <div className="nw-fallback-topics__chips">
                           {overview.key_topics.map((topic, index) => (
-                            <span
-                              key={`${topic}-${index}`}
-                              className="px-2 py-1 rounded bg-[#262a35] border border-[#464554]/40 text-xs text-[#c7c4d7]"
-                            >
+                            <span key={`${topic}-${index}`} className="nw-fallback-chip">
                               <MathText>{topic}</MathText>
                             </span>
                           ))}
@@ -370,12 +298,9 @@ export default function App() {
 
                   {/* Important concepts and formulas */}
                   {overview.important_concepts?.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-[10px] uppercase tracking-wider font-bold text-[#908fa0] mb-2">
-                        Concepts and formulas detected
-                      </p>
-
-                      <ul className="list-disc pl-5 space-y-2 text-xs text-[#c7c4d7]">
+                    <div className="nw-concepts-section">
+                      <p className="nw-topics-title">Concepts and formulas detected</p>
+                      <ul className="nw-concepts-list">
                         {overview.important_concepts.map((concept, index) => (
                           <li key={`${concept}-${index}`}>
                             <MathText>{concept}</MathText>
@@ -385,21 +310,23 @@ export default function App() {
                     </div>
                   )}
 
+                  {/* OCR Notice */}
                   {overview.ocr_used && (
-                    <p className="mt-3 text-[11px] text-amber-200">
+                    <div className="nw-ocr-notice">
                       OCR was used to extract this document. Extracted text is
                       available for {overview.extracted_pages ?? 'some'} of{' '}
                       {overview.page_count ?? selectedFile?.pageCount ?? '—'} pages.
                       Mathematical symbols may need verification against the
                       original PDF.
-                    </p>
+                    </div>
                   )}
 
                   {/* Extracted text excerpt */}
-                  <div className="mt-4 border-t border-[#464554]/30 pt-3">
+                  <div className="nw-excerpt-section">
                     <button
+                      type="button"
                       onClick={() => setShowExcerpt((open) => !open)}
-                      className="text-xs font-semibold text-[#4cd7f6]"
+                      className="nw-excerpt-toggle"
                     >
                       {showExcerpt
                         ? 'Hide extracted text excerpt'
@@ -407,12 +334,11 @@ export default function App() {
                     </button>
 
                     {showExcerpt && overview.excerpt && (
-                      <blockquote className="mt-3 p-3 rounded-lg bg-[#0a0e18]/80 border-l-2 border-[#4cd7f6] text-xs text-[#c7c4d7]">
-                        <span className="block text-[10px] text-[#4cd7f6] mb-2">
+                      <blockquote className="nw-excerpt-box">
+                        <span className="nw-excerpt-label">
                           EXTRACTED TEXT · PAGE {overview.excerpt.page}
                         </span>
-
-                        <div className="whitespace-pre-wrap break-words">
+                        <div className="nw-excerpt-text">
                           <MathText>{overview.excerpt.text || ''}</MathText>
                         </div>
                       </blockquote>
@@ -420,24 +346,26 @@ export default function App() {
                   </div>
 
                   {/* Study actions */}
-                  <div className="pt-4 flex items-center gap-3 flex-wrap">
-                    <button
+                  <div className="nw-study-actions">
+                    <Button
+                      variant="primary"
+                      size="sm"
                       onClick={() =>
                         handleSendPromptToTutor(
                           `Summarize the key ideas in ${selectedFile.name}`
                         )
                       }
-                      className="px-3 py-1 rounded-md bg-[#8083ff]/20 hover:bg-[#8083ff]/40 text-[#c0c1ff] border border-[#c0c1ff]/30 text-xs font-semibold"
                     >
                       Ask Tutor
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => setActiveTab('recall')}
-                      className="px-3 py-1 rounded-md bg-[#1c1f2a] hover:bg-[#262a35] text-[#c7c4d7] border border-[#464554]/30 text-xs font-semibold"
                     >
                       Study with flashcards
-                    </button>
+                    </Button>
                   </div>
                 </>
               )}
@@ -445,7 +373,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Right Copilot Studio */}
+        {/* Right Copilot Studio (Kept Mounted) */}
         <RightPanel
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -454,6 +382,6 @@ export default function App() {
           setSelectedFile={setSelectedFile}
         />
       </div>
-    </div>
+    </AppShell>
   );
 }

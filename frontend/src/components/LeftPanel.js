@@ -72,15 +72,7 @@ export default function LeftPanel({
     } finally { setDeleting(null); }
   };
 
-  const totalMaxGB = 10;
-  const totalBytes = uploadedFiles.reduce((acc, f) => acc + (f.rawBytes || 0), 0);
-  const totalMB = totalBytes / (1024 * 1024);
-  const totalGB = totalBytes / (1024 * 1024 * 1024);
 
-  const formattedUsage =
-    totalGB >= 0.1 ? `${totalGB.toFixed(2)} GB` : `${totalMB.toFixed(1)} MB`;
-
-  const storagePercentage = Math.min((totalGB / totalMaxGB) * 100, 100);
 
   return (
     <aside className="bg-[#171b26] backdrop-blur-xl border-r border-[#464554]/30 shadow-xl w-80 lg:w-[340px] flex flex-col justify-between p-4 shrink-0 h-full overflow-hidden transition-all duration-300">
@@ -178,23 +170,8 @@ export default function LeftPanel({
         )}
       </div>
 
-      {/* ChromaDB Storage Meter */}
-      <div className="pt-3 border-t border-[#464554]/30 flex flex-col gap-2.5">
-        <div className="bg-[#1c1f2a]/60 p-2.5 rounded-lg border border-[#464554]/20">
-          <div className="flex items-center justify-between text-xs mb-1.5">
-            <span className="text-[#908fa0] font-semibold">ChromaDB Storage</span>
-            <span className="font-mono text-[11px] text-[#c0c1ff]">
-              {formattedUsage} / {totalMaxGB} GB
-            </span>
-          </div>
-          <div className="w-full h-1.5 bg-[#313540] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#c0c1ff] via-[#8083ff] to-[#4cd7f6] rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(128,131,255,0.6)]"
-              style={{ width: `${storagePercentage}%` }}
-            />
-          </div>
-        </div>
-      </div>
+
+
       {pendingDelete && <div role="dialog" aria-modal="true" className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4"><div className="max-w-md rounded-xl bg-[#171b26] border border-[#464554] p-5"><p className="text-sm text-[#dfe2f1]">Remove {pendingDelete.name}? This deletes its text, overview, flashcards and quiz from this app. Your original PDF is not affected.</p><div className="flex justify-end gap-2 mt-4"><button onClick={() => setPendingDelete(null)} className="px-3 py-2 text-sm">Cancel</button><button disabled={Boolean(deleting)} onClick={() => confirmDelete(pendingDelete)} className="px-3 py-2 text-sm bg-rose-900 rounded disabled:opacity-50">{deleting ? 'Removing…' : 'Remove'}</button></div></div></div>}
     </aside>
   );

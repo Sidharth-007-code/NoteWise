@@ -1,0 +1,172 @@
+/* NoteWise Design Tokens — Modern Scriptorium
+   Authoritative source: docs/design/DESIGN.md & docs/redesign/design-system.md
+*/
+
+/* Font Imports: only needed weights from @fontsource */
+@import '@fontsource/playfair-display/500.css';
+@import '@fontsource/playfair-display/600.css';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/source-serif-4/400.css';
+@import '@fontsource/source-serif-4/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+:root,
+[data-theme="light"] {
+  /* Typography stacks */
+  --nw-font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --nw-font-ui: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --nw-font-reading: 'Source Serif 4', Georgia, serif;
+  --nw-font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+
+  /* Dimensions */
+  --nw-header-h: 56px;
+  --nw-rail-w: 64px;
+
+  /* Surfaces & Canvas (Parchment & Vellum) */
+  --nw-bg: #F5F1E8;
+  --nw-surface: #FFFEFA;
+  --nw-surface-raised: #FFFFFF;
+  --nw-surface-dim: #EFE9DC;
+  --nw-surface-tint: #50625B;
+
+  /* Navigation & Topbar (Deep Forest) */
+  --nw-nav: #293A34;
+  --nw-nav-hover: #354B43;
+  --nw-nav-active: #1D2A25;
+  --nw-nav-text: #F1F0E9;
+  --nw-nav-text-muted: #B6B9AE;
+  --nw-topbar: #293A34;
+  --nw-topbar-text: #F1F0E9;
+
+  /* Text & Ink */
+  --nw-text: #292B29;
+  --nw-text-muted: #5E625C;
+  --nw-text-dim: #737875;
+  --nw-text-inverse: #F1F0E9;
+
+  /* Accents */
+  --nw-primary: #293A34;
+  --nw-primary-hover: #1D2A25;
+  --nw-primary-text: #FFFFFF;
+
+  --nw-accent: #7E5A44;
+  --nw-accent-hover: #674734;
+  --nw-accent-fill: #A5B69C;
+  --nw-accent-fill-hover: #93A48A;
+  --nw-accent-text: #FFFFFF;
+
+  /* Borders & Rules */
+  --nw-border: #D8CDBA;
+  --nw-border-strong: #8A8170;
+  --nw-border-focus: #7E5A44;
+
+  /* Status Colors */
+  --nw-success: #1E6B38;
+  --nw-success-bg: #E8F4EC;
+  --nw-success-border: #97D2AC;
+
+  --nw-danger: #A32323;
+  --nw-danger-bg: #FDECEC;
+  --nw-danger-border: #F3A8A8;
+
+  --nw-warning: #85520E;
+  --nw-warning-bg: #FEF6E7;
+  --nw-warning-border: #E8C888;
+
+  /* Elevations (Restrained Soft Skeuomorphism) */
+  --nw-shadow-sm: 0 1px 2px rgba(41, 43, 41, 0.04);
+  --nw-shadow-card: 0 1px 2px rgba(41, 43, 41, 0.04), 0 4px 12px rgba(126, 90, 68, 0.06);
+  --nw-shadow-modal: 0 2px 4px rgba(41, 43, 41, 0.04), 0 12px 28px rgba(41, 58, 52, 0.08);
+
+  /* Border Radii */
+  --nw-radius-sm: 4px;
+  --nw-radius-md: 6px;
+  --nw-radius-lg: 8px;
+  --nw-radius-full: 9999px;
+
+  /* Transitions */
+  --nw-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --nw-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  /* Surfaces & Canvas (Dark Scholar's Desk) */
+  --nw-bg: #171D1A;
+  --nw-surface: #202923;
+  --nw-surface-raised: #2B352E;
+  --nw-surface-dim: #131715;
+  --nw-surface-tint: #91A49C;
+
+  /* Navigation & Topbar (Deep Forest stays dark anchor in both themes) */
+  --nw-nav: #293A34;
+  --nw-nav-hover: #354B43;
+  --nw-nav-active: #1D2A25;
+  --nw-nav-text: #F1F0E9;
+  --nw-nav-text-muted: #B6B9AE;
+  --nw-topbar: #1C231F;
+  --nw-topbar-text: #F1F0E9;
+
+  /* Text & Ink */
+  --nw-text: #F1F0E9;
+  --nw-text-muted: #B6B9AE;
+  --nw-text-dim: #888C83;
+  --nw-text-inverse: #292B29;
+
+  /* Accents */
+  --nw-primary: #A5B69C;
+  --nw-primary-hover: #B8C7B0;
+  --nw-primary-text: #171D1A;
+
+  --nw-accent: #A5B69C;
+  --nw-accent-hover: #B8C7B0;
+  --nw-accent-fill: #3E5146;
+  --nw-accent-fill-hover: #4C6255;
+  --nw-accent-text: #171D1A;
+
+  /* Borders & Rules */
+  --nw-border: #3B473E;
+  --nw-border-strong: #728277;
+  --nw-border-focus: #A5B69C;
+
+  /* Status Colors */
+  --nw-success: #68D391;
+  --nw-success-bg: #142E1F;
+  --nw-success-border: #22543D;
+
+  --nw-danger: #FC8181;
+  --nw-danger-bg: #321A1A;
+  --nw-danger-border: #63171B;
+
+  --nw-warning: #F6AD55;
+  --nw-warning-bg: #2D2214;
+  --nw-warning-border: #5A3E1B;
+
+  /* Elevations */
+  --nw-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --nw-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.25);
+  --nw-shadow-modal: 0 4px 8px rgba(0, 0, 0, 0.35), 0 16px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Global foundational resets for tokens */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--nw-font-ui);
+  background-color: var(--nw-bg);
+  color: var(--nw-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--nw-border-focus);
+  outline-offset: 2px;
+}

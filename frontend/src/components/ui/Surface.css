@@ -1,0 +1,34 @@
+.nw-surface {
+  background-color: var(--nw-surface);
+  color: var(--nw-text);
+  border-radius: var(--nw-radius-lg);
+  border: 1px solid var(--nw-border);
+  transition: background-color var(--nw-transition-base), border-color var(--nw-transition-base);
+}
+
+.nw-surface--resting {
+  box-shadow: none;
+}
+
+.nw-surface--lifted {
+  box-shadow: var(--nw-shadow-card);
+}
+
+.nw-surface--raised {
+  background-color: var(--nw-surface-raised);
+  box-shadow: var(--nw-shadow-card);
+}
+
+.nw-surface--modal {
+  box-shadow: var(--nw-shadow-modal);
+}
+
+.nw-surface--glass {
+  background-color: rgba(255, 254, 250, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .nw-surface--glass {
+  background-color: rgba(32, 41, 35, 0.85);
+}

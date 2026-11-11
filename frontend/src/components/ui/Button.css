@@ -1,0 +1,114 @@
+.nw-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--nw-font-ui);
+  font-weight: 500;
+  border-radius: var(--nw-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--nw-transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1.25;
+}
+
+.nw-button:focus-visible {
+  outline: 2px solid var(--nw-border-focus);
+  outline-offset: 2px;
+}
+
+.nw-button:disabled,
+.nw-button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Sizes */
+.nw-button--sm {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.8125rem;
+}
+
+.nw-button--md {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+.nw-button--lg {
+  padding: 0.625rem 1.125rem;
+  font-size: 0.9375rem;
+}
+
+/* Variants */
+.nw-button--primary {
+  background-color: var(--nw-primary);
+  color: var(--nw-primary-text);
+  border-color: var(--nw-primary);
+}
+
+.nw-button--primary:hover:not(:disabled) {
+  background-color: var(--nw-primary-hover);
+  border-color: var(--nw-primary-hover);
+}
+
+.nw-button--secondary {
+  background-color: var(--nw-surface);
+  color: var(--nw-text);
+  border-color: var(--nw-border-strong);
+  box-shadow: var(--nw-shadow-sm);
+}
+
+.nw-button--secondary:hover:not(:disabled) {
+  background-color: var(--nw-bg);
+  border-color: var(--nw-text);
+}
+
+.nw-button--ghost {
+  background-color: transparent;
+  color: var(--nw-text-muted);
+}
+
+.nw-button--ghost:hover:not(:disabled) {
+  background-color: var(--nw-bg);
+  color: var(--nw-text);
+}
+
+.nw-button--danger {
+  background-color: var(--nw-danger-bg);
+  color: var(--nw-danger);
+  border-color: var(--nw-danger-border);
+}
+
+.nw-button--danger:hover:not(:disabled) {
+  background-color: var(--nw-danger);
+  color: #FFFFFF;
+}
+
+.nw-button--accent {
+  background-color: var(--nw-accent-fill);
+  color: var(--nw-accent-text);
+  border-color: var(--nw-accent-fill);
+}
+
+.nw-button--accent:hover:not(:disabled) {
+  background-color: var(--nw-accent-fill-hover);
+}
+
+.nw-button__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: nw-spin 0.6s linear infinite;
+}
+
+@keyframes nw-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
