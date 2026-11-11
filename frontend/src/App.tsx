@@ -8,7 +8,6 @@ import { getDocumentOverview } from './api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('tutor');
-  const [activeSubject, setActiveSubject] = useState('All');
   const [promptText, setPromptText] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -155,8 +154,6 @@ export default function App() {
         <LeftPanel
           uploadedFiles={uploadedFiles}
           setUploadedFiles={setUploadedFiles}
-          activeSubject={activeSubject}
-          setActiveSubject={setActiveSubject}
           selectedFile={selectedFile}
           setSelectedFile={setSelectedFile}
         />
@@ -170,7 +167,7 @@ export default function App() {
               </span>
 
               <span className="text-[#908fa0]">
-                {selectedFile ? selectedFile.subject : 'Discrete Math (DMS)'}
+                {selectedFile ? 'Selected document' : 'Document workspace'}
               </span>
 
               <span className="text-[#464554]">/</span>

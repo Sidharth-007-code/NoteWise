@@ -963,7 +963,7 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
         if not chunks:
             raise HTTPException(status_code=400, detail="No text chunks could be created from this PDF.")
         document_id = str(uuid.uuid4())
-        clean_subject = subject.strip() or "General"
+        clean_subject = "General"
         ids, documents, metadatas = [], [], []
         for index, chunk in enumerate(chunks):
             ids.append(f"{document_id}_{index}")
@@ -982,7 +982,7 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
         logger.info("Ingested %s: %s pages, %s chunks", filename, page_count, len(chunks))
         return {
             "success": True, "id": document_id, "document_id": document_id,
-            "filename": filename, "subject": clean_subject,
+            "filename": filename,
             "preview": preview_text, "text": preview_text,
             "pages": page_count, "page_count": page_count, "chunk_count": len(chunks),
             "ocr_used": used_ocr, "ocr_confidence": None, "overview": None,

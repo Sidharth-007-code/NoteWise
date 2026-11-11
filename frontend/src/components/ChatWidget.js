@@ -1,26 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownAnswer from './MarkdownAnswer';
-import { askQuestion, getSubjects } from '../api';
+import { askQuestion } from '../api';
 
-const ChatWidget = ({ subject: currentSubject, onSubjectChange }) => {
+const ChatWidget = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [subjects, setSubjects] = useState(['All']);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    const fetchSubjects = async () => {
-      try {
-        const subj = await getSubjects();
-        setSubjects(['All', ...subj.filter(s => s !== 'All')]);
-      } catch (err) {
-        console.error('Failed to load subjects:', err);
-        setSubjects(['All']);
-      }
-    };
-    fetchSubjects();
-  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,7 +28,7 @@ const ChatWidget = ({ subject: currentSubject, onSubjectChange }) => {
     setLoading(true);
 
     try {
-      const response = await askQuestion(question, currentSubject);
+      const response = await askQuestion(question);
       const aiMsg = {
         id: Date.now() + 1,
         role: 'assistant',
@@ -73,30 +60,6 @@ const ChatWidget = ({ subject: currentSubject, onSubjectChange }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '12px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#94a3b8' }}>
-        <label htmlFor="subject-select" style={{ fontWeight: '700', color: '#cbd5e1' }}>Subject Context:</label>
-        <select
-          id="subject-select"
-          value={currentSubject}
-          onChange={(e) => onSubjectChange(e.target.value)}
-          disabled={loading}
-          style={{
-            flex: 1,
-            height: '38px',
-            borderRadius: '6px',
-            border: '1px solid #26334d',
-            backgroundColor: '#131b2e',
-            color: '#f8fafc',
-            fontSize: '0.88rem'
-          }}
-        >
-          {subjects.map((subj) => (
-            <option key={subj} value={subj}>
-              {subj}
-            </option>
-          ))}
-        </select>
-      </div>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '4px' }}>
         {messages.length === 0 && (

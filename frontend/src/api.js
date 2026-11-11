@@ -65,11 +65,11 @@ export async function deleteDocument(documentId) {
   return data;
 }
 
-export async function askQuestion(question, subject = 'General') {
+export async function askQuestion(question) {
   const response = await fetch(`${API_BASE_URL}/ask`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question, subject }),
+    body: JSON.stringify({ question }),
   });
   if (!response.ok) throw new Error(`Server Error: ${response.statusText}`);
   return await response.json();
