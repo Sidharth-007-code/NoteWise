@@ -9,6 +9,20 @@ import main
 
 
 class DocumentInsightTests(unittest.TestCase):
+    def test_query_flags_length_truncation(self):
+        class Completion:
+            def __init__(self, reason):
+                self.choices = [type("Choice", (), {"finish_reason": reason, "message": type("Message", (), {"content": "Answer"})()})()]
+                self.usage = type("Usage", (), {"total_tokens": 42})()
+        for reason, truncated in (("length", True), ("stop", False)):
+            with self.subTest(reason=reason), patch.object(main, "require_groq"), \
+                 patch.object(main.collection, "count", return_value=1), \
+                 patch.object(main.collection, "query", return_value={"documents": [["notes"]], "metadatas": [[{"source": "a.pdf", "page": 1}]], "distances": [[0.1]]}), \
+                 patch.object(main, "groq_chat", return_value=Completion(reason)):
+                result = main.query_notes(main.QueryRequest(question="Q"))
+            self.assertEqual(result["truncated"], truncated)
+            self.assertEqual("cut off" in result["answer"], truncated)
+
     def test_overview_uses_one_context_and_is_cached_in_sqlite(self):
         entries = [
             {"page": 1, "text": "Universal quantifier ∀x P(x).", "index": 0},
