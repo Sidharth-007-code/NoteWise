@@ -32,6 +32,8 @@ limitations](#current-scope-and-limitations) for known caveats.
 -   **Document insights:** Generate summaries, topics, concepts, and
     recall flashcards from indexed document content. Overview and
     flashcards are generated when first requested and cached in SQLite.
+-   **Workspace focus:** Maximize the AI Tutor, Active Recall, or Concept Quiz panel and restore the previous workspace with the header control or Esc.
+-   **Document removal:** Remove an uploaded PDF and its indexed text, overview, flashcards, and quiz source from the app. The original PDF is unchanged.
 -   **Concept quiz:** AI selects a question count based on a document's
     indexed chunks. The prompt targets 5–10 questions and backend
     validation accepts 3–10. Each has four options with individual
@@ -83,6 +85,8 @@ The AI Tutor can present worked probability examples with mathematical notation,
 ![NoteWise AI Tutor showing a worked mathematical answer](docs/images/notewise-math-answers.png)
 
 > **Screenshot note:** The existing workspace screenshots were captured on October 24, 2026, and the Concept Quiz screenshots were captured on November 10, 2026. Quiz questions and answer keys are AI-generated and must be checked against the original material.
+
+Some screenshots predate the maximize control and subject-tag removal. Retake `notewise-empty-state.png`, `notewise-document-overview.png`, `notewise-active-recall.png`, `notewise-quiz-question.png`, `notewise-quiz-feedback.png`, `notewise-quiz-results.png`, and `notewise-math-answers.png`.
 
 ## Architecture
 
@@ -280,7 +284,10 @@ They do not implement authentication.
 
   `POST /api/ingest`                              Upload a PDF using      Rejects invalid/empty
                                                   multipart field `file`; PDFs and uploads over
-                                                  optional subject field  20 MiB
+                                                                          20 MiB
+
+  `DELETE /api/documents/{document_id}`          Remove document and     Deletes indexed chunks and
+                                                  cached insights         cached SQLite insights
 
   `GET /api/documents/{document_id}/overview`     Retrieve or generate a  Returns summary,
                                                   document overview       topics, concepts, and
@@ -311,10 +318,7 @@ They do not implement authentication.
 
 ### Known frontend/backend route mismatch
 
-`frontend/src/api.js` also calls `/documents`, `/documents/{docName}`,
-and `/ask`. These routes are not defined in the current
-`backend/main.py`, so document listing/deletion or legacy ask helpers
-may fail until the integration is reconciled.
+`frontend/src/api.js` retains legacy helpers for `/documents` and `/ask`; these routes are not defined in the current backend.
 
 ## Retrieval, grounding, and citations
 
@@ -414,6 +418,7 @@ API keys, private PDFs, or generated databases.
     characters. It requires Tesseract; PyMuPDF renders the page.
 -   Generated summaries, cards, answers, and citations may be incomplete
     or inaccurate.
+-   Tutor answers are capped by a max token limit; very long multi-part answers may be cut off and are flagged.
 -   Quiz question count varies with the amount of distinct material in a
     document. Quiz questions and answer keys are AI-generated and can be
     wrong; check them against the original material.
