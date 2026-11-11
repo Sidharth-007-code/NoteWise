@@ -8,6 +8,34 @@ from unittest.mock import patch
 import main
 
 
+class DeleteDocumentTests(unittest.TestCase):
+    def test_delete_removes_chunks_and_insight_row_only_for_target(self):
+        client = main.chromadb.EphemeralClient()
+        collection = client.create_collection("delete_test")
+        collection.add(ids=["doc-a-0", "doc-b-0"], documents=["a", "b"], metadatas=[
+            {"document_id": "doc-a", "source": "a.pdf"},
+            {"document_id": "doc-b", "source": "b.pdf"},
+        ])
+        database = Path(main.BASE_DIR) / f"test-delete-{uuid.uuid4().hex}.sqlite3"
+        try:
+            with patch.object(main, "collection", collection), patch.object(main, "INSIGHTS_DB", database):
+                main.init_insights_db()
+                main.save_document_insight("doc-a", "a.pdf", 1, False, 1, summary={"summary": "a"}, cards=[{"q": "q"}])
+                main.save_document_insight("doc-b", "b.pdf", 1, False, 1)
+                result = main.delete_document("doc-a")
+                self.assertEqual(result, {"success": True, "document_id": "doc-a", "deleted_chunks": 1})
+                self.assertEqual(collection.get(where={"document_id": "doc-a"}, include=[])["ids"], [])
+                self.assertIsNone(main.get_insight_row("doc-a"))
+                self.assertEqual(collection.get(where={"document_id": "doc-b"}, include=[])["ids"], ["doc-b-0"])
+                self.assertIsNotNone(main.get_insight_row("doc-b"))
+                with self.assertRaises(main.HTTPException) as missing:
+                    main.delete_document("doc-a")
+                self.assertEqual(missing.exception.status_code, 404)
+        finally:
+            gc.collect()
+            database.unlink(missing_ok=True)
+
+
 class DocumentInsightTests(unittest.TestCase):
     def test_query_flags_length_truncation(self):
         class Completion:

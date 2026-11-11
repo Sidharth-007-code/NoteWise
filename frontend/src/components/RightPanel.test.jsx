@@ -20,7 +20,7 @@ test('switching documents replaces the deck and clears the prior session', async
     document_id: id,
     cards: [{ question: `Question from ${id}`, answer: `Answer from ${id}` }],
   }));
-  const props = { activeTab: 'recall', setActiveTab: jest.fn(), initialPrompt: '', setSelectedFile: jest.fn() };
+  const props = { setActiveTab: jest.fn(), initialPrompt: '', setSelectedFile: jest.fn() };
   try {
     await act(async () => {
       root.render(<RightPanel {...props} selectedFile={{ id: 'doc-a', name: 'A.pdf' }} />);
@@ -98,4 +98,50 @@ test('ends the deck and revisits only queued cards, removing cards marked known'
     await act(async () => root.unmount());
     host.remove();
   }
+});
+
+test('maximise toggle preserves tutor input, tabs and restores on Escape', async () => {
+  const host = document.createElement('div'); document.body.appendChild(host);
+  const root = createRoot(host);
+  const click = async (button) => act(async () => button.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  function Harness() {
+    const [activeTab, setActiveTab] = React.useState('tutor');
+    return <RightPanel activeTab={activeTab} setActiveTab={setActiveTab} initialPrompt="" selectedFile={null} setSelectedFile={jest.fn()} />;
+  }
+  try {
+    await act(async () => root.render(<Harness />));
+    const input = host.querySelector('textarea');
+    await act(async () => { Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(input, 'draft question'); input.dispatchEvent(new Event('input', { bubbles: true })); });
+    await click(host.querySelector('[aria-label="Maximize panel"]'));
+    expect(host.querySelector('[aria-label="Restore panel"]')).toBeTruthy();
+    expect(host.querySelector('[data-maximized="true"]')).toBeTruthy();
+    expect(host.querySelector('.nw-content-column')).toBeTruthy();
+    await click(host.querySelector('[aria-label="Concept Quiz"]'));
+    expect(host.querySelector('[aria-label="Restore panel"]')).toBeTruthy();
+    expect(host.querySelector('textarea')).toBeNull();
+    await click(host.querySelector('[aria-label="AI Tutor Studio"]'));
+    expect(host.querySelector('textarea').value).toBe('draft question');
+    await act(async () => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })));
+    expect(host.querySelector('[aria-label="Maximize panel"]')).toBeTruthy();
+    expect(host.querySelector('[data-maximized="false"]')).toBeTruthy();
+  } finally { await act(async () => root.unmount()); host.remove(); }
+});
+
+test('clearing the selected document resets tutor input and recall cards', async () => {
+  const host = document.createElement('div'); document.body.appendChild(host);
+  const root = createRoot(host);
+  const props = { activeTab: 'recall', setActiveTab: jest.fn(), initialPrompt: '', setSelectedFile: jest.fn() };
+  getDocumentFlashcards.mockResolvedValue({ cards: [{ question: 'Selected document card', answer: 'Answer' }] });
+  try {
+    await act(async () => root.render(<RightPanel {...props} activeTab="tutor" selectedFile={{ id: 'remove-me', name: 'Notes.pdf' }} />));
+    const input = host.querySelector('textarea');
+    await act(async () => { Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(input, 'document chat draft'); input.dispatchEvent(new Event('input', { bubbles: true })); });
+    await act(async () => root.render(<RightPanel {...props} activeTab="recall" selectedFile={{ id: 'remove-me', name: 'Notes.pdf' }} />));
+    expect(host.textContent).toContain('Selected document card');
+    await act(async () => root.render(<RightPanel {...props} activeTab="recall" selectedFile={null} />));
+    expect(host.textContent).not.toContain('Selected document card');
+    expect(host.textContent).toContain('Upload and select a processed PDF');
+    await act(async () => root.render(<RightPanel {...props} activeTab="tutor" selectedFile={null} />));
+    expect(host.querySelector('textarea').value).toBe('');
+  } finally { await act(async () => root.unmount()); host.remove(); }
 });

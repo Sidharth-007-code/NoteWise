@@ -162,7 +162,7 @@ export default function LeftPanel({
                         {file.name}
                       </span>
                     </div>
-                    <button type="button" aria-label={`Remove ${file.name}`} disabled={deleting === file.id} onClick={(event) => { event.stopPropagation(); setPendingDelete(file); }} className="text-rose-300 p-1 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c0c1ff]">{deleting === file.id ? '…' : '🗑'}</button>
+                    <button type="button" aria-label={`Remove ${file.name}`} disabled={deleting === file.id} onClick={(event) => { event.stopPropagation(); setPendingDelete(file); }} className="text-rose-300 p-1 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c0c1ff]">{deleting === file.id ? <span className="material-symbols-outlined animate-spin" aria-hidden="true">progress_activity</span> : <span className="material-symbols-outlined" aria-hidden="true">delete</span>}</button>
                     <span className="text-[10px] font-mono text-[#908fa0] shrink-0">{file.size}</span>
                   </div>
                   <div className="flex items-center justify-between pt-0.5">
