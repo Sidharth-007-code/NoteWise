@@ -10,7 +10,7 @@ body, html, #root {
   margin: 0;
   padding: 0;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   overflow: hidden;
   background-color: #0f131d;
   color: #dfe2f1;
@@ -41,6 +41,39 @@ body, html, #root {
 .markdown-table-scroll [align="right"] { text-align: right; }
 .markdown-table-scroll th { background: #252b42; color: #d7d8ff; font-weight: 700; border-bottom: 2px solid #8083ff; }
 .markdown-answer blockquote { border-left: 2px solid #8083ff; padding-left: 0.8em; color: #c7c4d7; }
+
+.nw-maximized {
+  box-sizing: border-box;
+  width: auto;
+  overflow: hidden;
+}
+.nw-content-column { width: 100%; min-width: 0; box-sizing: border-box; margin-inline: auto; padding-inline: 16px; }
+.nw-maximized .nw-content-column { max-width: 1000px; }
+.nw-panel-header-inner { height: 100%; }
+.nw-panel-content { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.nw-maximized .nw-tutor { min-width: 0; }
+.nw-message-area { overflow-x: hidden; }
+.nw-message { overflow-wrap: anywhere; max-width: 100%; }
+.nw-maximized .nw-message-area { padding-inline: 0; }
+.nw-maximized .nw-message-area > div:has(.nw-message) { min-width: 0; }
+.nw-maximized .nw-message:has(.markdown-answer) { max-width: 100%; }
+.nw-maximized .nw-message:has(.markdown-answer) { overflow-x: hidden; }
+.nw-maximized .nw-message-area > div:has(.nw-scope-label) { max-width: 80%; }
+.nw-scope-row, .nw-input-row { padding-inline: 16px; }
+.nw-input-row textarea { overflow-wrap: anywhere; }
+.nw-maximized .nw-recall { width: 100%; max-width: 1000px; margin-inline: auto; }
+.nw-maximized .nw-panel-content > section { width: 100%; max-width: 1000px; margin-inline: auto; overflow-y: auto; }
+.nw-maximized .nw-panel-content > section > div { width: 100%; max-width: 1000px; margin-inline: auto; }
+.nw-maximized .nw-panel-content > section h2 { overflow-wrap: anywhere; }
+.nw-maximized .nw-panel-header-inner { gap: 8px; }
+.nw-maximized .nw-tab { flex: 0 0 auto; white-space: nowrap; padding-inline: clamp(0.5rem, 1.3vw, 0.9rem); }
+.nw-maximized .nw-tab-label { display: inline; }
+@media (max-width: 420px) {
+  .nw-maximized .nw-tab { padding-inline: 0.65rem; }
+  .nw-maximized .nw-tab-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .nw-maximized .nw-tab { gap: 0; }
+  .nw-maximized .nw-panel-header-inner { padding-inline: 10px; }
+}
 
 /* Custom Scrollbar for Sidebar List */
 ::-webkit-scrollbar {
