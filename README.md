@@ -28,7 +28,8 @@ limitations](#current-scope-and-limitations) for known caveats.
     retrieve up to five relevant chunks.
 -   **AI question answering:** The backend sends retrieved context to
     the configured Groq chat-completions model. Answers and citations
-    are model-generated and are not independently verified.
+    are model-generated and are not independently verified. Greetings
+    and small talk are answered locally without searching your notes.
 -   **Document insights:** Generate summaries, topics, concepts, and
     recall flashcards from indexed document content. Overview and
     flashcards are generated when first requested and cached in SQLite.

@@ -36,6 +36,71 @@ class DeleteDocumentTests(unittest.TestCase):
             database.unlink(missing_ok=True)
 
 
+class SmallTalkTests(unittest.TestCase):
+    def test_detector_recognizes_requested_small_talk_and_rejects_study_questions(self):
+        positives = {
+            "hi": "greeting", "Hi!": "greeting", "heyy": "greeting",
+            "hellooo": "greeting", "hello there": "greeting", "good morning": "greeting",
+            "thanks": "thanks", "thank you!": "thanks", "ok": "ack", "bye": "bye",
+            "who are you": "help", "what can you do": "help", "👋 hi": "greeting",
+        }
+        for message, category in positives.items():
+            with self.subTest(message=message):
+                self.assertEqual(main.detect_small_talk(message), category)
+
+        negatives = [
+            "hey can you explain the exponential distribution",
+            "what is the mean of an exponential distribution",
+            "hi, solve problem 3",
+            "help me with quantifiers",
+            "ok but why is the cdf 1 - e^(-lx)",
+        ]
+        for message in negatives:
+            with self.subTest(message=message):
+                self.assertIsNone(main.detect_small_talk(message))
+
+    def test_small_talk_returns_locally_even_with_an_empty_collection(self):
+        client = main.chromadb.EphemeralClient()
+        empty_collection = client.create_collection(f"smalltalk-{uuid.uuid4().hex}")
+        self.assertEqual(empty_collection.count(), 0)
+        with patch.object(main, "collection", empty_collection), \
+             patch.object(empty_collection, "count") as count, \
+             patch.object(empty_collection, "query") as query, \
+             patch.object(main, "require_groq") as require_groq, \
+             patch.object(main, "groq_chat") as groq_chat:
+            for message in ("hi", "Hi!", "heyy", "hellooo", "hello there", "good morning", "thanks", "thank you!", "ok", "bye", "who are you", "what can you do", "👋 hi"):
+                with self.subTest(message=message):
+                    result = main.query_notes(main.QueryRequest(question=message))
+                    self.assertTrue(result["success"])
+                    self.assertTrue(result["small_talk"])
+                    self.assertEqual(result["model"], "local")
+                    self.assertEqual(result["sources"], [])
+                    self.assertFalse(result["truncated"])
+                    self.assertEqual(result["question"], message)
+        count.assert_not_called()
+        query.assert_not_called()
+        require_groq.assert_not_called()
+        groq_chat.assert_not_called()
+
+    def test_retrieval_distance_guard_only_applies_when_every_chunk_is_far(self):
+        unrelated = "The retrieved notes look unrelated to the question; say so briefly instead of forcing an answer from them."
+
+        class Completion:
+            choices = [type("Choice", (), {"finish_reason": "stop", "message": type("Message", (), {"content": "Answer"})()})()]
+
+        for distances, should_warn in (([0.81, 0.76], True), ([0.82, 0.74], False)):
+            with self.subTest(distances=distances), patch.object(main, "require_groq"), \
+                 patch.object(main.collection, "count", return_value=2), \
+                 patch.object(main.collection, "query", return_value={
+                     "documents": [["first note", "second note"]],
+                     "metadatas": [[{"source": "a.pdf", "page": 1}, {"source": "b.pdf", "page": 2}]],
+                     "distances": [distances],
+                 }), patch.object(main, "groq_chat", return_value=Completion()) as chat:
+                main.query_notes(main.QueryRequest(question="Explain the topic"))
+            user_prompt = chat.call_args.args[0][1]["content"]
+            self.assertEqual(unrelated in user_prompt, should_warn)
+
+
 class DocumentInsightTests(unittest.TestCase):
     def test_query_flags_length_truncation(self):
         class Completion:
