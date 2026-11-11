@@ -115,6 +115,7 @@ test('maximise toggle preserves tutor input, tabs and restores on Escape', async
     await click(host.querySelector('[aria-label="Maximize panel"]'));
     expect(host.querySelector('[aria-label="Restore panel"]')).toBeTruthy();
     expect(host.querySelector('[data-maximized="true"]')).toBeTruthy();
+    expect(host.querySelector('[data-maximized="true"]').classList.contains('nw-maximized')).toBe(true);
     expect(host.querySelector('.nw-content-column')).toBeTruthy();
     await click(host.querySelector('[aria-label="Concept Quiz"]'));
     expect(host.querySelector('[aria-label="Restore panel"]')).toBeTruthy();
@@ -143,5 +144,21 @@ test('clearing the selected document resets tutor input and recall cards', async
     expect(host.textContent).toContain('Upload and select a processed PDF');
     await act(async () => root.render(<RightPanel {...props} activeTab="tutor" selectedFile={null} />));
     expect(host.querySelector('textarea').value).toBe('');
+  } finally { await act(async () => root.unmount()); host.remove(); }
+});
+
+test('flashcard reveal state survives switching tabs', async () => {
+  const host = document.createElement('div'); document.body.appendChild(host);
+  const root = createRoot(host);
+  getDocumentFlashcards.mockResolvedValue({ cards: [{ question: 'Persistent question', answer: 'Persistent answer' }] });
+  try {
+    await act(async () => root.render(<RightPanel activeTab="recall" setActiveTab={jest.fn()} initialPrompt="" selectedFile={{ id: 'persist', name: 'Persist.pdf' }} setSelectedFile={jest.fn()} />));
+    const reveal = [...host.querySelectorAll('button')].find((button) => button.textContent.trim() === 'Reveal Answer');
+    await act(async () => reveal.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+    expect(host.textContent).toContain('Persistent answer');
+    await act(async () => root.render(<RightPanel activeTab="tutor" setActiveTab={jest.fn()} initialPrompt="" selectedFile={{ id: 'persist', name: 'Persist.pdf' }} setSelectedFile={jest.fn()} />));
+    expect(host.querySelector('.nw-tab-pane[hidden]')).toBeTruthy();
+    await act(async () => root.render(<RightPanel activeTab="recall" setActiveTab={jest.fn()} initialPrompt="" selectedFile={{ id: 'persist', name: 'Persist.pdf' }} setSelectedFile={jest.fn()} />));
+    expect(host.textContent).toContain('Persistent answer');
   } finally { await act(async () => root.unmount()); host.remove(); }
 });

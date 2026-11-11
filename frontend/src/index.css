@@ -51,6 +51,8 @@ body, html, #root {
 .nw-maximized .nw-content-column { max-width: 1000px; }
 .nw-panel-header-inner { height: 100%; }
 .nw-panel-content { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.nw-tab-pane { display: flex; flex: 1 1 auto; min-height: 0; flex-direction: column; overflow: hidden; }
+.nw-tab-pane[hidden] { display: none; }
 .nw-maximized .nw-tutor { min-width: 0; }
 .nw-message-area { overflow-x: hidden; }
 .nw-message { overflow-wrap: anywhere; max-width: 100%; }

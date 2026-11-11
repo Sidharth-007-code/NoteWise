@@ -347,9 +347,10 @@ export default function RightPanel({
 
       {/* AI Tutor */}
       <div className={`nw-content-column nw-panel-content ${activeTab === 'tutor' ? 'nw-tutor-layout' : ''}`}>
-      {activeTab === 'quiz' ? (
+      <div className="nw-tab-pane" hidden={activeTab !== 'quiz'}>
         <InteractiveQuiz selectedFile={selectedFile} />
-      ) : activeTab === 'tutor' ? (
+      </div>
+      <div className="nw-tab-pane" hidden={activeTab !== 'tutor'}>
         <div className="nw-tutor flex-1 flex flex-col overflow-hidden relative min-w-0">
           <div className="nw-scope-row bg-[#1c1f2a]/90 py-2 border-b border-[#464554]/30 flex items-center justify-between shrink-0 min-w-0">
             <div className="flex items-center gap-2 text-[#c0c1ff] min-w-0">
@@ -462,8 +463,9 @@ export default function RightPanel({
             </p>
           </div>
         </div>
-      ) : (
-        /* Active Recall */
+      </div>
+      <div className="nw-tab-pane" hidden={activeTab !== 'recall'}>
+        {/* Active Recall */}
         <div className="nw-recall flex-1 flex flex-col p-5 items-center gap-4 overflow-y-auto min-w-0">
           {!sessionComplete && <div className="w-full flex justify-between items-center gap-3 text-xs text-[#908fa0]">
             <span className="font-semibold text-[#c0c1ff] truncate">
@@ -640,7 +642,7 @@ export default function RightPanel({
             </div>
           )}
         </div>
-      )}
+      </div>
       </div>
     </section>
   );
