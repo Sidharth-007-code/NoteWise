@@ -4,6 +4,7 @@ import MarkdownAnswer from './MarkdownAnswer';
 import InteractiveQuiz from './InteractiveQuiz';
 import { askDocumentQuestion, getDocumentFlashcards } from '../api';
 import { Maximize2, Minimize2 } from 'lucide-react';
+import './RightPanelTypography.css';
 
 export default function RightPanel({
   activeTab,

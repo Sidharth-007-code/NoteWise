@@ -1,0 +1,79 @@
+/* Change these rem values to adjust panel reading sizes while preserving browser zoom. */
+.nw-panel-root {
+  --nw-body: 0.9375rem;
+  --nw-small: 0.8125rem;
+  font-size: var(--nw-body);
+  line-height: 1.5;
+}
+
+.nw-maximized {
+  --nw-body: 1rem;
+  --nw-small: 0.875rem;
+  font-size: var(--nw-body);
+  line-height: 1.5;
+}
+
+.nw-panel-root .nw-message,
+.nw-maximized .nw-message {
+  font-size: var(--nw-body);
+  line-height: 1.65;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.nw-panel-root .nw-scope-row,
+.nw-panel-root .nw-scope-label,
+.nw-maximized .nw-scope-row,
+.nw-maximized .nw-scope-label {
+  font-size: var(--nw-small);
+}
+
+.nw-panel-root .nw-input-row textarea,
+.nw-maximized .nw-input-row textarea {
+  font-size: var(--nw-body);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.nw-helper { font-size: 0.75rem; }
+.nw-panel-root .nw-recall .text-sm,
+.nw-maximized .nw-recall .text-sm { font-size: var(--nw-body); }
+.nw-maximized .nw-recall .text-xs { font-size: var(--nw-small); }
+
+.nw-maximized .markdown-answer {
+  font-size: var(--nw-body);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.nw-maximized .markdown-answer h1 { font-size: 1.35em; }
+.nw-maximized .markdown-answer h2 { font-size: 1.2em; }
+.nw-maximized .markdown-answer h3 { font-size: 1.1em; }
+.nw-maximized .markdown-answer li,
+.nw-maximized .markdown-answer th,
+.nw-maximized .markdown-answer td {
+  font-size: var(--nw-body);
+  overflow-wrap: anywhere;
+}
+.markdown-answer .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  font-size: 1.1em;
+}
+.markdown-answer .katex { font-size: 1em; }
+
+.nw-maximized .nw-tab { font-size: 0.875rem; }
+.nw-maximized .nw-panel-content > section button { font-size: var(--nw-body); }
+.nw-maximized .nw-panel-content > section .text-xs { font-size: var(--nw-small); }
+.nw-maximized .nw-panel-content > section h2 { font-size: 1.25rem; }
+
+@media (max-width: 420px) {
+  .nw-maximized .nw-tab-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
