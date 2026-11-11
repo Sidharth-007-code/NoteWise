@@ -6,4 +6,4 @@
 2. Upload and select a PDF; confirm the overview and document scope appear, then switch among Tutor, Active Recall and Concept Quiz.
 3. Maximize the right panel, switch tabs, and press Escape; confirm the panel restores and its session state remains intact.
 
-Expected results: the current app remains usable in its existing dark style and the right panel restores to its original workspace. These are manual checks; no browser was available during Phase 0.
+Expected results: the current app remains usable in its existing dark style and the right panel restores to its original workspace. Note: Phase 0 is read-only with no UI changes. Visual browser verification begins in Phase 1.
