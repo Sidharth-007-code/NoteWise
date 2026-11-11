@@ -101,3 +101,16 @@ Run `npx tsc --noEmit`, the Jest suite (`$env:CI="true"`, cacheDirectory under %
 ## Report format
 
 Files changed; what was verified (commands and results); what was NOT verified; the steps added to `docs/redesign-qa.md`; deviations from the Stitch reference and why; dependencies changed; the commit hash. Then stop.
+---
+
+## Decisions after Phase 0 (authoritative)
+
+1. Baseline: the owner ran Jest locally and all 13 tests pass. The Codex sandbox cannot run Jest (EPERM); the owner runs it after each phase.
+2. Entry point: both `src/index.js` and `src/index.tsx` exist. Determine which one actually mounts the app (CRA's default module resolution may pick `index.js` over `index.tsx`). Put the ThemeProvider in the real entry and remove the unused one only if proven unused.
+3. Tailwind is already present (dependency and directives in `index.css`). Do not remove it and do not extend it. New and re-skinned components use CSS files with token variables. In every file you touch, replace hardcoded colour utilities and hex values with tokens and report how many remain in the report.
+4. Study state: keep RightPanel as one mounted component until Phase 4. Workspace switching hides it and never unmounts it. When Tutor, Recall and Quiz become separate workspaces (Phases 4 and 6), lift their state into a shared provider (context plus reducer) so chat, flashcard and quiz state survive workspace switches and the Reader's docked Tutor shares the Tutor's chat. Add tests for state surviving workspace switches. Library, Reader, Overview, Progress and Settings may mount on demand.
+5. Phase 1 rail: list only "Study" (the current three-panel layout, unchanged behaviour). Add a temporary light / dark / system toggle in the rail footer so both themes are checkable now; it moves into Settings in Phase 7.
+6. Phase 2 must add an additive `GET /api/documents` (from SQLite `document_insights`: document_id, filename, page_count, ocr_used, extracted_pages, created_at nullable, has_overview, has_flashcards) and hydrate the Library from it on startup, because uploads currently vanish from the UI on refresh. Retire the unused legacy helpers (`getDocuments` to `/documents`, `askQuestion` to `/ask`) once nothing imports them. Add backend tests.
+7. The generated document overview (summary, key topics, important concepts, topic summaries with pages) is an existing feature and must be kept. Until Phase 3 it stays in the current centre pane. From Phase 3 it lives in the Reader's left rail as an "Overview" tab beside "Contents" (the PDF outline, shown only when the PDF has one); topic page chips jump to that page.
+8. Remove the hardcoded storage meter ("ChromaDB Storage 0.0 MB / 10 GB" and similar). If something is shown instead, use real data only (for example the document count).
+9. Dead code (`ActiveRecallStudio.js`, `ChatWidget.js`, template assets, `CommandPalette.js`): leave untouched in Phases 1 to 7. In Phase 8, delete a file only after grep and the test suite confirm nothing imports it. `CommandPalette` may be reused for navigation earlier if it fits.
