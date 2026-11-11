@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
-import RightPanel from './RightPanel';
+import RightPanel, { getOverlayStyle, MAXIMISED_OVERLAY_TOP } from './RightPanel';
 import { askDocumentQuestion, getDocumentFlashcards } from '../api';
 
 jest.mock('../api', () => ({
@@ -123,8 +123,11 @@ test('maximise toggle preserves tutor input, tabs and restores on Escape', async
     expect(column.style.paddingInline).toBe('16px');
     const overlay = host.querySelector('[data-testid="right-panel"]');
     expect(overlay.style.position).toBe('fixed');
-    expect(overlay.style.top).toBe('var(--nw-header-h, 64px)');
     expect(`${overlay.style.width} ${overlay.style.height}`).not.toMatch(/vw|vh/i);
+    // jsdom drops var() values for top; verify the exact runtime source and helper instead.
+    expect(MAXIMISED_OVERLAY_TOP).toBe('var(--nw-header-h, 64px)');
+    expect(MAXIMISED_OVERLAY_TOP).toContain('--nw-header-h');
+    expect(getOverlayStyle(true).top).toBe(MAXIMISED_OVERLAY_TOP);
     expect(host.querySelector('[aria-label="Restore panel"]').closest('[data-testid="panel-column"]')).toBe(column);
     ['AI Tutor Studio', 'Active Recall (3D)', 'Concept Quiz'].forEach((label) => {
       const tab = host.querySelector(`[aria-label="${label}"]`);

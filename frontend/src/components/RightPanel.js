@@ -6,6 +6,18 @@ import { askDocumentQuestion, getDocumentFlashcards } from '../api';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import './RightPanelTypography.css';
 
+export const MAXIMISED_OVERLAY_TOP = 'var(--nw-header-h, 64px)';
+
+export function getOverlayStyle(maximized) {
+  return maximized
+    ? {
+        position: 'fixed', top: MAXIMISED_OVERLAY_TOP, right: 0, bottom: 0, left: 0,
+        zIndex: 60, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxSizing: 'border-box', minHeight: 0, backgroundColor: '#171b26',
+      }
+    : { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' };
+}
+
 export default function RightPanel({
   activeTab,
   setActiveTab,
@@ -295,13 +307,7 @@ export default function RightPanel({
     setRevealed(false);
   };
 
-  const rootLayoutStyle = maximized
-    ? {
-        position: 'fixed', top: 'var(--nw-header-h, 64px)', right: 0, bottom: 0, left: 0,
-        zIndex: 60, display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        boxSizing: 'border-box', minHeight: 0, backgroundColor: '#171b26',
-      }
-    : { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' };
+  const rootLayoutStyle = getOverlayStyle(maximized);
   const columnLayoutStyle = {
     width: '100%', maxWidth: maximized ? '1000px' : 'none', marginInline: maximized ? 'auto' : 0,
     paddingInline: maximized ? '16px' : 0, boxSizing: 'border-box', display: 'flex',
