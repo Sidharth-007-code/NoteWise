@@ -63,9 +63,9 @@
 .markdown-answer .katex { font-size: 1em; }
 
 .nw-maximized .nw-tab { font-size: 0.875rem; }
-.nw-maximized .nw-panel-content > section button { font-size: var(--nw-body); }
-.nw-maximized .nw-panel-content > section .text-xs { font-size: var(--nw-small); }
-.nw-maximized .nw-panel-content > section h2 { font-size: 1.25rem; }
+.nw-maximized .nw-tab-pane[data-tab-pane="quiz"] button { font-size: var(--nw-body); }
+.nw-maximized .nw-tab-pane[data-tab-pane="quiz"] .text-xs { font-size: var(--nw-small); }
+.nw-maximized .nw-tab-pane[data-tab-pane="quiz"] h2 { font-size: 1.25rem; }
 
 @media (max-width: 420px) {
   .nw-maximized .nw-tab-label {

@@ -287,16 +287,35 @@ export default function RightPanel({
     setRevealed(false);
   };
 
+  const rootLayoutStyle = maximized
+    ? {
+        position: 'fixed', top: 'var(--nw-header-h, 64px)', right: 0, bottom: 0, left: 0,
+        zIndex: 60, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxSizing: 'border-box', minHeight: 0, backgroundColor: '#171b26',
+      }
+    : { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' };
+  const columnLayoutStyle = {
+    width: '100%', maxWidth: maximized ? '1000px' : 'none', marginInline: maximized ? 'auto' : 0,
+    paddingInline: maximized ? '16px' : 0, boxSizing: 'border-box', display: 'flex',
+    flexDirection: 'column', flex: '1 1 0', minHeight: 0, overflow: 'hidden',
+  };
+  const paneLayoutStyle = (active) => ({
+    display: active ? 'flex' : 'none', flexDirection: 'column', flex: '1 1 0',
+    minHeight: 0, minWidth: 0, overflow: 'hidden',
+  });
+
   return (
-    <section data-maximized={maximized} className={`${maximized ? 'nw-maximized fixed inset-0 z-[60]' : 'nw-panel-root w-full xl:w-[480px] 2xl:w-[540px] relative'} flex flex-col bg-[#171b26]/95 border-l border-[#464554]/30 backdrop-blur-2xl h-full shrink-0 overflow-hidden transition-[width] duration-150 motion-reduce:transition-none`}>
+    <section data-testid="right-panel" data-maximized={maximized} style={rootLayoutStyle} className={`${maximized ? 'nw-maximized' : 'nw-panel-root w-full xl:w-[480px] 2xl:w-[540px] relative'} flex flex-col bg-[#171b26]/95 border-l border-[#464554]/30 backdrop-blur-2xl shrink-0 transition-[width] duration-150 motion-reduce:transition-none`}>
+      <div data-testid="panel-column" style={columnLayoutStyle}>
       {/* Panel tabs */}
-      <div className="nw-panel-header h-14 border-b border-[#464554]/30 flex items-center bg-[#0a0e18]/80 shrink-0">
-        <div className="nw-content-column nw-panel-header-inner flex items-center justify-between">
-        <div className="inline-flex items-center p-1 rounded-xl bg-[#262a35]/60 border border-[#464554]/30 min-w-0 max-w-full">
+      <div className="nw-panel-header h-14 border-b border-[#464554]/30 flex items-center bg-[#0a0e18]/80 shrink-0" style={{ flexShrink: 0 }}>
+        <div className="nw-panel-header-inner flex items-center justify-between" style={{ width: '100%', minWidth: 0, paddingInline: maximized ? 0 : 16, boxSizing: 'border-box' }}>
+        <div className="inline-flex items-center p-1 rounded-xl bg-[#262a35]/60 border border-[#464554]/30 min-w-0 max-w-full" style={{ flex: maximized ? '0 1 auto' : '1 1 auto', width: maximized ? 'auto' : '100%' }}>
           <button
             type="button"
             onClick={() => setActiveTab('tutor')}
             aria-label="AI Tutor Studio"
+            style={{ flex: maximized ? '0 0 auto' : '1 1 0' }}
             className={`nw-tab py-1.5 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
               activeTab === 'tutor'
                 ? 'bg-[#8083ff] text-[#0d0096] shadow-sm'
@@ -313,6 +332,7 @@ export default function RightPanel({
             type="button"
             onClick={() => setActiveTab('recall')}
             aria-label="Active Recall (3D)"
+            style={{ flex: maximized ? '0 0 auto' : '1 1 0' }}
             className={`nw-tab py-1.5 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
               activeTab === 'recall'
                 ? 'bg-[#8083ff] text-[#0d0096] shadow-sm'
@@ -329,6 +349,7 @@ export default function RightPanel({
             type="button"
             onClick={() => setActiveTab('quiz')}
             aria-label="Concept Quiz"
+            style={{ flex: maximized ? '0 0 auto' : '1 1 0' }}
             className={`nw-tab py-1.5 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-all ${
               activeTab === 'quiz'
                 ? 'bg-[#8083ff] text-[#0d0096] shadow-sm'
@@ -345,45 +366,29 @@ export default function RightPanel({
         </div>
       </div>
 
+      <div className="nw-scope-row bg-[#1c1f2a]/90 py-2 border-b border-[#464554]/30 flex items-center justify-between shrink-0 min-w-0" style={{ flexShrink: 0, minWidth: 0 }}>
+        <div className="flex items-center gap-2 text-[#c0c1ff] min-w-0">
+          <span className="material-symbols-outlined text-[16px]">find_in_page</span>
+          <span className="font-semibold truncate max-w-[280px]">Target PDF: {selectedFile ? selectedFile.name : 'All Knowledge Base Repositories'}</span>
+        </div>
+        {selectedFile && <button type="button" onClick={() => setSelectedFile(null)} className="text-[#908fa0] hover:text-[#dfe2f1] underline shrink-0">Clear Scope</button>}
+      </div>
+
       {/* AI Tutor */}
-      <div className={`nw-content-column nw-panel-content ${activeTab === 'tutor' ? 'nw-tutor-layout' : ''}`}>
-      <div className="nw-tab-pane" hidden={activeTab !== 'quiz'}>
+      <div className={`nw-panel-content ${activeTab === 'tutor' ? 'nw-tutor-layout' : ''}`} style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, minWidth: 0, overflow: 'hidden', paddingInline: maximized ? 0 : 16 }}>
+      <div className="nw-tab-pane" data-tab-pane="quiz" hidden={activeTab !== 'quiz'} style={paneLayoutStyle(activeTab === 'quiz')}>
         <InteractiveQuiz selectedFile={selectedFile} />
       </div>
-      <div className="nw-tab-pane" hidden={activeTab !== 'tutor'}>
-        <div className="nw-tutor flex-1 flex flex-col overflow-hidden relative min-w-0">
-          <div className="nw-scope-row bg-[#1c1f2a]/90 py-2 border-b border-[#464554]/30 flex items-center justify-between shrink-0 min-w-0">
-            <div className="flex items-center gap-2 text-[#c0c1ff] min-w-0">
-              <span className="material-symbols-outlined text-[16px]">
-                find_in_page
-              </span>
-
-              <span className="font-semibold truncate max-w-[280px]">
-                Target PDF:{' '}
-                {selectedFile
-                  ? selectedFile.name
-                  : 'All Knowledge Base Repositories'}
-              </span>
-            </div>
-
-            {selectedFile && (
-              <button
-                type="button"
-                onClick={() => setSelectedFile(null)}
-                className="text-[#908fa0] hover:text-[#dfe2f1] underline shrink-0"
-              >
-                Clear Scope
-              </button>
-            )}
-          </div>
-
-          <div className="nw-message-area flex-1 overflow-y-auto p-4 space-y-4 min-w-0">
+      <div className="nw-tab-pane" data-tab-pane="tutor" hidden={activeTab !== 'tutor'} style={paneLayoutStyle(activeTab === 'tutor')}>
+        <div className="nw-tutor flex flex-col overflow-hidden min-w-0" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
+          <div className="nw-message-area flex-1 overflow-y-auto p-4 space-y-4 min-w-0" style={{ flex: '1 1 0', minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex items-start gap-2.5 ${
                     msg.sender === 'user' ? 'justify-end pl-8' : 'pr-4'
                 }`}
+                style={msg.sender === 'user' ? { width: '80%', maxWidth: '80%', minWidth: 0, marginLeft: 'auto' } : { width: '100%', maxWidth: '100%', minWidth: 0 }}
               >
                 {msg.sender === 'ai' && (
                   <div className="w-7 h-7 rounded-lg bg-[#8083ff] text-[#0d0096] flex items-center justify-center shrink-0 mt-0.5">
@@ -430,7 +435,7 @@ export default function RightPanel({
           </div>
 
           {/* Tutor input */}
-          <div className="nw-input-row border-t border-[#464554]/30 bg-[#0a0e18]/90 shrink-0">
+          <div className="nw-input-row border-t border-[#464554]/30 bg-[#0a0e18]/90 shrink-0" style={{ flexShrink: 0 }}>
             <div className="relative rounded-xl bg-[#262a35]/70 border border-[#464554]/40 focus-within:border-[#c0c1ff] transition-all overflow-hidden p-2 flex items-center gap-2">
               <textarea
                 value={inputText}
@@ -464,9 +469,9 @@ export default function RightPanel({
           </div>
         </div>
       </div>
-      <div className="nw-tab-pane" hidden={activeTab !== 'recall'}>
+      <div className="nw-tab-pane" data-tab-pane="recall" hidden={activeTab !== 'recall'} style={paneLayoutStyle(activeTab === 'recall')}>
         {/* Active Recall */}
-        <div className="nw-recall flex-1 flex flex-col p-5 items-center gap-4 overflow-y-auto min-w-0">
+        <div className="nw-recall flex-1 flex flex-col p-5 items-center gap-4 overflow-hidden min-w-0" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}>
           {!sessionComplete && <div className="w-full flex justify-between items-center gap-3 text-xs text-[#908fa0]">
             <span className="font-semibold text-[#c0c1ff] truncate">
               {selectedFile
@@ -500,6 +505,7 @@ export default function RightPanel({
             />
           </div>}
 
+          <div className="nw-recall-content w-full flex flex-col items-center gap-4" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           {cardsLoading && (
             <p className="text-sm text-[#908fa0] m-auto">
               Loading cards from this PDF…
@@ -560,7 +566,7 @@ export default function RightPanel({
             )}
 
           {currentCard && !cardsLoading && !sessionComplete && (
-            <article className="w-full max-w-md min-h-[250px] rounded-2xl bg-[#262a35]/90 border border-[#464554]/40 p-6 flex flex-col gap-5 shadow-xl">
+            <article className="w-full max-w-md min-h-[250px] rounded-2xl bg-[#262a35]/90 border border-[#464554]/40 p-6 flex flex-col gap-5 shadow-xl" style={{ flex: '1 1 0', minHeight: 250 }}>
               <span className="text-[10px] font-bold text-[#c0c1ff] tracking-wider uppercase">
                 {revealed ? 'Answer' : 'Question'}
               </span>
@@ -573,40 +579,21 @@ export default function RightPanel({
                 </MarkdownAnswer>
               </div>
 
-              {!revealed && (
-                <button
-                  type="button"
-                  onClick={() => setRevealed(true)}
-                  className="mt-auto px-4 py-2 rounded-lg bg-[#8083ff] text-[#0d0096] text-xs font-bold"
-                >
-                  Reveal Answer
-                </button>
-              )}
-
-              {revealed && (
-                <div className="mt-auto flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => rateCard(false)}
-                    className="flex-1 px-3 py-2 rounded-lg bg-rose-500/10 border border-rose-400/40 text-rose-300 text-xs font-bold"
-                  >
-                    Review Again
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => rateCard(true)}
-                    className="flex-1 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-400/40 text-emerald-300 text-xs font-bold"
-                  >
-                    Know It
-                  </button>
-                </div>
-              )}
             </article>
           )}
+          </div>
 
-          {flashcards.length > 0 && !cardsLoading && !sessionComplete && (
-            <div className="flex flex-wrap justify-center gap-2">
+          {currentCard && !cardsLoading && !sessionComplete && (
+            <div className="nw-recall-controls w-full max-w-md flex flex-col gap-2" style={{ flexShrink: 0 }}>
+              {!revealed ? (
+                <button type="button" onClick={() => setRevealed(true)} className="w-full px-4 py-2 rounded-lg bg-[#8083ff] text-[#0d0096] text-xs font-bold">Reveal Answer</button>
+              ) : (
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => rateCard(false)} className="flex-1 px-3 py-2 rounded-lg bg-rose-500/10 border border-rose-400/40 text-rose-300 text-xs font-bold">Review Again</button>
+                  <button type="button" onClick={() => rateCard(true)} className="flex-1 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-400/40 text-emerald-300 text-xs font-bold">Know It</button>
+                </div>
+              )}
+              <div className="flex flex-wrap justify-center gap-2">
               <button
                 type="button"
                 onClick={() => moveCard(-1)}
@@ -639,9 +626,11 @@ export default function RightPanel({
               >
                 Next
               </button>
+              </div>
             </div>
           )}
         </div>
+      </div>
       </div>
       </div>
     </section>

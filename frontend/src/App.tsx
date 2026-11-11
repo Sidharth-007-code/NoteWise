@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MathText from './components/MathText';
 import LeftPanel from './components/LeftPanel';
 import RightPanel from './components/RightPanel';
@@ -15,6 +15,20 @@ export default function App() {
   const [overviewLoading, setOverviewLoading] = useState(false);
   const [overviewError, setOverviewError] = useState('');
   const [showExcerpt, setShowExcerpt] = useState(false);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return undefined;
+    const updateHeaderHeight = () => {
+      document.documentElement.style.setProperty('--nw-header-h', `${header.getBoundingClientRect().height}px`);
+    };
+    updateHeaderHeight();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(updateHeaderHeight);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -104,7 +118,7 @@ export default function App() {
   return (
     <div className="bg-[#0f131d] text-[#dfe2f1] font-sans min-h-screen relative overflow-hidden flex flex-col h-screen antialiased">
       {/* Header */}
-      <header className="bg-[#0a0e18]/80 backdrop-blur-md text-[#c0c1ff] sticky top-0 z-50 border-b border-[#464554]/30 flex justify-between items-center w-full px-8 h-16 shrink-0">
+      <header ref={headerRef} style={{ height: 'var(--nw-header-h, 64px)', boxSizing: 'border-box' }} className="bg-[#0a0e18]/80 backdrop-blur-md text-[#c0c1ff] sticky top-0 z-50 border-b border-[#464554]/30 flex justify-between items-center w-full px-8 h-16 shrink-0">
         <div
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => setActiveTab('tutor')}

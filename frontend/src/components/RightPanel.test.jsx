@@ -116,15 +116,39 @@ test('maximise toggle preserves tutor input, tabs and restores on Escape', async
     expect(host.querySelector('[aria-label="Restore panel"]')).toBeTruthy();
     expect(host.querySelector('[data-maximized="true"]')).toBeTruthy();
     expect(host.querySelector('[data-maximized="true"]').classList.contains('nw-maximized')).toBe(true);
-    expect(host.querySelector('.nw-content-column')).toBeTruthy();
+    const column = host.querySelector('[data-testid="panel-column"]');
+    expect(column).toBeTruthy();
+    expect(column.style.maxWidth).toBe('1000px');
+    expect(column.style.marginInline).toBe('auto');
+    expect(column.style.paddingInline).toBe('16px');
+    const overlay = host.querySelector('[data-testid="right-panel"]');
+    expect(overlay.style.position).toBe('fixed');
+    expect(overlay.style.top).toBe('var(--nw-header-h, 64px)');
+    expect(`${overlay.style.width} ${overlay.style.height}`).not.toMatch(/vw|vh/i);
+    expect(host.querySelector('[aria-label="Restore panel"]').closest('[data-testid="panel-column"]')).toBe(column);
+    ['AI Tutor Studio', 'Active Recall (3D)', 'Concept Quiz'].forEach((label) => {
+      const tab = host.querySelector(`[aria-label="${label}"]`);
+      expect(tab).toBeTruthy();
+      expect(tab.closest('[hidden]')).toBeNull();
+    });
+    const tutorPane = host.querySelector('[data-tab-pane="tutor"]');
+    expect(tutorPane.style.display).toBe('flex');
+    expect(tutorPane.lastElementChild.lastElementChild.classList.contains('nw-input-row')).toBe(true);
+    expect(host.querySelector('.nw-message-area').style.flex).toBe('1 1 0');
+    expect(host.querySelector('.nw-message-area').style.overflowY).toBe('auto');
+    expect(host.querySelector('[data-tab-pane="quiz"]').style.display).toBe('none');
+    expect(host.querySelector('[data-tab-pane="recall"]').style.display).toBe('none');
     await click(host.querySelector('[aria-label="Concept Quiz"]'));
     expect(host.querySelector('[aria-label="Restore panel"]')).toBeTruthy();
-    expect(host.querySelector('textarea')).toBeNull();
+    expect(host.querySelector('textarea')).toBeTruthy();
+    expect(host.querySelector('[data-tab-pane="tutor"]').style.display).toBe('none');
+    expect(host.querySelector('[data-tab-pane="quiz"]').style.display).toBe('flex');
     await click(host.querySelector('[aria-label="AI Tutor Studio"]'));
     expect(host.querySelector('textarea').value).toBe('draft question');
     await act(async () => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })));
     expect(host.querySelector('[aria-label="Maximize panel"]')).toBeTruthy();
     expect(host.querySelector('[data-maximized="false"]')).toBeTruthy();
+    expect(column.style.maxWidth).toBe('none');
   } finally { await act(async () => root.unmount()); host.remove(); }
 });
 

@@ -95,7 +95,7 @@ export default function InteractiveQuiz({ selectedFile }) {
   const uniqueIncorrectTopics = [...new Set(incorrectTopics.map((topic) => topic.trim()).filter(Boolean))];
 
   return (
-    <section className="flex-1 min-h-0 overflow-y-auto bg-[#0f131d] text-[#dfe2f1]">
+    <section className="flex-1 min-h-0 overflow-hidden bg-[#0f131d] text-[#dfe2f1]" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
       {!selectedFile ? (
         <div className="h-full min-h-[280px] flex flex-col items-center justify-center gap-3 p-6 text-center">
           <span className="material-symbols-outlined text-4xl text-[#8083ff]">task_alt</span>
@@ -116,7 +116,7 @@ export default function InteractiveQuiz({ selectedFile }) {
           </button>
         </div>
       ) : isComplete ? (
-        <div className="mx-auto flex min-h-full max-w-lg flex-col justify-center p-6 sm:p-8">
+        <div className="mx-auto flex min-h-0 max-w-lg flex-col justify-center overflow-y-auto p-6 sm:p-8" style={{ flex: '1 1 0', minHeight: 0, overflowY: 'auto' }}>
           <div className="mb-5 flex items-center gap-3 text-[#c0c1ff]"><span className="material-symbols-outlined text-2xl">emoji_events</span><span className="text-xs font-semibold uppercase tracking-[0.2em]">Quiz Complete</span></div>
           <h2 className="text-2xl font-bold">{remark}</h2>
           <p className="mt-2 text-sm text-[#908fa0]">You completed all {questions.length} questions.</p>
@@ -138,12 +138,13 @@ export default function InteractiveQuiz({ selectedFile }) {
           <button type="button" onClick={resetQuiz} className="mt-8 rounded-xl border border-[#464554]/40 bg-[#171b26] px-4 py-3 text-sm font-semibold text-[#dfe2f1] hover:border-[#8083ff]/60 hover:text-[#c0c1ff]">Retake Quiz</button>
         </div>
       ) : (
-        <div className="mx-auto flex max-w-2xl flex-col p-4 sm:p-6">
-          <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="mx-auto flex w-full max-w-2xl flex-col p-4 sm:p-6" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
+          <div className="mb-5 flex shrink-0 items-center justify-between gap-3">
             <span className="truncate text-xs font-medium text-[#908fa0]">{selectedFile.name}</span>
             <span className="shrink-0 rounded-full border border-[#464554]/40 bg-[#171b26] px-3 py-1 text-xs text-[#c0c1ff]">Question {currentQuestionIndex + 1} of {questions.length}</span>
           </div>
-          <div className="mb-5 h-1.5 rounded-full bg-[#262a35]"><div className="h-full rounded-full bg-gradient-to-r from-[#c0c1ff] to-[#8083ff] transition-all" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }} /></div>
+          <div className="mb-5 h-1.5 shrink-0 rounded-full bg-[#262a35]"><div className="h-full rounded-full bg-gradient-to-r from-[#c0c1ff] to-[#8083ff] transition-all" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }} /></div>
+          <div className="nw-quiz-question-scroll" style={{ flex: '1 1 0', minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#4cd7f6]">{currentQuestion.topic || 'Concept Check'}</p>
           <h2 className="mb-5 text-base font-semibold leading-relaxed sm:text-lg">{currentQuestion.question}</h2>
           <div className="space-y-2.5">
@@ -163,7 +164,8 @@ export default function InteractiveQuiz({ selectedFile }) {
             <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#c0c1ff]">Explanation</p>
             <p className="text-sm leading-relaxed text-[#dfe2f1]">{currentQuestion.explanations[selectedOptionIndex]}</p>
           </div>}
-          <div className="mt-5 flex items-center justify-between gap-3">
+          </div>
+          <div className="mt-5 flex shrink-0 items-center justify-between gap-3" style={{ flexShrink: 0 }}>
             <span className="text-xs text-[#908fa0]">Score: {score} / {maxScore}</span>
             {!hasSubmitted ? <button type="button" onClick={submitAnswer} disabled={selectedOptionIndex === null} className="rounded-xl bg-[#8083ff] px-4 py-2.5 text-sm font-semibold text-[#0a0e18] transition hover:bg-[#c0c1ff] disabled:cursor-not-allowed disabled:opacity-40">Submit Answer</button>
               : <button type="button" onClick={advance} className="rounded-xl bg-[#8083ff] px-4 py-2.5 text-sm font-semibold text-[#0a0e18] transition hover:bg-[#c0c1ff]">{currentQuestionIndex === questions.length - 1 ? 'View Results' : 'Next Question'}<span className="material-symbols-outlined ml-1 inline-block align-middle text-base">arrow_forward</span></button>}
