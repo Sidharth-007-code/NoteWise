@@ -1,7 +1,9 @@
 import json
 import gc
+import sqlite3
 import unittest
 import uuid
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -102,6 +104,66 @@ class SmallTalkTests(unittest.TestCase):
 
 
 class DocumentInsightTests(unittest.TestCase):
+    def test_timestamp_creation_returns_iso_utc(self):
+        created_at = main.current_iso_timestamp()
+        self.assertTrue(created_at.endswith("+00:00"))
+        self.assertIsInstance(datetime.fromisoformat(created_at), datetime)
+
+    def test_created_at_migration_is_safe_for_legacy_and_repeated_runs(self):
+        database = Path(main.BASE_DIR) / f"test-migration-{uuid.uuid4().hex}.sqlite3"
+        try:
+            with sqlite3.connect(database) as connection:
+                connection.execute("""CREATE TABLE document_insights (
+                    document_id TEXT PRIMARY KEY, filename TEXT NOT NULL,
+                    page_count INTEGER NOT NULL, ocr_used INTEGER NOT NULL,
+                    extracted_pages INTEGER NOT NULL, summary_json TEXT, cards_json TEXT
+                )""")
+                connection.execute("INSERT INTO document_insights VALUES ('old', 'Old.pdf', 2, 0, 2, NULL, NULL)")
+            connection.close()
+            with patch.object(main, "INSIGHTS_DB", database):
+                main.init_insights_db()
+                main.init_insights_db()
+                row = main.get_insight_row("old")
+                self.assertIn("created_at", row.keys())
+                self.assertIsNone(row["created_at"])
+                self.assertEqual(row["filename"], "Old.pdf")
+        finally:
+            gc.collect()
+            database.unlink(missing_ok=True)
+
+    def test_ingest_timestamp_is_preserved_during_cache_updates_and_document_list(self):
+        database = Path(main.BASE_DIR) / f"test-document-list-{uuid.uuid4().hex}.sqlite3"
+        try:
+            with patch.object(main, "INSIGHTS_DB", database):
+                main.init_insights_db()
+                main.save_document_insight("new", "New.pdf", 4, True, 3, created_at="2026-11-11T10:00:00+00:00")
+                main.save_document_insight("new", "New.pdf", 4, True, 3, summary={"summary": "cached"})
+                main.save_document_insight("new", "New.pdf", 4, True, 3, cards=[{"question": "Q", "answer": "A"}])
+                main.save_document_insight("old", "Old.pdf", 1, False, 1)
+                result = main.list_documents()
+                self.assertEqual(result, {"documents": [
+                    {"document_id": "new", "filename": "New.pdf", "page_count": 4,
+                     "ocr_used": True, "extracted_pages": 3, "created_at": "2026-11-11T10:00:00+00:00",
+                     "has_overview": True, "has_flashcards": True},
+                    {"document_id": "old", "filename": "Old.pdf", "page_count": 1,
+                     "ocr_used": False, "extracted_pages": 1, "created_at": None,
+                     "has_overview": False, "has_flashcards": False},
+                ]})
+                self.assertEqual(main.get_insight_row("new")["created_at"], "2026-11-11T10:00:00+00:00")
+        finally:
+            gc.collect()
+            database.unlink(missing_ok=True)
+
+    def test_document_list_empty_database_returns_empty_wrapper(self):
+        database = Path(main.BASE_DIR) / f"test-document-list-empty-{uuid.uuid4().hex}.sqlite3"
+        try:
+            with patch.object(main, "INSIGHTS_DB", database):
+                main.init_insights_db()
+                self.assertEqual(main.list_documents(), {"documents": []})
+        finally:
+            gc.collect()
+            database.unlink(missing_ok=True)
+
     def test_query_flags_length_truncation(self):
         class Completion:
             def __init__(self, reason):

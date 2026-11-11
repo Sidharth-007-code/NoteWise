@@ -54,3 +54,35 @@ No placeholder screenshots were created.
 The existing `LeftPanel.js` uses `w-80 lg:w-[340px]` (Tailwind fixed width). The AppShell nav rail adds another 64 px. At 768 px and especially 390 px, the combined fixed widths will produce horizontal overflow. **This is expected Phase 1 behaviour** — responsive breakpoints and panel collapsing are out of Phase 1 scope (see `docs/redesign-plan.md`). The overflow check at 768 px and 390 px is therefore expected to fail until a future phase addresses it. This must be explicitly re-tested and resolved in the phase that introduces responsive layout.
 
 
+
+## Phase 2 — persistent Cognitive Library
+
+### Automated checks
+
+| Check | Command | Result |
+|---|---|---|
+| TypeScript | `npx tsc --noEmit` | ✅ Passed, 0 errors |
+| Contrast | `npm run check:contrast` | ✅ 34/34 token pairs passed |
+| Jest | `$env:CI='true'; npx react-scripts test --watchAll=false --cacheDirectory $tempCache` | ⚠️ Could not run suites: Windows `EPERM` while renaming Jest transform cache files under `%TEMP%`; per instructions, not retried. |
+| Production build | `npm run build` | ✅ Compiled successfully (185.89 kB JS, 16.33 kB CSS gzip) |
+| Backend unittests | `..\\.venv\\Scripts\\python.exe -m unittest discover -p "test_*.py"` | ✅ 26 tests passed |
+| Python compilation | `..\\.venv\\Scripts\\python.exe -m py_compile main.py test_document_insights.py` | ✅ Passed |
+
+### Manual verification
+
+For the Library in Light and Dark themes, at 1440, 1280, 1024, 768 and 390 px:
+
+1. On startup, verify the library shows a loading state until `GET /api/documents` resolves; a successful empty result shows the honest empty state.
+2. Simulate a list request failure; confirm the error is visible and Retry reloads the list. Confirm an error is not presented as an empty library.
+3. Verify persisted documents show their filename, real page count, upload date or “Date unknown”, and OCR indication only when `ocr_used` is true.
+4. Search with mixed-case filename text; confirm filtering is case-insensitive and only filenames are matched. Confirm a no-match state is shown.
+5. Upload a PDF; confirm an indeterminate “Uploading and indexing…” state with no percentage or cancel control, then confirm the successful item is selected and appears in the list.
+6. Select a document, confirm its overview and Tutor scope work, then delete another document with confirmation. Confirm the list updates. Delete the selected document and confirm selection/scope resets.
+7. Reload after an upload and confirm documents hydrate from SQLite. Confirm legacy rows show “Date unknown”.
+8. At each width/theme, verify `document.documentElement.scrollWidth <= window.innerWidth`, no clipped or overlapping controls, and visible keyboard focus rings.
+
+Browser visual verification was not completed: the in-app browser timed out opening both `http://localhost:3000` and `http://127.0.0.1:3000`, although CRA reported successful startup. Therefore the five widths, both themes, overflow/clipping, keyboard focus, screenshot capture, and PDF upload visual check were not run. No screenshots were saved. Retry visual QA when the browser can access the local dev server. Check whether `samples/` exists before attempting PDF upload.
+
+### Owner-reported local closure verification
+
+On 2026-11-11, the owner reported that all automated tests pass and manually verified the application locally. The owner confirmed Library hydration after startup and refresh persistence; upload; page/date/OCR metadata; case-insensitive filename search; deletion; Light and Dark themes; and responsive behavior at 1440, 1280, 1024, 768 and 390 px. This is owner-reported verification; no browser screenshots were captured by this run.

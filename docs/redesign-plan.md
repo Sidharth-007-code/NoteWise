@@ -117,3 +117,13 @@ Current backend routes in `main.py`: `GET /`, `GET /api/health`, `POST /api/inge
 3. Maximize the right panel, switch tabs, then press Escape. Expected: the focused panel stays usable across tabs and Escape restores the prior three-panel workspace.
 
 No browser is available to this run, so these checks are for owner review rather than claims of visual verification.
+
+## Phase 2 implementation plan (approved preflight)
+
+1. Migrate `document_insights` additively by checking `PRAGMA table_info` and adding nullable `created_at` only when absent. Set an ISO UTC timestamp on first ingest and preserve it during later insight-cache writes.
+2. Add `GET /api/documents` backed only by SQLite, returning `{ "documents": [...] }` with the documented columns and cache-presence flags, ordered by timestamp descending with null timestamps last.
+3. Change `getDocuments()` to use the additive endpoint. Hydrate the app's document state on startup with loading, retryable error, and honest empty states; merge server metadata into existing local entries by ID and clear a selection if hydration confirms it no longer exists.
+4. Extend the Cognitive Library with filename-only case-insensitive search, persisted page/date/OCR metadata, and indeterminate in-flight ingest status. Preserve existing upload, selected scope, overview and confirmed-delete behavior.
+5. Add temporary-database backend coverage, frontend behavior tests, and a Phase 2 manual QA checklist. Run required automated validation, inspect the full diff, check for BOMs and scan the diff for secrets. No dependency changes or Phase 3 work.
+
+Expected files: `backend/main.py`, `backend/test_document_insights.py`, `frontend/src/api.js`, `frontend/src/App.tsx`, `frontend/src/App.test.jsx`, `frontend/src/components/LeftPanel.js`, `frontend/src/components/LeftPanel.test.jsx`, and `docs/redesign-qa.md`.

@@ -8,6 +8,7 @@ import time
 import logging
 import sqlite3
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -316,6 +317,13 @@ def init_insights_db() -> None:
             summary_json TEXT,
             cards_json TEXT
         )""")
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(document_insights)")}
+        if "created_at" not in columns:
+            connection.execute("ALTER TABLE document_insights ADD COLUMN created_at TEXT")
+
+
+def current_iso_timestamp() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 init_insights_db()
@@ -339,22 +347,25 @@ def get_document_chunks(document_id: str) -> list[dict]:
 def save_document_insight(
     document_id: str, filename: str, page_count: int, ocr_used: bool,
     extracted_pages: int, summary: Optional[dict] = None, cards: Optional[list] = None,
+    created_at: Optional[str] = None,
 ) -> None:
     with sqlite3.connect(INSIGHTS_DB) as connection:
         connection.execute("""INSERT INTO document_insights
-            (document_id, filename, page_count, ocr_used, extracted_pages, summary_json, cards_json)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (document_id, filename, page_count, ocr_used, extracted_pages, summary_json, cards_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(document_id) DO UPDATE SET
                 filename=excluded.filename,
                 page_count=excluded.page_count,
                 ocr_used=excluded.ocr_used,
                 extracted_pages=excluded.extracted_pages,
                 summary_json=COALESCE(excluded.summary_json, document_insights.summary_json),
-                cards_json=COALESCE(excluded.cards_json, document_insights.cards_json)""",
+                cards_json=COALESCE(excluded.cards_json, document_insights.cards_json),
+                created_at=COALESCE(document_insights.created_at, excluded.created_at)""",
             (
                 document_id, filename, page_count, int(ocr_used), extracted_pages,
                 json.dumps(summary, ensure_ascii=False) if summary is not None else None,
                 json.dumps(cards, ensure_ascii=False) if cards is not None else None,
+                created_at,
             ),
         )
 
@@ -1005,7 +1016,10 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
         extracted_pages = len({chunk["page"] for chunk in chunks})
         # Store document metadata only. Summary, flashcard, and quiz generation
         # are deliberately kept out of the upload request.
-        save_document_insight(document_id, filename, page_count, used_ocr, extracted_pages)
+        save_document_insight(
+            document_id, filename, page_count, used_ocr, extracted_pages,
+            created_at=current_iso_timestamp(),
+        )
         preview_text = extracted_text[:preview_chars]
         logger.info("Ingested %s: %s pages, %s chunks", filename, page_count, len(chunks))
         return {
@@ -1052,6 +1066,30 @@ def delete_document(document_id: str):
     except Exception as exc:
         logger.exception("Failed to delete document %s", document_id)
         raise HTTPException(status_code=500, detail="Could not remove the document.") from exc
+
+
+@app.get("/api/documents")
+def list_documents():
+    with sqlite3.connect(INSIGHTS_DB) as connection:
+        connection.row_factory = sqlite3.Row
+        rows = connection.execute("""SELECT document_id, filename, page_count, ocr_used,
+            extracted_pages, created_at, summary_json, cards_json
+            FROM document_insights
+            ORDER BY CASE WHEN created_at IS NULL THEN 1 ELSE 0 END,
+                     created_at DESC, document_id ASC""").fetchall()
+    return {"documents": [
+        {
+            "document_id": row["document_id"],
+            "filename": row["filename"],
+            "page_count": row["page_count"],
+            "ocr_used": bool(row["ocr_used"]),
+            "extracted_pages": row["extracted_pages"],
+            "created_at": row["created_at"],
+            "has_overview": row["summary_json"] is not None,
+            "has_flashcards": row["cards_json"] is not None,
+        }
+        for row in rows
+    ]}
 
 
 @app.get("/api/documents/{document_id}/overview")

@@ -5,7 +5,7 @@ import RightPanel from './components/RightPanel';
 import { AppShell } from './components/ui/AppShell';
 import { Button } from './components/ui/Button';
 import { Folder } from 'lucide-react';
-import { getDocumentOverview } from './api';
+import { getDocumentOverview, getDocuments } from './api';
 import './App.css';
 import './OverviewPane.css';
 
@@ -13,11 +13,61 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('tutor');
   const [promptText, setPromptText] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [documentsLoading, setDocumentsLoading] = useState(true);
+  const [documentsError, setDocumentsError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [overview, setOverview] = useState(null);
   const [overviewLoading, setOverviewLoading] = useState(false);
   const [overviewError, setOverviewError] = useState('');
   const [showExcerpt, setShowExcerpt] = useState(false);
+
+  const loadDocuments = async () => {
+    setDocumentsLoading(true);
+    setDocumentsError('');
+    try {
+      const records = await getDocuments();
+      setUploadedFiles((current) => {
+        const existing = new Map(current.map((file) => [file.id, file]));
+        return records.map((record) => {
+          const prior = existing.get(record.document_id) || {};
+          return {
+            ...prior,
+            id: record.document_id,
+            name: record.filename,
+            pageCount: record.page_count,
+            ocrUsed: record.ocr_used,
+            extractedPages: record.extracted_pages,
+            createdAt: record.created_at,
+            hasOverview: record.has_overview,
+            hasFlashcards: record.has_flashcards,
+            status: prior.status || 'Indexed',
+          };
+        });
+      });
+      setSelectedFile((current) => {
+        if (!current) return current;
+        const record = records.find((item) => item.document_id === current.id);
+        if (!record) return null;
+        return {
+          ...current,
+          id: record.document_id,
+          name: record.filename,
+          pageCount: record.page_count,
+          ocrUsed: record.ocr_used,
+          extractedPages: record.extracted_pages,
+          createdAt: record.created_at,
+          hasOverview: record.has_overview,
+          hasFlashcards: record.has_flashcards,
+        };
+      });
+    } catch (error) {
+      setDocumentsError(error.message || 'Could not load the document library.');
+    } finally {
+      setDocumentsLoading(false);
+    }
+  };
+
+  useEffect(() => { loadDocuments(); }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,14 +92,14 @@ export default function App() {
         setUploadedFiles((files) =>
           files.map((file) =>
             file.id === selectedFile.id
-              ? { ...file, overview: data, status: 'Processed' }
+              ? { ...file, overview: data, status: 'Indexed' }
               : file
           )
         );
 
         setSelectedFile((current) =>
           current?.id === selectedFile.id
-            ? { ...current, overview: data, status: 'Processed' }
+            ? { ...current, overview: data, status: 'Indexed' }
             : current
         );
       })
@@ -82,14 +132,14 @@ export default function App() {
       setUploadedFiles((files) =>
         files.map((file) =>
           file.id === documentId
-            ? { ...file, overview: data, status: 'Processed' }
+            ? { ...file, overview: data, status: 'Indexed' }
             : file
         )
       );
 
       setSelectedFile((current) =>
         current?.id === documentId
-          ? { ...current, overview: data, status: 'Processed' }
+            ? { ...current, overview: data, status: 'Indexed' }
           : current
       );
     } catch (error) {
@@ -117,6 +167,9 @@ export default function App() {
           setUploadedFiles={setUploadedFiles}
           selectedFile={selectedFile}
           setSelectedFile={setSelectedFile}
+          documentsLoading={documentsLoading}
+          documentsError={documentsError}
+          onRetryDocuments={loadDocuments}
         />
 
         {/* Center Document Overview Workspace Pane */}
