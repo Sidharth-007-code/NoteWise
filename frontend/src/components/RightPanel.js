@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import MarkdownAnswer from './MarkdownAnswer';
 import InteractiveQuiz from './InteractiveQuiz';
 import { askDocumentQuestion, getDocumentFlashcards } from '../api';
+import { Maximize2, Minimize2 } from 'lucide-react';
 
 export default function RightPanel({
   activeTab,
@@ -31,9 +32,17 @@ export default function RightPanel({
   const [sessionComplete, setSessionComplete] = useState(false);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [cardsError, setCardsError] = useState('');
+  const [maximized, setMaximized] = useState(false);
 
   const chatEndRef = useRef(null);
   const completionGuardRef = useRef(false);
+
+  useEffect(() => {
+    if (!maximized) return undefined;
+    const handleKeyDown = (event) => { if (event.key === 'Escape') setMaximized(false); };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [maximized]);
 
   const sessionCards = sessionMode === 'review' ? reviewSessionCards : flashcards;
 
@@ -269,10 +278,10 @@ export default function RightPanel({
   };
 
   return (
-    <section className="w-full xl:w-[480px] 2xl:w-[540px] flex flex-col bg-[#171b26]/95 border-l border-[#464554]/30 backdrop-blur-2xl h-full shrink-0 relative overflow-hidden">
+    <section className={`${maximized ? 'fixed inset-0 z-[60] w-full' : 'w-full xl:w-[480px] 2xl:w-[540px]'} flex flex-col bg-[#171b26]/95 border-l border-[#464554]/30 backdrop-blur-2xl h-full shrink-0 relative overflow-hidden transition-[width] duration-150 motion-reduce:transition-none`}>
       {/* Panel tabs */}
       <div className="h-14 border-b border-[#464554]/30 px-4 flex items-center justify-between bg-[#0a0e18]/80 shrink-0">
-        <div className="flex items-center p-1 rounded-xl bg-[#262a35]/60 border border-[#464554]/30 w-full">
+        <div className="flex items-center p-1 rounded-xl bg-[#262a35]/60 border border-[#464554]/30 flex-1 min-w-0">
           <button
             type="button"
             onClick={() => setActiveTab('tutor')}
@@ -316,6 +325,9 @@ export default function RightPanel({
             Concept Quiz
           </button>
         </div>
+        <button type="button" aria-label={maximized ? 'Restore panel' : 'Maximize panel'} title={maximized ? 'Restore panel' : 'Maximize panel'} onClick={() => setMaximized((value) => !value)} className="ml-2 shrink-0 p-2 rounded-lg text-[#c7c4d7] hover:text-white hover:bg-[#313540] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c0c1ff]">
+          {maximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+        </button>
       </div>
 
       {/* AI Tutor */}
