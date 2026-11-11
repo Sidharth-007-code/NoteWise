@@ -137,7 +137,8 @@ test('maximise toggle preserves tutor input, tabs and restores on Escape', async
     const tutorPane = host.querySelector('[data-tab-pane="tutor"]');
     expect(tutorPane.style.display).toBe('flex');
     expect(tutorPane.lastElementChild.lastElementChild.classList.contains('nw-input-row')).toBe(true);
-    expect(host.querySelector('.nw-message-area').style.flex).toBe('1 1 0');
+    // jsdom drops or normalises some CSS values, so the real rendering must be checked in a browser.
+    expect(['1 1 0', '1 1 0px']).toContain(host.querySelector('.nw-message-area').style.flex);
     expect(host.querySelector('.nw-message-area').style.overflowY).toBe('auto');
     expect(host.querySelector('[data-tab-pane="quiz"]').style.display).toBe('none');
     expect(host.querySelector('[data-tab-pane="recall"]').style.display).toBe('none');
