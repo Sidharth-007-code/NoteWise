@@ -10,6 +10,7 @@ jest.mock('./api', () => ({
 }));
 jest.mock('./components/MathText', () => () => null);
 jest.mock('./components/RightPanel', () => () => null);
+jest.mock('./workspaces/ReaderWorkspace', () => ({ __esModule: true, ReaderWorkspace: () => null, default: ({ overviewContent }) => <div>{overviewContent?.(() => {}, 0)}</div> }));
 jest.mock('./components/ui/AppShell', () => ({ AppShell: ({ children }) => <div>{children}</div> }));
 jest.mock('./components/ui/Button', () => ({ Button: ({ children, ...props }) => <button {...props}>{children}</button> }));
 

@@ -85,7 +85,7 @@ test('confirming selected document removal calls API and clears selection', asyn
   deleteDocument.mockResolvedValue({ success: true });
   try {
     await click(host.querySelector('[aria-label="Remove Notes.pdf"]'));
-    expect(host.textContent).toContain('This deletes its text, overview, flashcards and quiz');
+    expect(host.textContent).toContain('This deletes its retained PDF, extracted text, overview, flashcards and quiz');
     const confirm = [...host.querySelectorAll('button')].find((button) => button.textContent === 'Remove');
     await click(confirm);
     expect(deleteDocument).toHaveBeenCalledWith('doc-1');

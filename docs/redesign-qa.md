@@ -86,3 +86,35 @@ Browser visual verification was not completed: the in-app browser timed out open
 ### Owner-reported local closure verification
 
 On 2026-11-11, the owner reported that all automated tests pass and manually verified the application locally. The owner confirmed Library hydration after startup and refresh persistence; upload; page/date/OCR metadata; case-insensitive filename search; deletion; Light and Dark themes; and responsive behavior at 1440, 1280, 1024, 768 and 390 px. This is owner-reported verification; no browser screenshots were captured by this run.
+
+## Phase 3 — PDF Reader / Document Workspace
+
+### Implementation checks
+
+| Check | Command | Result |
+|---|---|---|
+| Backend unittest discovery | `..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"` | ✅ 35 tests passed |
+| Python compilation | `..\.venv\Scripts\python.exe -m py_compile main.py test_reader.py` | ✅ Passed |
+| TypeScript | `npx tsc --noEmit` | ✅ Passed, 0 errors |
+| Jest | `npm test -- --watchAll=false --runInBand` | ⚠️ Suites did not run: Windows `EPERM` while renaming Jest transform cache files in the system temporary directory. Not retried, per project instructions. |
+| Contrast | `npm run check:contrast` | ✅ 34/34 token pairs passed |
+| Production build | `npm run build` | ✅ CRA 5 / Webpack 5 compiled, including locally bundled PDF.js worker |
+| Diff whitespace | `git diff --check` | ✅ Passed; no whitespace errors in the tracked diff |
+
+The backend tests use temporary SQLite and upload directories plus an ephemeral Chroma collection. They cover PDF persistence, ID validation, failure cleanup, file and page routes, legacy missing-file behavior, page ordering and overlap reconstruction, and file deletion. The real document database was not inspected or modified directly.
+
+### Manual verification steps
+
+Use the browser at `http://localhost:3000` and a safe PDF from `samples/` if one is available. No `samples/` directory was present for this run. Verify the following before Phase 3 closure:
+
+- [x] A legacy document without a retained original PDF displayed its stored extracted-page text through the fallback reader; the generated overview remained available in the context rail.
+- [x] The page-number input changed the fallback reader’s current page and the corresponding extracted page content was present in the rendered DOM.
+- [ ] Upload a sample PDF; verify the uploaded original is retained under its generated document ID, renders as a PDF, and the existing Tutor scope remains selected.
+- [ ] Verify PDF page input, previous/next, keyboard navigation, 50–200% zoom limits, Fit width, nearby-page rendering and per-document last-page restore after refresh.
+- [ ] With an outlined PDF, verify Contents appears and outline entries navigate. With a PDF without an outline, verify Contents is absent.
+- [ ] Verify valid topic page references navigate, and “Ask about this page” opens the existing Tutor with the selected document scope and a page-specific prompt.
+- [ ] Verify PDF load and rendering errors show an actionable retry, and legacy PDFs continue to use extracted text.
+- [ ] Delete a retained-PDF document with confirmation; verify its list entry, selected scope and retained PDF are removed.
+- [ ] In both Light and Dark themes, check Reader layout at widths 1440, 1280, 1024, 768 and 390 px; verify no horizontal overflow, clipped or overlapping controls, and visible focus rings.
+
+Browser visual QA is incomplete. The in-app browser showed the selected legacy document and overview, but its available narrow viewport clipped the three-pane shell and reported a zero-width Reader. The browser viewport capability was unavailable, so the requested width/theme matrix could not be set or verified. Browser control then stopped because it could not establish the current Windows browser URL with enough confidence. No Phase 3 screenshots were saved. The local sample upload, PDF.js canvas rendering, PDF outline, Tutor prompt action, zoom/keyboard behavior, deletion of a retained PDF, Light theme, responsive matrix and focus-ring checks remain unverified manually.

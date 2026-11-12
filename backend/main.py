@@ -8,6 +8,7 @@ import time
 import logging
 import sqlite3
 import threading
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -19,6 +20,7 @@ import pymupdf as fitz
 from PIL import Image
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel
@@ -36,6 +38,7 @@ load_dotenv(BASE_DIR / ".env", override=False)
 
 CHROMA_DIR = BASE_DIR / "chroma_db"
 INSIGHTS_DB = BASE_DIR / "document_insights.sqlite3"
+UPLOADS_DIR = BASE_DIR / "uploads"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 150
 TOP_K = 5
@@ -326,6 +329,61 @@ def current_iso_timestamp() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def validate_document_id(document_id: str) -> str:
+    if not document_id or len(document_id) > 128 or not re.fullmatch(r"[A-Za-z0-9_-]+", document_id):
+        raise HTTPException(status_code=400, detail="Invalid document ID.")
+    return document_id
+
+
+def document_pdf_path(document_id: str) -> Path:
+    validate_document_id(document_id)
+    return UPLOADS_DIR / f"{document_id}.pdf"
+
+
+def store_pdf_atomically(document_id: str, pdf_bytes: bytes) -> Path:
+    final_path = document_pdf_path(document_id)
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    temporary_path = None
+    try:
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=f".{document_id}-", suffix=".tmp", dir=UPLOADS_DIR
+        )
+        temporary_path = Path(temporary_name)
+        with os.fdopen(descriptor, "wb") as output:
+            output.write(pdf_bytes)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary_path, final_path)
+        return final_path
+    except Exception:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+
+
+def cleanup_failed_ingest(document_id: Optional[str], temporary_path: Optional[Path] = None) -> None:
+    if document_id:
+        try:
+            collection.delete(where={"document_id": document_id})
+        except Exception:
+            logger.exception("Failed to clean up chunks for %s", document_id)
+    if document_id:
+        try:
+            with sqlite3.connect(INSIGHTS_DB) as connection:
+                connection.execute("DELETE FROM document_insights WHERE document_id = ?", (document_id,))
+        except Exception:
+            logger.exception("Failed to clean up metadata for %s", document_id)
+        try:
+            document_pdf_path(document_id).unlink(missing_ok=True)
+        except Exception:
+            logger.exception("Failed to clean up stored PDF for %s", document_id)
+    if temporary_path is not None:
+        try:
+            temporary_path.unlink(missing_ok=True)
+        except Exception:
+            logger.exception("Failed to clean up temporary PDF %s", temporary_path.name)
+
+
 init_insights_db()
 
 
@@ -340,6 +398,7 @@ def get_document_chunks(document_id: str) -> list[dict]:
             "text": text or "",
             "page": int(metadata.get("page", 1)),
             "index": int(metadata.get("chunk_index", 0)),
+            "start": int(metadata["chunk_start"]) if metadata.get("chunk_start") is not None else None,
         })
     return sorted(entries, key=lambda item: item["index"])
 
@@ -474,7 +533,9 @@ def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, int, bool]:
 # ============================================================
 # CHUNKING AND TEXT HELPERS
 # ============================================================
-def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[str]:
+def chunk_text_with_offsets(
+    text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP,
+) -> list[dict]:
     text = " ".join(text.split())
     if not text:
         return []
@@ -490,11 +551,16 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
                 end = boundary
         piece = text[start:end].strip()
         if piece:
-            chunks.append(piece)
+            leading_trim = len(text[start:end]) - len(text[start:end].lstrip())
+            chunks.append({"text": piece, "start": start + leading_trim})
         if end >= len(text):
             break
         start = max(end - overlap, start + 1)
     return chunks
+
+
+def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[str]:
+    return [chunk["text"] for chunk in chunk_text_with_offsets(text, chunk_size, overlap)]
 
 
 def build_chunks_with_pages(text: str) -> list[dict]:
@@ -505,11 +571,51 @@ def build_chunks_with_pages(text: str) -> list[dict]:
             if index + 1 >= len(sections):
                 break
             page_number = int(sections[index])
-            for piece in chunk_text(sections[index + 1].strip()):
-                chunks.append({"text": piece, "page": page_number})
+            for piece in chunk_text_with_offsets(sections[index + 1].strip()):
+                chunks.append({"text": piece["text"], "page": page_number, "start": piece["start"]})
     if not chunks:
-        chunks = [{"text": piece, "page": 1} for piece in chunk_text(text)]
+        chunks = [
+            {"text": chunk["text"], "page": 1, "start": chunk["start"]}
+            for chunk in chunk_text_with_offsets(text)
+        ]
     return chunks
+
+
+def _merge_page_chunks(chunks: list[dict]) -> str:
+    ordered = sorted(chunks, key=lambda entry: entry["index"])
+    result = ""
+    for entry in ordered:
+        text = entry["text"]
+        if not text:
+            continue
+        start = entry.get("start")
+        if start is not None and start <= len(result):
+            overlap_size = len(result) - start
+            if overlap_size <= len(text) and result[start:] == text[:overlap_size]:
+                result += text[overlap_size:]
+                continue
+        elif start is None and result:
+            max_overlap = min(CHUNK_OVERLAP, len(result), len(text))
+            for overlap_size in range(max_overlap, 0, -1):
+                if result[-overlap_size:] == text[:overlap_size]:
+                    result += text[overlap_size:]
+                    break
+            else:
+                result += text
+            continue
+        result += text
+    return result
+
+
+def document_page_texts(document_id: str) -> list[dict]:
+    entries = get_document_chunks(document_id)
+    grouped = {}
+    for entry in entries:
+        grouped.setdefault(entry["page"], []).append(entry)
+    return [
+        {"page": page_number, "text": _merge_page_chunks(chunks)}
+        for page_number, chunks in sorted(grouped.items())
+    ]
 
 
 def build_context(entries: list[dict], max_chars: int) -> str:
@@ -982,7 +1088,6 @@ def health():
 async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General")):
     filename = Path(file.filename or "document.pdf").name
     document_id = None
-    chunks_added = False
     preview_chars = 1200
     if not filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
@@ -1010,9 +1115,10 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
             metadatas.append({
                 "document_id": document_id, "source": filename, "subject": clean_subject,
                 "page": int(chunk["page"]), "chunk_index": int(index),
+                "chunk_start": int(chunk["start"]),
             })
         collection.add(ids=ids, documents=documents, metadatas=metadatas)
-        chunks_added = True
+        store_pdf_atomically(document_id, pdf_bytes)
         extracted_pages = len({chunk["page"] for chunk in chunks})
         # Store document metadata only. Summary, flashcard, and quiz generation
         # are deliberately kept out of the upload request.
@@ -1034,11 +1140,7 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
     except HTTPException:
         raise
     except Exception as exc:
-        if chunks_added and document_id:
-            try:
-                collection.delete(where={"document_id": document_id})
-            except Exception:
-                logger.exception("Failed to clean up chunks for %s", document_id)
+        cleanup_failed_ingest(document_id)
         logger.exception("PDF ingestion failed")
         raise HTTPException(status_code=500, detail="Unexpected error while processing the PDF.") from exc
     finally:
@@ -1049,8 +1151,7 @@ async def ingest_pdf(file: UploadFile = File(...), subject: str = Form("General"
 # ============================================================
 @app.delete("/api/documents/{document_id}")
 def delete_document(document_id: str):
-    if not document_id or len(document_id) > 128 or not re.fullmatch(r"[A-Za-z0-9_-]+", document_id):
-        raise HTTPException(status_code=400, detail="Invalid document ID.")
+    validate_document_id(document_id)
     try:
         chunks = collection.get(where={"document_id": document_id}, include=[])
         deleted_chunks = len(chunks.get("ids") or [])
@@ -1060,12 +1161,41 @@ def delete_document(document_id: str):
         collection.delete(where={"document_id": document_id})
         with sqlite3.connect(INSIGHTS_DB) as connection:
             connection.execute("DELETE FROM document_insights WHERE document_id = ?", (document_id,))
+        document_pdf_path(document_id).unlink(missing_ok=True)
         return {"success": True, "document_id": document_id, "deleted_chunks": deleted_chunks}
     except HTTPException:
         raise
     except Exception as exc:
         logger.exception("Failed to delete document %s", document_id)
         raise HTTPException(status_code=500, detail="Could not remove the document.") from exc
+
+
+@app.get("/api/documents/{document_id}/file")
+def document_file(document_id: str):
+    validate_document_id(document_id)
+    if not get_insight_row(document_id):
+        raise HTTPException(status_code=404, detail="Document was not found.")
+    pdf_path = document_pdf_path(document_id)
+    if not pdf_path.is_file():
+        raise HTTPException(status_code=404, detail="The original PDF is not available for this document.")
+    return FileResponse(pdf_path, media_type="application/pdf", filename=f"{document_id}.pdf")
+
+
+@app.get("/api/documents/{document_id}/pages")
+def document_pages(document_id: str):
+    validate_document_id(document_id)
+    row = get_insight_row(document_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Document was not found.")
+    pages = document_page_texts(document_id)
+    if not pages:
+        raise HTTPException(status_code=404, detail="No processed text exists for this document ID.")
+    return {
+        "document_id": document_id,
+        "filename": row["filename"],
+        "page_count": row["page_count"],
+        "pages": pages,
+    }
 
 
 @app.get("/api/documents")

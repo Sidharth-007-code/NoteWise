@@ -206,7 +206,7 @@ export default function LeftPanel({
 
 
 
-      {pendingDelete && <div role="dialog" aria-modal="true" className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4"><div className="max-w-md rounded-xl bg-[var(--nw-surface)] border border-[var(--nw-border)] p-5"><p className="text-sm text-[var(--nw-text)]">Remove {pendingDelete.name}? This deletes its text, overview, flashcards and quiz from this app. Your original PDF is not affected.</p><div className="flex justify-end gap-2 mt-4"><button onClick={() => setPendingDelete(null)} className="px-3 py-2 text-sm">Cancel</button><button disabled={Boolean(deleting)} onClick={() => confirmDelete(pendingDelete)} className="px-3 py-2 text-sm bg-[var(--nw-danger-bg)] text-[var(--nw-danger)] rounded disabled:opacity-50">{deleting ? 'Removing…' : 'Remove'}</button></div></div></div>}
+      {pendingDelete && <div role="dialog" aria-modal="true" className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-4"><div className="max-w-md rounded-xl bg-[var(--nw-surface)] border border-[var(--nw-border)] p-5"><p className="text-sm text-[var(--nw-text)]">Remove {pendingDelete.name}? This deletes its retained PDF, extracted text, overview, flashcards and quiz from this app.</p><div className="flex justify-end gap-2 mt-4"><button onClick={() => setPendingDelete(null)} className="px-3 py-2 text-sm">Cancel</button><button disabled={Boolean(deleting)} onClick={() => confirmDelete(pendingDelete)} className="px-3 py-2 text-sm bg-[var(--nw-danger-bg)] text-[var(--nw-danger)] rounded disabled:opacity-50">{deleting ? 'Removing…' : 'Remove'}</button></div></div></div>}
     </aside>
   );
 }

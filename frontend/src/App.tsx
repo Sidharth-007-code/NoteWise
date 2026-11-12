@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MathText from './components/MathText';
 import LeftPanel from './components/LeftPanel';
 import RightPanel from './components/RightPanel';
+import ReaderWorkspace from './workspaces/ReaderWorkspace';
 import { AppShell } from './components/ui/AppShell';
 import { Button } from './components/ui/Button';
 import { Folder } from 'lucide-react';
@@ -172,7 +173,10 @@ export default function App() {
           onRetryDocuments={loadDocuments}
         />
 
-        {/* Center Document Overview Workspace Pane */}
+        {/* Center PDF Reader workspace; generated overview remains in its contextual rail. */}
+        <ReaderWorkspace
+          selectedFile={selectedFile}
+          overviewContent={(jumpToPage, readerPageCount) => (
         <section className="nw-overview-pane">
           <div className="nw-overview-topbar">
             <div className="nw-overview-breadcrumb">
@@ -293,7 +297,10 @@ export default function App() {
                                 {item.pages?.length > 0 && (
                                   <p className="nw-topic-pages">
                                     Page{item.pages.length > 1 ? 's' : ''}{' '}
-                                    {item.pages.join(', ')}
+                                    {item.pages.map((topicPage, pageIndex) => {
+                                      const valid = Number.isInteger(topicPage) && topicPage >= 1 && topicPage <= readerPageCount;
+                                      return <React.Fragment key={`${topicPage}-${pageIndex}`}>{pageIndex > 0 ? ', ' : ''}{valid ? <button type="button" onClick={() => jumpToPage(topicPage)}>{topicPage}</button> : topicPage}</React.Fragment>;
+                                    })}
                                   </p>
                                 )}
                               </div>
@@ -425,6 +432,9 @@ export default function App() {
             </div>
           </div>
         </section>
+          )}
+          onAskAboutPage={(page) => handleSendPromptToTutor(`Explain page ${page} of ${selectedFile?.name || 'this document'}.`)}
+        />
 
         {/* Right Copilot Studio (Kept Mounted) */}
         <RightPanel

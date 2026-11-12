@@ -127,3 +127,33 @@ No browser is available to this run, so these checks are for owner review rather
 5. Add temporary-database backend coverage, frontend behavior tests, and a Phase 2 manual QA checklist. Run required automated validation, inspect the full diff, check for BOMs and scan the diff for secrets. No dependency changes or Phase 3 work.
 
 Expected files: `backend/main.py`, `backend/test_document_insights.py`, `frontend/src/api.js`, `frontend/src/App.tsx`, `frontend/src/App.test.jsx`, `frontend/src/components/LeftPanel.js`, `frontend/src/components/LeftPanel.test.jsx`, and `docs/redesign-qa.md`.
+
+## Phase 3 implementation plan — PDF Reader / Document Workspace
+
+### Architecture and storage
+
+- Preserve the current AppShell, Library `LeftPanel`, and single mounted `RightPanel`; replace the center overview body with a Reader workspace when a document is selected. The generated overview remains in the Reader rail under an Overview view; show Contents only when the PDF outline has entries.
+- Keep original PDFs in `backend/uploads/{document_id}.pdf`, with IDs validated before any path is formed. The repository root `.gitignore` already ignores `backend/uploads/*`. Write to a unique temporary file in that directory, flush/close it, then `os.replace` to the final UUID-derived path. If ingest fails after vector insertion or file persistence, delete both the newly inserted Chroma records and temp/final file.
+- Extend the existing delete route with idempotent PDF cleanup while preserving its response shape. Older indexed records may have no file and continue through the extracted-page endpoint.
+- Store `chunk_start` offsets in new Chroma metadata so page text can be reconstructed without ambiguity. For older chunks without offsets, merge only exact adjacent suffix/prefix overlap bounded by `CHUNK_OVERLAP`; preserve chunks verbatim when no overlap is proven.
+
+### Additive API contracts
+
+- `GET /api/documents/{document_id}/file`: validate the same document ID grammar used by deletion; return `application/pdf` from the UUID-derived path; return 404 when that file is absent. It does not change `POST /api/ingest` response fields.
+- `GET /api/documents/{document_id}/pages`: return `{ "document_id": "…", "filename": "…", "page_count": n, "pages": [{"page": 1, "text": "…"}] }`, with pages ordered numerically and text reconstructed from ordered stored chunks. Known documents without chunks return the existing 404-style missing-text error; unknown IDs return 404. No SQLite content-storage change is planned.
+- Existing `DELETE /api/documents/{document_id}` response fields remain unchanged; its behavior additionally removes the retained local PDF if present.
+
+### PDF.js and Reader behavior
+
+- Add exact `pdfjs-dist` version `5.7.284`. Use its Webpack entry (`pdfjs-dist/webpack.mjs`) so Webpack bundles/configures the worker locally; verify this against CRA 5 / Webpack 5 with the production build. Do not use a CDN or worker URL from a remote host.
+- Render only the current PDF page and its immediate neighbors. Support page input, previous/next, keyboard page navigation, fit width, and zoom clamped to 50–200%. Do not add a thumbnail strip.
+- Resolve outline destinations through PDF.js and display Contents only if outline entries exist. Overview topic page controls jump through the same Reader page callback. Persist last page under a document-scoped localStorage key.
+- “Ask about this page” sets the existing Tutor tab and initial prompt while leaving selected-document scope unchanged. It asks about that page but does not introduce page-filtered retrieval or alter `/api/query`.
+- When the file endpoint returns 404, render the page-text API response as the existing-text fallback. Keep the Overview panel and existing topic summaries available in this mode.
+
+### Tests and verification
+
+- Backend temporary-path tests: atomic persistence and exact bytes, cleanup after failures at storage/vector/metadata steps, valid and invalid IDs, file route success/404, page grouping/order, offset/legacy overlap reconstruction, known legacy document without PDF, and delete cleanup with unchanged response fields.
+- Frontend Jest: mock PDF.js worker/document/page/render APIs; cover render/current-neighbor window, loading/errors, page bounds/input/previous-next/keyboard, zoom bounds and fit-width, outline-present/absent rail, topic jump, per-document progress restore/save, scoped Tutor prefill, legacy text fallback, and Reader/RightPanel mounting plus existing overview behavior.
+- Run required backend unittest discovery and `py_compile`, TypeScript, `npm test -- --watchAll=false --runInBand`, contrast, production build, and `git diff --check`; inspect BOMs and the diff for secrets before any phase commit. Add the Phase 3 manual checklist to `docs/redesign-qa.md` and follow the browser/screenshot requirements in AGENTS.md.
+- Update README privacy behavior: newly uploaded original PDFs are retained locally in backend storage and removed when their document is deleted.
