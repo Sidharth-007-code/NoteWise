@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — Academic Folio</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary": "#7a5641",
+            "surface-tint": "#50625b",
+            "background": "#f9f9f6",
+            "tertiary": "#172413",
+            "on-primary-fixed-variant": "#394a44",
+            "surface-dim": "#dadad7",
+            "inverse-primary": "#b8cbc2",
+            "secondary-fixed-dim": "#ebbda2",
+            "tertiary-container": "#2c3a27",
+            "surface-container": "#eeeeeb",
+            "primary": "#14241f",
+            "inverse-on-surface": "#f1f1ed",
+            "on-primary-container": "#91a49c",
+            "on-secondary": "#ffffff",
+            "outline-variant": "#c2c8c4",
+            "on-tertiary-fixed-variant": "#3c4b36",
+            "surface-container-high": "#e8e8e5",
+            "primary-container": "#293a34",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#b8cbc2",
+            "surface-container-highest": "#e2e3df",
+            "error": "#ba1a1a",
+            "on-background": "#1a1c1a",
+            "on-surface": "#1a1c1a",
+            "on-tertiary": "#ffffff",
+            "surface-variant": "#e2e3df",
+            "inverse-surface": "#2f312f",
+            "on-surface-variant": "#424845",
+            "on-secondary-container": "#795540",
+            "on-tertiary-container": "#93a48b",
+            "tertiary-fixed": "#d6e8cc",
+            "secondary-fixed": "#ffdbc8",
+            "surface-container-low": "#f4f4f0",
+            "primary-fixed": "#d3e7de",
+            "surface": "#f9f9f6",
+            "outline": "#737875",
+            "tertiary-fixed-dim": "#baccb1",
+            "surface-bright": "#f9f9f6",
+            "on-secondary-fixed": "#2e1505",
+            "on-primary-fixed": "#0e1f19",
+            "on-secondary-fixed-variant": "#603f2b",
+            "on-tertiary-fixed": "#111f0e",
+            "secondary-container": "#fdcdb2",
+            "on-error-container": "#93000a",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "on-primary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "gutter-mobile": "1rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "margin": "3rem",
+            "space-md": "1rem",
+            "margin-mobile": "1.25rem",
+            "margin-tablet": "2rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Playfair Display"],
+            "display-lg": ["Playfair Display"],
+            "label-md": ["DM Sans"],
+            "code-md": ["JetBrains Mono"],
+            "headline-md": ["Playfair Display"],
+            "headline-lg-mobile": ["Playfair Display"],
+            "body-sm": ["DM Sans"],
+            "label-sm": ["DM Sans"],
+            "reading-md": ["\"Source Serif 4\""],
+            "headline-sm": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"],
+            "body-md": ["DM Sans"],
+            "reading-lg": ["\"Source Serif 4\""],
+            "body-lg": ["DM Sans"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg": ["3rem", { "lineHeight": "3.5rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "code-md": ["0.875rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "headline-md": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "500" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "reading-md": ["1.0625rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "500" }],
+            "headline-lg": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "reading-lg": ["1.1875rem", { "lineHeight": "1.9rem", "fontWeight": "400" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Material symbols helper */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.15rem;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    /* Academic selection highlight */
+    ::selection {
+      background-color: #eedcc9;
+      color: #14241f;
+    }
+
+    /* Paper elevation shadows strictly complying with design system */
+    .folio-shadow {
+      box-shadow: 0 1px 2px rgba(41, 43, 41, 0.04), 0 4px 12px rgba(126, 90, 68, 0.06);
+    }
+    
+    .elevated-palette {
+      box-shadow: 0 2px 4px rgba(41, 43, 41, 0.04), 0 12px 28px rgba(41, 58, 52, 0.08);
+    }
+
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f4f4f0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c2c8c4;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #737875;
+    }
+  </style>
+</head>
+<body class="bg-[#F5F1E8] text-on-surface antialiased font-body-md min-h-screen overflow-x-hidden selection:bg-[#fdcdb2]/50">
+<!-- =========================================================================
+       SIDE NAVIGATION RAIL (Shared Component: SideNavBar)
+       Executed verbatim per style_ rules and labels
+       ========================================================================= -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container text-on-primary border-r border-outline-variant/30">
+<div class="flex flex-col gap-5">
+<!-- Crest Header / Brand -->
+<div class="flex items-center gap-3 px-2 pt-1 pb-3 border-b border-on-primary-container/20">
+<div class="w-9 h-9 rounded-sm bg-primary border border-on-primary-container/40 flex items-center justify-center text-surface-container-lowest">
+<span class="material-symbols-outlined text-[1.25rem] text-[#A5B69C]">auto_stories</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-medium text-surface-container-lowest tracking-tight leading-none">
+            NoteWise
+          </h1>
+<p class="font-label-sm text-label-sm text-on-primary-container tracking-wider mt-1 uppercase text-[0.68rem]">
+            Academic Folio
+          </p>
+</div>
+</div>
+<!-- Action Button (CTA) -->
+<button class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded bg-primary text-surface-container-lowest border border-on-primary-container/30 hover:bg-[#1E2B26] transition-colors duration-150 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[1.1rem]">edit_square</span>
+<span>New Note</span>
+</button>
+<!-- Navigation Links -->
+<nav class="flex flex-col space-y-1">
+<!-- Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#overview">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Library -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#library">
+<span class="material-symbols-outlined">local_library</span>
+<span>Library</span>
+</a>
+<!-- Reader (ACTIVE STATE mapped to current page context) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-surface-container-lowest bg-primary border-l-2 border-[#A5B69C] font-medium font-label-md text-label-md" href="#reader">
+<span class="material-symbols-outlined text-[#A5B69C]">menu_book</span>
+<span>Reader</span>
+</a>
+<!-- AI Tutor -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#tutor">
+<span class="material-symbols-outlined">smart_toy</span>
+<span>AI Tutor</span>
+</a>
+<!-- Active Recall -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#recall">
+<span class="material-symbols-outlined">psychology</span>
+<span>Active Recall</span>
+</a>
+<!-- Quiz -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#quiz">
+<span class="material-symbols-outlined">quiz</span>
+<span>Quiz</span>
+</a>
+<!-- Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#progress">
+<span class="material-symbols-outlined">trending_up</span>
+<span>Progress</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150 font-label-md text-label-md" href="#settings">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Scholar Profile & Institutional Status -->
+<div class="pt-4 border-t border-on-primary-container/20">
+<div class="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-primary/40 transition-colors">
+<div class="w-8 h-8 rounded-sm bg-primary border border-[#D8CDBA]/30 flex items-center justify-center font-display-lg text-sm text-surface-container-lowest font-medium">
+          HV
+        </div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-surface-container-lowest truncate leading-tight">Hilary Term</p>
+<p class="font-label-sm text-[0.7rem] text-on-primary-container tracking-wide truncate">4 Advanced Courses</p>
+</div>
+<span class="w-2 h-2 rounded-full bg-[#A5B69C]" title="Archival Sync Active"></span>
+</div>
+</div>
+</aside>
+<!-- =========================================================================
+       TOP BAR (Shared Component: TopNavBar)
+       Executed verbatim per style_ rules and labels
+       ========================================================================= -->
+<header class="fixed top-0 right-0 left-64 h-16 z-30 flex items-center justify-between px-6 bg-surface-container-lowest border-b border-[#D8CDBA]">
+<!-- Left: Search & Archival Breadcrumb -->
+<div class="flex items-center gap-6">
+<!-- Breadcrumb Cluster -->
+<nav aria-label="Breadcrumb" class="hidden lg:flex items-center gap-1.5 font-body-sm text-body-sm">
+<a class="text-outline hover:text-primary transition-colors" href="#">STAT 210</a>
+<span class="text-outline-variant font-code-md text-xs">/</span>
+<a class="text-outline hover:text-primary transition-colors" href="#">Unit 2 DMS</a>
+<span class="text-outline-variant font-code-md text-xs">/</span>
+<span class="text-primary font-medium">Tutorial-3.pdf</span>
+</nav>
+<span class="hidden lg:block h-4 w-px bg-[#D8CDBA]"></span>
+<!-- Scholarly Corpus Search -->
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[1.1rem]">search</span>
+<input class="w-full pl-8 pr-12 py-1 text-sm bg-[#FFFEFA] border border-[#D8CDBA] rounded-sm text-on-surface placeholder:text-outline font-label-md focus:border-primary focus:ring-0 focus:outline-none transition-colors" placeholder="Search corpus, formulas (⌘K)..." type="text"/>
+<kbd class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[0.65rem] font-code-md text-outline bg-surface-container border border-[#D8CDBA] rounded">⌘K</kbd>
+</div>
+</div>
+<!-- Right Actions Cluster -->
+<div class="flex items-center gap-3">
+<!-- View mode toggles -->
+<div class="hidden md:flex items-center border border-[#D8CDBA] rounded-sm bg-[#FFFEFA] p-0.5 text-outline">
+<button class="px-2 py-0.5 rounded-sm hover:text-primary text-xs flex items-center gap-1" title="Double Page Folio">
+<span class="material-symbols-outlined text-[1rem]">auto_stories</span>
+</button>
+<button class="px-2 py-0.5 rounded-sm bg-surface-container-low text-primary font-medium text-xs flex items-center gap-1" title="Marginalia Split View">
+<span class="material-symbols-outlined text-[1rem]">vertical_split</span>
+</button>
+<button class="px-2 py-0.5 rounded-sm hover:text-primary text-xs flex items-center gap-1" title="Focus Desk Mode">
+<span class="material-symbols-outlined text-[1rem]">center_focus_strong</span>
+</button>
+</div>
+<div class="h-4 w-px bg-[#D8CDBA]"></div>
+<!-- Icon actions from JSON: bookmark, ios_share, more_horiz -->
+<div class="flex items-center text-outline">
+<button class="p-1.5 hover:bg-surface-container-low rounded-sm hover:text-primary transition-colors" title="Bookmark folio">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container-low rounded-sm hover:text-primary transition-colors" title="Share folio">
+<span class="material-symbols-outlined">ios_share</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container-low rounded-sm hover:text-primary transition-colors" title="More options">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Trailing Action 2: Cite (BibTeX) -->
+<button class="px-3 py-1 text-xs font-label-md text-primary bg-[#FFFEFA] border border-[#D8CDBA] hover:bg-[#F5F1E8] rounded-sm transition-colors duration-150 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[1rem] text-secondary">format_quote</span>
+<span>Cite</span>
+</button>
+<!-- Trailing Action 1: Annotate -->
+<button class="px-3.5 py-1 text-xs font-label-md text-on-primary bg-primary hover:bg-[#1E2B26] rounded-sm transition-colors duration-150 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[1rem]">border_color</span>
+<span>Annotate</span>
+</button>
+</div>
+</header>
+<!-- =========================================================================
+       MAIN SCHOLARLY WORKSPACE
+       Split Reader & Companion Layout on Archival Canvas (#F5F1E8)
+       ========================================================================= -->
+<main class="ml-64 mt-16 p-8 min-h-[calc(100vh-4rem)] flex justify-center items-start gap-8">
+<!-- =======================================================================
+         CENTER READING FOLIO (The Academic Document Pane)
+         Bounded by single hairline rule (#D8CDBA), Pure Paper Surface (#FFFEFA)
+         ======================================================================= -->
+<article class="flex-1 max-w-[780px] bg-[#FFFEFA] border border-[#D8CDBA] folio-shadow px-12 py-14 transition-all">
+<!-- Folio Header & Indexing -->
+<header class="border-b border-[#D8CDBA] pb-7 mb-8">
+<div class="flex items-center justify-between text-xs text-outline font-label-md mb-3">
+<span class="tracking-wide uppercase text-[0.7rem] text-secondary font-semibold">Oxford Mathematical Series · Vol. IV</span>
+<span class="font-code-md text-[0.72rem] bg-surface-container-low px-2 py-0.5 border border-[#D8CDBA] rounded-sm">Ref: MS-210-U2-T3</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-2">
+          The Exponential Distribution &amp; Memoryless Property
+        </h2>
+<div class="text-sm font-label-md text-outline flex flex-wrap items-center gap-y-2 gap-x-4 mt-3">
+<span class="text-primary font-medium">Prof. H. Vance</span>
+<span class="text-outline-variant">·</span>
+<span>Discrete &amp; Mathematical Statistics</span>
+<span class="text-outline-variant">·</span>
+<span class="flex items-center gap-1 text-[0.8rem]">
+<span class="material-symbols-outlined text-[0.95rem]">schedule</span> 18 min reading
+          </span>
+<span class="text-outline-variant">·</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-[#A5B69C]/25 text-primary text-[0.7rem] font-semibold border border-[#A5B69C]/60">
+            Verified Folio
+          </span>
+</div>
+</header>
+<!-- Document Content in Source Serif 4 (strictly 65-72 char line-length) -->
+<div class="font-reading-md text-reading-md text-[#292B29] leading-[1.75] space-y-6 max-w-[68ch]">
+<!-- Opening Scholarly Paragraph -->
+<p>
+          In probability theory, the exponential distribution represents the continuous analogue to the geometric distribution. It models the time elapsed between continuous, Poisson-governed occurrences that happen independently at a constant average rate denoted by <span class="font-code-md text-sm bg-surface-container-low px-1.5 py-0.5 rounded border border-[#D8CDBA]">λ &gt; 0</span>. Because of its tractability, it serves as the foundational pillar for queuing theory, operational risk assessment, and survival analysis.
+        </p>
+<!-- Formal Equation Block (Layer 1 resting paper with hairline rule) -->
+<div class="my-6 p-5 bg-[#F5F1E8]/60 border border-[#D8CDBA] rounded-sm">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#D8CDBA]/60">
+<span class="font-label-sm text-[0.7rem] tracking-wider uppercase text-secondary font-semibold">Definition 3.1 — Probability Density Function</span>
+<span class="font-code-md text-xs text-outline">Eq. 2.14</span>
+</div>
+<div class="font-code-md text-base text-primary text-center py-2 tracking-wide font-medium">
+            f(x; λ) = λ · e<sup>-λx</sup>   for   x ≥ 0
+          </div>
+<div class="font-code-md text-sm text-outline text-center pb-2">
+            F(x; λ) = 1 - e<sup>-λx</sup>   (Cumulative Distribution Function)
+          </div>
+<p class="font-reading-md text-xs text-outline text-center italic mt-2 border-t border-[#D8CDBA]/40 pt-2">
+            Where λ denotes the event arrival rate parameter, and E[X] = 1/λ, with Var(X) = 1/λ².
+          </p>
+</div>
+<p>
+          A critical analytical property distinguishes the exponential law from all other continuous probability distributions: the absence of memory. Under this formulation, the remaining duration until an event occurs does not depend on how much time has already passed.
+        </p>
+<!-- Highlighted Key Passage with Leather Bookmark Accent & Marginalia Pin -->
+<div class="relative group my-5 p-4 rounded-sm bg-[#fcece1]/45 border-l-4 border-secondary transition-all">
+<div class="absolute -right-3 -top-2 flex items-center justify-center w-6 h-6 rounded-full bg-secondary text-white shadow-sm" title="Anchored to Socratic Study Companion">
+<span class="material-symbols-outlined text-[0.85rem]">push_pin</span>
+</div>
+<p class="font-reading-md italic text-primary font-medium">
+            "The memoryless property states that P(X &gt; s + t | X &gt; s) = P(X &gt; t) for any non-negative s and t. In reliability engineering, this implies that an aged operational component is mathematically as good as new, suffering no cumulative wear or degradation."
+          </p>
+<div class="mt-2.5 flex items-center justify-between text-xs font-label-md text-secondary border-t border-secondary/20 pt-2">
+<span>Theorem 3.2 · Memoryless Formulation</span>
+<span class="font-code-md text-[0.7rem]">P(X &gt; s+t ∩ X &gt; s) / P(X &gt; s)</span>
+</div>
+</div>
+<p>
+          To demonstrate this analytically, let <span class="font-code-md text-sm bg-surface-container-low px-1 rounded border border-[#D8CDBA]">X ~ Exp(λ)</span>. Then the survival function simplifies to <span class="font-code-md text-sm">S(t) = P(X &gt; t) = e<sup>-λt</sup></span>. Applying the fundamental definition of conditional probability:
+        </p>
+<!-- Mathematical Proof Lines in JetBrains Mono -->
+<div class="font-code-md text-xs p-4 bg-surface-container-lowest border border-[#D8CDBA] rounded-sm space-y-1.5 text-primary">
+<p class="text-outline">// Analytical proof of conditional invariance:</p>
+<p>P(X &gt; s + t | X &gt; s) = P(X &gt; s + t) / P(X &gt; s)</p>
+<p class="pl-4">= e<sup>-λ(s + t)</sup> / e<sup>-λs</sup></p>
+<p class="pl-4">= e<sup>-λs</sup> · e<sup>-λt</sup> / e<sup>-λs</sup></p>
+<p class="pl-4 font-semibold text-secondary">= e<sup>-λt</sup> = P(X &gt; t)  ∎</p>
+</div>
+<!-- Worked Academic Example 3.2 -->
+<div class="pt-6 border-t border-[#D8CDBA] mt-8">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-primary text-surface-container-lowest font-label-sm text-[0.68rem] tracking-wider uppercase rounded-sm">Worked Example 3.2</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Call Center Dispatch &amp; Service Intervals</h3>
+</div>
+<p class="mt-2">
+            Consider emergency technical support intervals modeled as an exponential variable with parameter <span class="font-code-md text-sm bg-surface-container-low px-1 rounded border border-[#D8CDBA]">λ = 0.4 min⁻¹</span>. Suppose an agent has already been on a continuous diagnostic session for <span class="font-code-md text-sm">s = 10 minutes</span> without resolving the ticket.
+          </p>
+<p class="mt-3 text-sm text-outline-variant italic">
+            Exercise: Compute the exact probability that the troubleshooting session extends for at least an additional 5 minutes.
+          </p>
+</div>
+<!-- Scholarly Footnote Section -->
+<footer class="mt-12 pt-5 border-t border-[#D8CDBA] text-xs font-label-md text-outline space-y-2">
+<p class="flex items-start gap-2">
+<span class="font-code-md text-secondary">¹</span>
+<span>Vance, H. (2024). <em>Principles of Mathematical Statistics</em>, 4th ed., Oxford University Press, pp. 112–119.</span>
+</p>
+<p class="flex items-start gap-2">
+<span class="font-code-md text-secondary">²</span>
+<span>Note on mechanical fatigue: Weibull distributions with shape parameter β &gt; 1 are preferentially used where positive wear-out must be modeled.</span>
+</p>
+</footer>
+</div>
+</article>
+<!-- =======================================================================
+         RIGHT MARGINALIA & AI STUDY COMPANION PANEL (Width: ~380px)
+         Dedicated Socratic Scholarly Assistant with Crisp Folio Styling
+         ======================================================================= -->
+<aside class="w-[380px] shrink-0 space-y-6 sticky top-24">
+<!-- AI Study Companion Master Slate -->
+<section class="bg-[#FFFEFA] border border-[#D8CDBA] folio-shadow p-6 rounded-sm">
+<!-- Companion Header -->
+<div class="flex items-center justify-between pb-4 border-b border-[#D8CDBA]">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-sm bg-[#A5B69C]/30 border border-[#A5B69C] flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[1.05rem]">smart_toy</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-primary font-semibold leading-none">AI Study Companion</h3>
+<p class="font-body-sm text-[0.7rem] text-outline mt-0.5">Anchored to Theorem 3.2</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-sm bg-[#A5B69C] text-primary text-[0.68rem] font-semibold tracking-wide">
+            Socratic Tutor
+          </span>
+</div>
+<!-- Socratic Question Block -->
+<div class="mt-5 border-l-2 border-secondary pl-3.5 py-1 bg-surface-container-low/40 rounded-r-sm">
+<span class="font-label-sm text-[0.68rem] uppercase tracking-wider text-secondary font-semibold">Socratic Inquiry</span>
+<p class="font-reading-md text-sm text-primary mt-1 leading-snug">
+            "Why does the memoryless property make the exponential distribution fundamentally unsuitable for modeling human lifespan or structural wear?"
+          </p>
+</div>
+<!-- Student Interaction Zone -->
+<div class="mt-4 space-y-3">
+<label class="block font-label-sm text-[0.72rem] text-outline uppercase tracking-wider">
+            Your Synthesis Note
+          </label>
+<div class="relative">
+<textarea class="w-full text-xs font-reading-md text-primary bg-[#FFFEFA] border border-[#D8CDBA] rounded-sm p-3 focus:border-primary focus:ring-0 focus:outline-none placeholder:text-outline leading-relaxed resize-none" placeholder="Formulate your reasoning... (e.g. Biological cellular aging invalidates P(X &gt; s+t | X &gt; s) = P(X &gt; t)...)" rows="3">Biological organisms and mechanical parts experience physical degradation over time. Under memorylessness, a 90-year-old would possess the exact identical residual life expectancy as a newborn.</textarea>
+</div>
+<div class="flex items-center justify-between pt-1">
+<button class="text-xs font-label-md text-secondary hover:text-primary transition-colors flex items-center gap-1 border-b border-secondary/30 pb-0.5">
+<span class="material-symbols-outlined text-[0.95rem]">auto_fix_high</span>
+<span>Refine with AI Tutor</span>
+</button>
+<button class="px-3 py-1 bg-primary text-surface-container-lowest text-xs font-label-md rounded-sm hover:bg-[#1E2B26] transition-colors">
+              Save to Folio
+            </button>
+</div>
+</div>
+<!-- Scholarly Quick Reference Accordion / Drawer -->
+<div class="mt-6 pt-4 border-t border-[#D8CDBA] space-y-2">
+<span class="font-label-sm text-[0.68rem] text-outline uppercase tracking-wider block mb-2">Contextual Proofs &amp; Slides</span>
+<button class="w-full flex items-center justify-between p-2 rounded-sm bg-surface-container-low/50 hover:bg-surface-container-low border border-[#D8CDBA]/60 text-left transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[1rem] text-secondary">functions</span>
+<span class="font-label-md text-xs text-primary">Formula Derivation: Integral Form</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[1rem]">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-2 rounded-sm bg-surface-container-low/50 hover:bg-surface-container-low border border-[#D8CDBA]/60 text-left transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[1rem] text-[#50625B]">co_present</span>
+<span class="font-label-md text-xs text-primary">Related Lecture Note: Slide 42</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[1rem]">open_in_new</span>
+</button>
+</div>
+</section>
+<!-- =====================================================================
+           ACTIVE RECALL CARD (Layer 2 Lifted Slate with 2-layer paper shadow)
+           Single elevated focus card on the scholarly desk
+           ===================================================================== -->
+<section class="bg-[#FFFEFA] border border-[#D8CDBA] elevated-palette p-6 rounded-sm relative overflow-hidden">
+<!-- Bookmark ribbon edge indicator -->
+<div class="absolute top-0 right-6 w-3 h-4 bg-secondary rounded-b-sm"></div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-1.5 text-xs font-label-md text-secondary">
+<span class="material-symbols-outlined text-[1.05rem]">psychology</span>
+<span class="font-semibold tracking-wide uppercase text-[0.7rem]">Active Recall Check</span>
+</div>
+<span class="font-code-md text-[0.68rem] text-outline">Card 14 of 30</span>
+</div>
+<h4 class="font-headline-sm text-sm text-primary font-medium leading-snug">
+          Show that for an exponential random variable <span class="font-code-md text-xs font-normal">X ~ Exp(λ)</span>, the variance is given by:
+        </h4>
+<div class="my-3 py-2 px-3 bg-surface-container-low border border-[#D8CDBA] rounded-sm text-center font-code-md text-sm text-primary">
+          Var(X) = E[X²] - (E[X])² = 1 / λ²
+        </div>
+<!-- Progress Tracker Bar (Sage #A5B69C strictly as fill) -->
+<div class="my-4">
+<div class="flex items-center justify-between text-[0.7rem] font-label-md text-outline mb-1.5">
+<span>Card Mastery</span>
+<span class="font-code-md text-primary font-medium">68%</span>
+</div>
+<div class="w-full h-1.5 bg-[#D8CDBA]/50 rounded-full overflow-hidden">
+<div class="h-full bg-[#A5B69C] rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<!-- Rating scale (1 to 5) for Spaced Repetition -->
+<div class="pt-3 border-t border-[#D8CDBA]/70">
+<p class="font-label-sm text-[0.7rem] text-outline mb-2 text-center">Confidence Rating</p>
+<div class="grid grid-cols-5 gap-1.5">
+<button class="py-1 border border-[#D8CDBA] rounded-sm bg-[#FFFEFA] hover:bg-[#F5F1E8] font-code-md text-xs text-primary transition-colors">1</button>
+<button class="py-1 border border-[#D8CDBA] rounded-sm bg-[#FFFEFA] hover:bg-[#F5F1E8] font-code-md text-xs text-primary transition-colors">2</button>
+<button class="py-1 border border-[#D8CDBA] rounded-sm bg-[#FFFEFA] hover:bg-[#F5F1E8] font-code-md text-xs text-primary transition-colors">3</button>
+<button class="py-1 border border-primary bg-primary text-surface-container-lowest rounded-sm font-code-md text-xs transition-colors font-semibold">4</button>
+<button class="py-1 border border-[#D8CDBA] rounded-sm bg-[#FFFEFA] hover:bg-[#F5F1E8] font-code-md text-xs text-primary transition-colors">5</button>
+</div>
+<div class="flex justify-between text-[0.65rem] text-outline font-label-md mt-1.5 px-0.5">
+<span>Forgot</span>
+<span>Mastered</span>
+</div>
+</div>
+</section>
+<!-- Citation Footnote Summary Pane -->
+<section class="p-4 bg-[#FFFEFA] border border-[#D8CDBA] rounded-sm text-xs font-body-sm space-y-1.5 text-outline">
+<div class="flex items-center gap-1.5 text-primary font-label-md font-semibold">
+<span class="material-symbols-outlined text-[1rem] text-secondary">menu_book</span>
+<span>Archival Source Citation</span>
+</div>
+<p class="italic text-primary/80 leading-relaxed font-reading-md text-xs">
+          Vance, H. (2024). <em>Principles of Mathematical Statistics</em>, 4th ed., Oxford University Press.
+        </p>
+<div class="flex items-center justify-between pt-1 font-label-sm text-[0.7rem] text-secondary">
+<span class="font-code-md">DOI: 10.1093/oxford.stat.210</span>
+<button class="hover:text-primary transition-colors flex items-center gap-0.5">
+<span>Copy BibTeX</span>
+<span class="material-symbols-outlined text-[0.8rem]">content_copy</span>
+</button>
+</div>
+</section>
+</aside>
+</main>
+</body></html>

@@ -1,0 +1,52 @@
+.nw-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--nw-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--nw-text-muted);
+  cursor: pointer;
+  transition: all var(--nw-transition-fast);
+  padding: 0;
+}
+
+.nw-icon-button:hover:not(:disabled) {
+  background-color: var(--nw-bg);
+  color: var(--nw-text);
+}
+
+.nw-icon-button:focus-visible {
+  outline: 2px solid var(--nw-border-focus);
+  outline-offset: 2px;
+}
+
+.nw-icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.nw-icon-button--sm {
+  width: 28px;
+  height: 28px;
+  font-size: 0.875rem;
+}
+
+.nw-icon-button--md {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+
+.nw-icon-button--lg {
+  width: 40px;
+  height: 40px;
+  font-size: 1.125rem;
+}
+
+.nw-icon-button--active {
+  background-color: var(--nw-surface);
+  color: var(--nw-accent);
+  border-color: var(--nw-border);
+}

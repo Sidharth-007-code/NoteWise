@@ -1,0 +1,45 @@
+.nw-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.1875rem 0.5rem;
+  font-family: var(--nw-font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1rem;
+  border-radius: var(--nw-radius-sm);
+  border: 1px solid var(--nw-border);
+  background-color: var(--nw-surface);
+  color: var(--nw-text-muted);
+  user-select: none;
+}
+
+.nw-tag--default {
+  background-color: var(--nw-surface);
+  border-color: var(--nw-border);
+  color: var(--nw-text-muted);
+}
+
+.nw-tag--accent {
+  background-color: var(--nw-accent-fill);
+  border-color: var(--nw-accent-fill);
+  color: var(--nw-accent-text);
+}
+
+.nw-tag--success {
+  background-color: var(--nw-success-bg);
+  border-color: var(--nw-success-border);
+  color: var(--nw-success);
+}
+
+.nw-tag--danger {
+  background-color: var(--nw-danger-bg);
+  border-color: var(--nw-danger-border);
+  color: var(--nw-danger);
+}
+
+.nw-tag--warning {
+  background-color: var(--nw-warning-bg);
+  border-color: var(--nw-warning-border);
+  color: var(--nw-warning);
+}

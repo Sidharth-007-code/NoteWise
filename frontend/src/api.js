@@ -1,16 +1,14 @@
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export async function getDocuments() {
-  const response = await fetch(`${API_BASE_URL}/documents`);
+  const response = await fetch(`${API_BASE_URL}/api/documents`);
   if (!response.ok) {
-    throw new Error('Failed to fetch document history');
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.detail || 'Failed to load the document library.');
   }
   const data = await response.json();
-
-  // Explicitly return the documents array
-  if (Array.isArray(data)) return data;
   if (data && Array.isArray(data.documents)) return data.documents;
-  return [];
+  throw new Error('The document library response was invalid.');
 }
 
 export async function uploadPDF(file) {
@@ -43,6 +41,20 @@ export function getDocumentOverview(documentId) {
 
 export function getDocumentFlashcards(documentId) {
   return documentRequest(documentId, 'flashcards');
+}
+
+export async function getDocumentFile(documentId) {
+  const response = await fetch(`${API_BASE_URL}/api/documents/${encodeURIComponent(documentId)}/file`);
+  if (!response.ok) {
+    const error = new Error(`Failed to load document PDF (${response.status}).`);
+    error.status = response.status;
+    throw error;
+  }
+  return new Uint8Array(await response.arrayBuffer());
+}
+
+export function getDocumentPages(documentId) {
+  return documentRequest(documentId, 'pages');
 }
 
 export async function askDocumentQuestion(question, documentId) {

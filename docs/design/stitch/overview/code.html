@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — Academic Overview</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=JetBrains+Mono:wght@400;500&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with CDN Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#0e1f19",
+            "secondary-fixed-dim": "#ebbda2",
+            "secondary-fixed": "#ffdbc8",
+            "tertiary": "#172413",
+            "inverse-on-surface": "#f1f1ed",
+            "background": "#f9f9f6",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#2e1505",
+            "tertiary-fixed": "#d6e8cc",
+            "on-secondary-fixed-variant": "#603f2b",
+            "outline": "#737875",
+            "surface": "#f9f9f6",
+            "secondary-container": "#fdcdb2",
+            "tertiary-container": "#2c3a27",
+            "primary-fixed-dim": "#b8cbc2",
+            "surface-container": "#eeeeeb",
+            "on-tertiary-fixed-variant": "#3c4b36",
+            "error": "#ba1a1a",
+            "outline-variant": "#c2c8c4",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-highest": "#e2e3df",
+            "tertiary-fixed-dim": "#baccb1",
+            "primary-container": "#293a34",
+            "on-primary-fixed-variant": "#394a44",
+            "primary": "#14241f",
+            "on-tertiary-container": "#93a48b",
+            "on-primary-container": "#91a49c",
+            "on-background": "#1a1c1a",
+            "surface-container-low": "#f4f4f0",
+            "inverse-primary": "#b8cbc2",
+            "surface-bright": "#f9f9f6",
+            "on-surface": "#1a1c1a",
+            "secondary": "#7a5641",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "surface-variant": "#e2e3df",
+            "on-surface-variant": "#424845",
+            "surface-dim": "#dadad7",
+            "primary-fixed": "#d3e7de",
+            "on-secondary-container": "#795540",
+            "surface-tint": "#50625b",
+            "on-error": "#ffffff",
+            "inverse-surface": "#2f312f",
+            "on-tertiary-fixed": "#111f0e",
+            "surface-container-high": "#e8e8e5",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-mobile": "1rem",
+            "margin": "3rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1.25rem",
+            "margin-tablet": "2rem"
+          },
+          "fontFamily": {
+            "body-lg": ["DM Sans"],
+            "body-sm": ["DM Sans"],
+            "label-sm": ["DM Sans"],
+            "reading-md": ["\"Source Serif 4\""],
+            "label-md": ["DM Sans"],
+            "headline-md": ["Playfair Display"],
+            "headline-lg-mobile": ["Playfair Display"],
+            "headline-sm": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"],
+            "display-lg-mobile": ["Playfair Display"],
+            "code-md": ["JetBrains Mono"],
+            "reading-lg": ["\"Source Serif 4\""],
+            "body-md": ["DM Sans"],
+            "display-lg": ["Playfair Display"]
+          },
+          "fontSize": {
+            "body-lg": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "400" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "reading-md": ["1.0625rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "headline-md": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "500" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "500" }],
+            "headline-lg": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg-mobile": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "code-md": ["0.875rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "reading-lg": ["1.1875rem", { "lineHeight": "1.9rem", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "display-lg": ["3rem", { "lineHeight": "3.5rem", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Subtle custom bookbinder paper elevation */
+    .folio-layer-2 {
+      box-shadow: 0 1px 2px rgba(41, 43, 41, 0.04), 0 4px 12px rgba(126, 90, 68, 0.06);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #D8CDBA;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-secondary/20 selection:text-secondary min-h-screen flex">
+<!-- SIDEBAR NAVIGATION (Shared Component: SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container text-on-primary border-r border-outline-variant">
+<div class="flex flex-col gap-6">
+<!-- Brand & Emblem Header -->
+<div class="flex items-center gap-3 px-2 pt-2">
+<div class="w-9 h-9 rounded bg-surface-container-lowest/10 flex items-center justify-center border border-outline-variant/30 text-surface-container-lowest">
+<span class="material-symbols-outlined text-xl" data-icon="menu_book">menu_book</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md font-medium text-surface-container-lowest tracking-tight leading-none">NoteWise</div>
+<div class="font-body-sm text-body-sm text-on-primary-container tracking-wider text-xs uppercase mt-0.5">Academic Folio</div>
+</div>
+</div>
+<!-- Action CTA -->
+<button class="w-full flex items-center justify-center gap-2 bg-surface-container-lowest text-primary py-2.5 px-4 rounded text-label-md font-label-md font-medium transition-colors hover:bg-surface-container-low duration-150">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+        New Note
+      </button>
+<!-- Navigation List -->
+<nav class="flex flex-col gap-1">
+<!-- Overview (Active) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-surface-container-lowest bg-primary font-medium" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<!-- Library -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="local_library">local_library</span>
+<span class="font-label-md text-label-md">Library</span>
+</a>
+<!-- Reader -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="menu_book">menu_book</span>
+<span class="font-label-md text-label-md">Reader</span>
+</a>
+<!-- AI Tutor -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="smart_toy">smart_toy</span>
+<span class="font-label-md text-label-md">AI Tutor</span>
+</a>
+<!-- Active Recall -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">Active Recall</span>
+</a>
+<!-- Quiz -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="quiz">quiz</span>
+<span class="font-label-md text-label-md">Quiz</span>
+</a>
+<!-- Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md">Progress</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest hover:bg-primary/50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+</div>
+<!-- User Profile Strip (Bottom Rail) -->
+<div class="pt-4 border-t border-outline-variant/30 flex items-center justify-between px-2">
+<div class="flex items-center gap-2.5">
+<img class="w-8 h-8 rounded-full border border-outline-variant/50 object-cover" data-alt="University researcher avatar portrait wearing classic tweed blazer against an archival dark oak academic bookshelf filled with vintage mathematical textbooks in natural soft library daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiYz5tKU9K9u6Sze9YQY2yglnTJj6pzN5IzzX4LdxLpWPrcEL5dv-fitrqJYu_Lqay6zFZwufATSDdvCSedfufkYZtJyz3uX84N1Zh1uqgElzCOURwK_51-LtEAY-mfoul15HDaDmgCjs6oo7zhWIWilrCnY2SVdIhn8vFDOhCTbJ0Ha13-eGUKNzh9WBGQtl7k0BuWGpWOB-aHVwakI2FMzGPkHyyWgu97dCQ310"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-surface-container-lowest leading-tight">Dr. A. Vance</span>
+<span class="font-code-md text-xs text-on-primary-container leading-none">Senior Fellow</span>
+</div>
+</div>
+<button class="text-on-primary-container hover:text-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</aside>
+<!-- TOP APP BAR (Shared Component: TopNavBar) -->
+<header class="fixed top-0 right-0 left-64 h-16 z-30 flex items-center justify-between px-8 bg-surface-container-lowest text-primary border-b border-outline-variant">
+<!-- Left: Search Catalog & Context -->
+<div class="flex items-center gap-6">
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" data-icon="search">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded border border-outline-variant focus:outline-none focus:border-primary placeholder:text-outline" placeholder="Search manuscripts, lemmas, citations..." type="text"/>
+</div>
+<!-- Navigation Links / Course Context Breadcrumbs -->
+<nav class="hidden lg:flex items-center gap-2 text-body-sm font-body-sm">
+<span class="text-outline">Folio:</span>
+<a class="text-outline hover:text-on-surface transition-colors" href="#">STAT 210</a>
+<span class="text-outline-variant">/</span>
+<a class="text-outline hover:text-on-surface transition-colors" href="#">Unit 2 DMS</a>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-medium">Tutorial-3.pdf</span>
+</nav>
+</div>
+<!-- Right: Actions & Tools -->
+<div class="flex items-center gap-3">
+<button class="px-3 py-1.5 text-label-md font-label-md text-on-surface border border-outline-variant rounded hover:bg-surface-container-low transition-colors duration-150 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm" data-icon="format_quote">format_quote</span>
+        Cite
+      </button>
+<button class="px-3.5 py-1.5 text-label-md font-label-md text-surface-container-lowest bg-primary-container rounded hover:bg-primary transition-colors duration-150 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm" data-icon="edit_note">edit_note</span>
+        Annotate
+      </button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<div class="flex items-center gap-1 text-outline">
+<button class="p-1.5 rounded hover:bg-surface-container-low hover:text-on-surface transition-colors" title="Bookmark">
+<span class="material-symbols-outlined text-xl" data-icon="bookmark">bookmark</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-low hover:text-on-surface transition-colors" title="Share Manuscript">
+<span class="material-symbols-outlined text-xl" data-icon="ios_share">ios_share</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-low hover:text-on-surface transition-colors" title="Additional actions">
+<span class="material-symbols-outlined text-xl" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN EDITORIAL CONTENT CANVAS -->
+<main class="ml-64 pt-16 flex-1 min-h-screen bg-surface px-12 py-10 max-w-7xl">
+<!-- Archival Greeting & Academic Date Banner -->
+<section class="border-b border-outline-variant pb-8 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 text-secondary font-label-sm text-label-sm uppercase tracking-wider mb-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          Term II, Week 6 · Hilary Term
+        </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-semibold tracking-tight">Academic Overview</h1>
+<p class="font-body-md text-body-md text-outline mt-1 font-normal">
+          Reflective catalog of active derivations, assigned readings, and stochastic inquiries.
+        </p>
+</div>
+<!-- Quick Course Folio Shortcuts -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="font-code-md text-xs text-outline mr-1">Active Disciplines:</span>
+<a class="px-2.5 py-1 rounded bg-surface-container-lowest border border-outline-variant text-on-surface font-label-sm text-label-sm hover:border-primary transition-colors" href="#">
+          STAT 210
+        </a>
+<a class="px-2.5 py-1 rounded bg-surface-container-lowest border border-outline-variant text-on-surface font-label-sm text-label-sm hover:border-primary transition-colors" href="#">
+          MATH 305
+        </a>
+<a class="px-2.5 py-1 rounded bg-surface-container-lowest border border-outline-variant text-on-surface font-label-sm text-label-sm hover:border-primary transition-colors" href="#">
+          PHIL 140
+        </a>
+</div>
+</section>
+<!-- CENTRAL HERO FEATURE: Continue Where You Left Off -->
+<section class="mb-12">
+<div class="flex items-baseline justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="auto_stories">auto_stories</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-medium">Continue Where You Left Off</h2>
+</div>
+<span class="font-code-md text-body-sm text-outline">Last read 24 minutes ago</span>
+</div>
+<!-- Elevated Paper Surface (The Single Raised Slate) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded folio-layer-2 p-8 transition-all">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Document Metadata & Scholarly Context (7 cols) -->
+<div class="lg:col-span-7 flex flex-col justify-between h-full space-y-6">
+<div>
+<div class="flex items-center gap-3 mb-3">
+<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-2 py-0.5 rounded">
+                  STAT 210
+                </span>
+<span class="font-body-sm text-body-sm text-outline">Discrete &amp; Mathematical Statistics (Unit 2 DMS)</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary font-medium mb-3">
+                Tutorial-3.pdf — Discrete &amp; Mathematical Statistics
+              </h3>
+<p class="font-reading-md text-reading-md text-on-surface/90 leading-relaxed italic border-l-2 border-secondary pl-4 py-1 mb-4 bg-surface-container-low/50">
+                “Theorem 3.2: The Memoryless Property states that for a geometric distribution, the probability of exceeding $s + t$ trials given that at least $s$ have occurred depends purely on $t$.”
+              </p>
+<div class="flex items-center gap-6 text-body-sm font-body-sm text-outline pt-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base" data-icon="description">description</span>
+<span>Folio Page 14 of 24</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base" data-icon="edit_note">edit_note</span>
+<span>4 Marginal Annotations</span>
+</div>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-base" data-icon="verified">verified</span>
+<span>Core Syllabus</span>
+</div>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex flex-wrap items-center gap-4 pt-4 border-t border-outline-variant/60">
+<button class="bg-primary-container text-surface-container-lowest hover:bg-primary font-label-md text-label-md font-medium px-5 py-2.5 rounded transition-colors duration-150 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="play_arrow">play_arrow</span>
+                Resume Reading (Page 14)
+              </button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-surface font-label-md text-label-md font-medium px-4 py-2.5 rounded transition-colors duration-150 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-secondary" data-icon="quiz">quiz</span>
+                Quick Quiz (5 cards)
+              </button>
+<a class="text-secondary font-label-md text-label-md underline underline-offset-4 hover:text-primary transition-colors ml-auto" href="#">
+                Inspect Source Folio
+              </a>
+</div>
+</div>
+<!-- Academic Manuscript Page Preview Thumbnail (5 cols) -->
+<div class="lg:col-span-5 bg-surface-container-low rounded border border-outline-variant p-5 flex flex-col justify-between">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant/70 text-outline font-code-md text-xs">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="article">article</span>
+                PDF RENDER · P.14
+              </span>
+<span>58.3% Completed</span>
+</div>
+<!-- Page Leaf Miniature Preview -->
+<div class="my-4 bg-surface-container-lowest p-6 border border-outline-variant shadow-sm space-y-3 font-reading-md text-xs text-on-surface/80 leading-relaxed select-none">
+<div class="font-headline-sm text-sm font-semibold text-primary pb-1 border-b border-outline-variant/40">
+                § 3.2 Moment-Generating Functions
+              </div>
+<p class="line-clamp-3">
+                Let $X$ be a random variable with density $f_X(x)$. The expected value of $e^{tX}$ is termed the moment generating function, yielding the characteristic Taylor expansion:
+              </p>
+<div class="bg-surface-container-low p-2 rounded font-code-md text-[11px] text-center text-primary-container border border-outline-variant/50">
+                M_X(t) = E[e^{tX}] = \sum_{k=0}^{\infty} \frac{t^k E[X^k]}{k!}
+              </div>
+<p class="line-clamp-2 text-outline">
+                Notice that under geometric parameterization $p$, memorylessness holds strictly when evaluated against discrete shifts...
+              </p>
+</div>
+<!-- Folio Track Indicator -->
+<div class="space-y-1.5">
+<div class="flex justify-between text-body-sm font-code-md text-xs text-outline">
+<span>Reading Index</span>
+<span>Page 14 / 24</span>
+</div>
+<div class="w-full h-1.5 bg-outline-variant/50 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 58.3%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TWO-COLUMN EDITORIAL SECTION: SUGGESTED FOCUS & RECENT MANUSCRIPTS -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+<!-- LEFT: Suggested Academic Focus (5 cols) -->
+<section class="lg:col-span-5 space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="psychology">psychology</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-medium">Suggested Academic Focus</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Scheduled</span>
+</div>
+<!-- Thoughtful Next Action Card -->
+<div class="bg-surface-container-lowest border-l-4 border-l-secondary border border-outline-variant p-6 rounded transition-colors hover:border-outline">
+<div class="flex items-center justify-between mb-3">
+<span class="font-code-md text-xs uppercase px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">
+              STAT 210 · Spaced Repetition
+            </span>
+<span class="font-body-sm text-body-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="timer">timer</span>
+              ~6 mins
+            </span>
+</div>
+<h3 class="font-headline-sm text-base text-primary font-medium mb-2 leading-snug">
+            Active Recall due for STAT 210: 8 cards flagged from Tutorial-3 variance derivation.
+          </h3>
+<p class="font-body-md text-body-sm text-outline mb-5 leading-normal">
+            Synthesized from your annotations on discrete expectation formulas and the continuous Cauchy inequality proofs.
+          </p>
+<div class="flex items-center justify-between pt-3 border-t border-outline-variant/50">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Retention rate: 84%</span>
+</div>
+<button class="bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md px-3.5 py-1.5 rounded transition-colors flex items-center gap-1">
+              Begin Recall
+              <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Secondary Note/Inquiry prompt box -->
+<div class="bg-surface-container-lowest border-l-4 border-l-primary-fixed-dim border border-outline-variant p-6 rounded">
+<div class="flex items-center gap-2 text-outline mb-2">
+<span class="material-symbols-outlined text-base" data-icon="menu_book">menu_book</span>
+<span class="font-label-sm text-label-sm">Upcoming Seminar Reference</span>
+</div>
+<p class="font-reading-md text-body-md text-on-surface leading-relaxed">
+            Review Poisson limit theorem derivations before tomorrow's 14:00 seminar with Prof. Lin.
+          </p>
+</div>
+</section>
+<!-- RIGHT: Recent Course Manuscripts (7 cols) -->
+<section class="lg:col-span-7 space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="folder_open">folder_open</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-medium">Recent Course Manuscripts</h2>
+</div>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-colors" href="#">
+            View Folio Archive →
+          </a>
+</div>
+<!-- Refined Editorial Row List (No boxed cards, bookbinder rules) -->
+<div class="divide-y divide-outline-variant bg-surface-container-lowest border border-outline-variant rounded">
+<!-- Row 1 -->
+<div class="p-5 flex items-center justify-between hover:bg-surface-container-low/60 transition-colors duration-150 group">
+<div class="flex items-start gap-4">
+<div class="mt-1 w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="picture_as_pdf">picture_as_pdf</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-headline-sm text-base text-primary font-medium group-hover:text-secondary transition-colors">
+                    Tutorial-3.pdf
+                  </h4>
+<span class="font-code-md text-xs px-1.5 py-0.2 bg-surface-container text-outline rounded">STAT 210</span>
+</div>
+<div class="flex items-center gap-3 text-body-sm font-body-sm text-outline">
+<span>Page 14 of 24</span>
+<span>·</span>
+<span>Discrete &amp; Mathematical Statistics</span>
+<span>·</span>
+<span class="text-on-surface-variant font-medium">Last read today</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-primary transition-opacity" title="Open in Reader">
+<span class="material-symbols-outlined text-lg" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="p-5 flex items-center justify-between hover:bg-surface-container-low/60 transition-colors duration-150 group">
+<div class="flex items-start gap-4">
+<div class="mt-1 w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="picture_as_pdf">picture_as_pdf</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-headline-sm text-base text-primary font-medium group-hover:text-secondary transition-colors">
+                    Markov-Chains-Lecture-4.pdf
+                  </h4>
+<span class="font-code-md text-xs px-1.5 py-0.2 bg-surface-container text-outline rounded">MATH 305</span>
+</div>
+<div class="flex items-center gap-3 text-body-sm font-body-sm text-outline">
+<span>Page 6 of 18</span>
+<span>·</span>
+<span>Stochastic Processes</span>
+<span>·</span>
+<span>Last read yesterday</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-primary transition-opacity" title="Open in Reader">
+<span class="material-symbols-outlined text-lg" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="p-5 flex items-center justify-between hover:bg-surface-container-low/60 transition-colors duration-150 group">
+<div class="flex items-start gap-4">
+<div class="mt-1 w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="picture_as_pdf">picture_as_pdf</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-headline-sm text-base text-primary font-medium group-hover:text-secondary transition-colors">
+                    Poisson-Processes-Seminar.pdf
+                  </h4>
+<span class="font-code-md text-xs px-1.5 py-0.2 bg-surface-container text-outline rounded">STAT 210</span>
+</div>
+<div class="flex items-center gap-3 text-body-sm font-body-sm text-outline">
+<span>Page 1 of 12</span>
+<span>·</span>
+<span>Probability Theory</span>
+<span>·</span>
+<span>Uploaded 3 days ago</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-primary transition-opacity" title="Open in Reader">
+<span class="material-symbols-outlined text-lg" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Catalog Footer Note -->
+<div class="p-4 bg-surface-container-low rounded border border-outline-variant/60 flex items-center justify-between text-body-sm text-outline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-secondary" data-icon="sync">sync</span>
+<span>Archival synchronisation intact with Oxford Bodleian Repository.</span>
+</div>
+<span class="font-code-md text-xs">v4.8 Hilary Build</span>
+</div>
+</section>
+</div>
+<!-- QUICK LINKS / COURSE FOLIO SHORTCUTS SECTION -->
+<section class="mt-14 pt-8 border-t border-outline-variant">
+<div class="flex items-baseline justify-between mb-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-medium">Academic Disciplines &amp; Portfolios</h2>
+<span class="font-body-sm text-body-sm text-outline">3 Enrolled Curriculums</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Discipline 1: STAT 210 -->
+<div class="bg-surface-container-lowest p-6 rounded border border-outline-variant hover:border-primary transition-all group">
+<div class="flex items-center justify-between mb-3">
+<span class="font-code-md text-xs text-secondary font-medium tracking-wide">STAT 210</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="north_east">north_east</span>
+</div>
+<h3 class="font-headline-sm text-base text-primary font-medium mb-1">Mathematical Statistics</h3>
+<p class="font-body-sm text-body-sm text-outline mb-4">Unit 2 DMS · Moment generating functions, convergence in probability.</p>
+<div class="pt-3 border-t border-outline-variant/50 flex items-center justify-between text-body-sm text-outline">
+<span>12 Manuscripts</span>
+<span class="text-secondary font-medium">Exam in 18 days</span>
+</div>
+</div>
+<!-- Discipline 2: MATH 305 -->
+<div class="bg-surface-container-lowest p-6 rounded border border-outline-variant hover:border-primary transition-all group">
+<div class="flex items-center justify-between mb-3">
+<span class="font-code-md text-xs text-secondary font-medium tracking-wide">MATH 305</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="north_east">north_east</span>
+</div>
+<h3 class="font-headline-sm text-base text-primary font-medium mb-1">Stochastic Processes</h3>
+<p class="font-body-sm text-body-sm text-outline mb-4">Discrete-time Markov chains, Chapman-Kolmogorov relations.</p>
+<div class="pt-3 border-t border-outline-variant/50 flex items-center justify-between text-body-sm text-outline">
+<span>8 Manuscripts</span>
+<span class="text-secondary font-medium">Seminar Friday</span>
+</div>
+</div>
+<!-- Discipline 3: PHIL 140 -->
+<div class="bg-surface-container-lowest p-6 rounded border border-outline-variant hover:border-primary transition-all group">
+<div class="flex items-center justify-between mb-3">
+<span class="font-code-md text-xs text-secondary font-medium tracking-wide">PHIL 140</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="north_east">north_east</span>
+</div>
+<h3 class="font-headline-sm text-base text-primary font-medium mb-1">Formal Logic</h3>
+<p class="font-body-sm text-body-sm text-outline mb-4">Modal systems, Gödelian incompleteness, epistemic modalities.</p>
+<div class="pt-3 border-t border-outline-variant/50 flex items-center justify-between text-body-sm text-outline">
+<span>6 Manuscripts</span>
+<span class="text-outline">Up to date</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quiet Editorial Colophon -->
+<footer class="mt-16 pb-12 pt-8 border-t border-outline-variant/60 flex items-center justify-between text-body-sm text-outline font-body-sm">
+<div class="flex items-center gap-3">
+<span class="font-headline-sm text-sm text-primary font-medium">NoteWise Folio</span>
+<span>·</span>
+<span>Archival Workspace Edition</span>
+</div>
+<div>
+<span class="font-code-md text-xs text-outline">Bodleian Library Curatorial Classification № 4820-D</span>
+</div>
+</footer>
+</main>
+</body></html>

@@ -1,0 +1,44 @@
+.nw-segmented-tabs {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  background-color: var(--nw-bg);
+  border: 1px solid var(--nw-border);
+  border-radius: var(--nw-radius-md);
+  gap: 2px;
+}
+
+.nw-segmented-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-family: var(--nw-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--nw-text-muted);
+  border: none;
+  background: transparent;
+  border-radius: calc(var(--nw-radius-md) - 2px);
+  cursor: pointer;
+  transition: all var(--nw-transition-fast);
+  white-space: nowrap;
+}
+
+.nw-segmented-tab:hover:not(.nw-segmented-tab--active) {
+  color: var(--nw-text);
+}
+
+.nw-segmented-tab:focus-visible {
+  outline: 2px solid var(--nw-border-focus);
+  outline-offset: 1px;
+}
+
+/* Raised treatment for the selected segmented control */
+.nw-segmented-tab--active {
+  background-color: var(--nw-surface-raised);
+  color: var(--nw-text);
+  box-shadow: var(--nw-shadow-sm);
+  font-weight: 600;
+}

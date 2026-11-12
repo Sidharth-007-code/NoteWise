@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NoteWise — Cognitive Library</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#0e1f19",
+            "secondary-fixed-dim": "#ebbda2",
+            "secondary-fixed": "#ffdbc8",
+            "tertiary": "#172413",
+            "inverse-on-surface": "#f1f1ed",
+            "background": "#F5F1E8",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#2e1505",
+            "tertiary-fixed": "#d6e8cc",
+            "on-secondary-fixed-variant": "#603f2b",
+            "outline": "#737875",
+            "surface": "#FFFEFA",
+            "secondary-container": "#fdcdb2",
+            "tertiary-container": "#2c3a27",
+            "primary-fixed-dim": "#b8cbc2",
+            "surface-container": "#eeeeeb",
+            "on-tertiary-fixed-variant": "#3c4b36",
+            "error": "#ba1a1a",
+            "outline-variant": "#D8CDBA",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-highest": "#e2e3df",
+            "tertiary-fixed-dim": "#baccb1",
+            "primary-container": "#293a34",
+            "on-primary-fixed-variant": "#394a44",
+            "primary": "#14241f",
+            "on-tertiary-container": "#93a48b",
+            "on-primary-container": "#91a49c",
+            "on-background": "#292B29",
+            "surface-container-low": "#f4f4f0",
+            "inverse-primary": "#b8cbc2",
+            "surface-bright": "#f9f9f6",
+            "on-surface": "#292B29",
+            "secondary": "#7E5A44",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "surface-variant": "#e2e3df",
+            "on-surface-variant": "#5E625C",
+            "surface-dim": "#dadad7",
+            "primary-fixed": "#d3e7de",
+            "on-secondary-container": "#795540",
+            "surface-tint": "#50625b",
+            "on-error": "#ffffff",
+            "inverse-surface": "#2f312f",
+            "on-tertiary-fixed": "#111f0e",
+            "surface-container-high": "#e8e8e5",
+            "on-error-container": "#93000a",
+            "academic-sage": "#A5B69C"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-mobile": "1rem",
+            "margin": "3rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1.25rem",
+            "margin-tablet": "2rem"
+          },
+          "fontFamily": {
+            "body-lg": ["DM Sans"],
+            "body-sm": ["DM Sans"],
+            "label-sm": ["DM Sans"],
+            "reading-md": ["\"Source Serif 4\""],
+            "label-md": ["DM Sans"],
+            "headline-md": ["Playfair Display"],
+            "headline-lg-mobile": ["Playfair Display"],
+            "headline-sm": ["Playfair Display"],
+            "headline-lg": ["Playfair Display"],
+            "display-lg-mobile": ["Playfair Display"],
+            "code-md": ["JetBrains Mono"],
+            "reading-lg": ["\"Source Serif 4\""],
+            "body-md": ["DM Sans"],
+            "display-lg": ["Playfair Display"]
+          },
+          "fontSize": {
+            "body-lg": ["1.125rem", { "lineHeight": "1.625rem", "fontWeight": "400" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "label-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "reading-md": ["1.0625rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "label-md": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "headline-md": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "500" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "500" }],
+            "headline-lg": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg-mobile": ["2.25rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "code-md": ["0.875rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "reading-lg": ["1.1875rem", { "lineHeight": "1.9rem", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "display-lg": ["3rem", { "lineHeight": "3.5rem", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 1.25rem;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+    .folio-lift {
+      box-shadow: 0 1px 2px rgba(41, 43, 41, 0.04), 0 4px 12px rgba(126, 90, 68, 0.06);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased font-body-md min-h-screen">
+<!-- Side Navigation Rail (Shared Component) -->
+<aside class="fixed left-0 top-0 h-full w-64 z-40 flex flex-col justify-between p-4 bg-primary-container text-on-primary border-r border-outline-variant">
+<div>
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 py-3 border-b border-primary/40 pb-4 mb-4">
+<div class="w-9 h-9 rounded bg-academic-sage flex items-center justify-center text-primary-container font-headline-sm font-semibold border border-outline-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="local_library">local_library</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-medium text-surface-container-lowest tracking-tight">NoteWise</h1>
+<p class="font-label-sm text-label-sm text-on-primary-container tracking-wider">Academic Folio</p>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full mb-6 flex items-center justify-center gap-2 bg-academic-sage text-primary-container hover:bg-primary-fixed font-label-md text-label-md py-2 px-3 rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+<span>New Note</span>
+</button>
+<!-- Navigation Tabs (8 items as per JSON anchor; Library active) -->
+<nav class="space-y-1">
+<!-- Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Library (ACTIVE STATE) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-surface-container-lowest bg-primary font-medium font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="local_library">local_library</span>
+<span>Library</span>
+</a>
+<!-- Reader -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span>Reader</span>
+</a>
+<!-- AI Tutor -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span>AI Tutor</span>
+</a>
+<!-- Active Recall -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span>Active Recall</span>
+</a>
+<!-- Quiz -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+<span>Quiz</span>
+</a>
+<!-- Progress -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span>Progress</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-primary-container hover:text-surface-container-lowest transition-colors font-label-md text-label-md hover:bg-primary/50" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Archival Rail Footer & User Profile -->
+<div class="pt-4 border-t border-primary/40 flex items-center justify-between text-on-primary-container">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded bg-primary border border-outline-variant/30 flex items-center justify-center text-xs font-code-md text-surface-container-lowest">
+          DR
+        </div>
+<div class="leading-tight">
+<p class="font-label-sm text-label-sm text-surface-container-lowest">Prof. D. Rhodes</p>
+<p class="font-code-md text-[10px] text-on-primary-container">ARCHIVE_ID #4829</p>
+</div>
+</div>
+<span class="material-symbols-outlined cursor-pointer hover:text-surface-container-lowest text-base" data-icon="more_horiz">more_horiz</span>
+</div>
+</aside>
+<!-- Top App Bar (Shared Component) -->
+<header class="fixed top-0 right-0 left-64 h-16 z-30 flex items-center justify-between px-8 bg-surface border-b border-outline-variant">
+<!-- Breadcrumbs / Catalog Context -->
+<div class="flex items-center gap-3 text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Cognitive Repository</span>
+<span class="text-outline-variant">/</span>
+<span class="font-label-md text-label-md text-primary font-medium">STAT 210</span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface-variant font-code-md text-code-md">Unit 2 DMS</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-medium">Tutorial-3.pdf</span>
+</div>
+<!-- Trailing Actions Cluster -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant border-r border-outline-variant pr-4">
+<button class="p-1.5 hover:bg-background rounded transition-colors text-on-surface" title="Bookmark folio">
+<span class="material-symbols-outlined text-base" data-icon="bookmark">bookmark</span>
+</button>
+<button class="p-1.5 hover:bg-background rounded transition-colors text-on-surface" title="Export citation">
+<span class="material-symbols-outlined text-base" data-icon="ios_share">ios_share</span>
+</button>
+<button class="p-1.5 hover:bg-background rounded transition-colors text-on-surface" title="Archive options">
+<span class="material-symbols-outlined text-base" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-1.5 border border-outline-variant bg-surface hover:bg-background text-on-surface font-label-md text-label-md rounded transition-colors">
+          Cite
+        </button>
+<button class="px-4 py-1.5 bg-primary-container hover:bg-primary text-surface font-label-md text-label-md rounded transition-colors">
+          Annotate
+        </button>
+</div>
+</div>
+</header>
+<!-- Main Canvas Content Area -->
+<main class="ml-64 pt-24 px-12 pb-16 max-w-7xl">
+<!-- Header Title Section -->
+<div class="mb-8 border-b border-outline-variant pb-6 flex items-end justify-between">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Cognitive Library</h2>
+<p class="font-reading-md text-reading-md text-on-surface-variant mt-1">
+          Organised academic manuscripts, lecture papers &amp; seminar folios
+        </p>
+</div>
+<div class="text-right">
+<span class="font-code-md text-code-md text-secondary">FOLIO-CATALOGUE // AUTUMN TERM 2024</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Archival density: 4 items registered</p>
+</div>
+</div>
+<!-- In-Flight Processing Status Banner (Restrained Soft-Skeuomorphic Deckle Card) -->
+<div class="mb-8 p-4 bg-surface border border-outline-variant rounded folio-lift flex items-center justify-between">
+<div class="flex items-center gap-3.5">
+<div class="w-8 h-8 rounded bg-background border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary animate-pulse" data-icon="smart_toy">smart_toy</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface">1 manuscript currently being parsed &amp; vectorized into local folio</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded font-code-md text-[11px] bg-background text-secondary border border-outline-variant">
+              In-flight Daemon
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Target: <span class="font-code-md text-on-surface">Convergence-Theorems-Handout.pdf</span> — Executing layout preservation &amp; math OCR
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-36 text-right">
+<span class="font-code-md text-xs text-on-surface font-medium">OCR 68%</span>
+<div class="w-full h-1.5 bg-outline-variant rounded-full mt-1 overflow-hidden">
+<div class="h-full bg-academic-sage w-[68%] transition-all duration-300"></div>
+</div>
+</div>
+<button class="font-label-sm text-label-sm text-secondary hover:underline ml-2">Inspect Vector Slate</button>
+</div>
+</div>
+<!-- Upload Deposit Drop Area -->
+<div class="mb-8 border border-dashed border-outline-variant hover:border-secondary bg-surface rounded p-8 text-center transition-colors cursor-pointer group">
+<div class="max-w-md mx-auto flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-background border border-outline-variant flex items-center justify-center text-on-surface-variant group-hover:text-secondary group-hover:border-secondary transition-colors mb-3">
+<span class="material-symbols-outlined text-2xl" data-icon="upload_file">upload_file</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">
+          Drop course PDFs or click to deposit manuscripts
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">
+          (OCR &amp; semantic indexing automatic)
+        </p>
+<span class="font-code-md text-[11px] text-on-surface-variant bg-background px-2.5 py-1 rounded border border-outline-variant">
+          Supported folio formats: PDF, TeX source, DJVU, EPUB · Max single folio: 128MB
+        </span>
+</div>
+</div>
+<!-- Search & Filter Bar -->
+<div class="mb-4 flex flex-col md:flex-row items-center justify-between gap-4">
+<!-- Search Field -->
+<div class="relative w-full md:w-96">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="search">search</span>
+</span>
+<input class="w-full pl-9 pr-4 py-2 bg-surface text-on-surface placeholder:text-on-surface-variant border border-outline-variant rounded text-body-sm font-body-sm focus:outline-none focus:border-primary-container" placeholder="Filter catalog by title, citation key, or author..." type="text"/>
+</div>
+<!-- Sorting Controls & View Options -->
+<div class="flex items-center gap-3 w-full md:w-auto justify-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sort Catalogue:</span>
+<div class="inline-flex rounded border border-outline-variant bg-surface p-0.5 text-label-sm font-label-sm">
+<button class="px-3 py-1 rounded bg-background text-on-surface font-medium border border-outline-variant">Date Added</button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Title</button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors">Pages</button>
+</div>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<button class="p-1.5 border border-outline-variant bg-surface rounded hover:bg-background text-on-surface-variant" title="Toggle Compact View">
+<span class="material-symbols-outlined text-base" data-icon="density_medium">density_medium</span>
+</button>
+</div>
+</div>
+<!-- Document Catalog List (Hairline Academic Folio Structure) -->
+<div class="bg-surface border border-outline-variant rounded overflow-hidden">
+<!-- Catalog Header Rule -->
+<div class="grid grid-cols-12 gap-4 px-6 py-3 bg-background border-b border-outline-variant font-label-sm text-label-sm text-on-surface-variant">
+<div class="col-span-5">MANUSCRIPT / TOPIC</div>
+<div class="col-span-2">DISCIPLINE</div>
+<div class="col-span-1 text-right">EXTENT</div>
+<div class="col-span-2">CATALOG STATUS</div>
+<div class="col-span-2 text-right">ACTIONS</div>
+</div>
+<!-- Item 1: Tutorial-3.pdf -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-outline-variant hover:bg-background/40 transition-colors">
+<div class="col-span-5 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary mt-0.5 text-lg" data-icon="description">description</span>
+<div>
+<h4 class="font-headline-sm text-base text-on-surface font-semibold tracking-tight">Tutorial-3.pdf</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Uploaded 2 hrs ago · Key: <span class="font-code-md">STAT210-T3-2024</span></p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="font-body-md text-sm text-on-surface">STAT 210 Discrete &amp; Mathematical Statistics</span>
+</div>
+<div class="col-span-1 text-right font-code-md text-xs text-on-surface-variant">
+          24 pp.
+        </div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-label-sm bg-academic-sage text-primary-container border border-primary-container/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Indexed · OCR applied
+          </span>
+</div>
+<div class="col-span-2 flex items-center justify-end gap-3 font-label-md text-label-md">
+<button class="text-secondary hover:underline">Open in Reader</button>
+<button class="text-on-surface-variant hover:text-error transition-colors" title="Remove manuscript">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<!-- Item 2: Markov-Chains-Lecture-4.pdf -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-outline-variant hover:bg-background/40 transition-colors">
+<div class="col-span-5 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary mt-0.5 text-lg" data-icon="description">description</span>
+<div>
+<h4 class="font-headline-sm text-base text-on-surface font-semibold tracking-tight">Markov-Chains-Lecture-4.pdf</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Uploaded Yesterday · Key: <span class="font-code-md">PRB-MC-L4</span></p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="font-body-md text-sm text-on-surface">Advanced Probability</span>
+</div>
+<div class="col-span-1 text-right font-code-md text-xs text-on-surface-variant">
+          18 pp.
+        </div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-label-sm bg-academic-sage text-primary-container border border-primary-container/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Indexed
+          </span>
+</div>
+<div class="col-span-2 flex items-center justify-end gap-3 font-label-md text-label-md">
+<button class="text-secondary hover:underline">Open in Reader</button>
+<button class="text-on-surface-variant hover:text-error transition-colors" title="Remove manuscript">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<!-- Item 3: Convergence-Theorems-Handout.pdf (In Processing) -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-outline-variant bg-background/25">
+<div class="col-span-5 flex items-start gap-3">
+<span class="material-symbols-outlined text-on-surface-variant mt-0.5 text-lg animate-spin" data-icon="sync">sync</span>
+<div>
+<h4 class="font-headline-sm text-base text-on-surface font-semibold tracking-tight">Convergence-Theorems-Handout.pdf</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Uploaded Oct 12 · Key: <span class="font-code-md">RA2-CTH-24</span></p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="font-body-md text-sm text-on-surface">Real Analysis II</span>
+</div>
+<div class="col-span-1 text-right font-code-md text-xs text-on-surface-variant">
+          42 pp.
+        </div>
+<div class="col-span-2">
+<div class="w-full max-w-[140px]">
+<div class="flex items-center justify-between text-[11px] font-label-sm text-on-surface mb-1">
+<span>Processing · 68% OCR</span>
+</div>
+<div class="w-full h-1.5 bg-outline-variant rounded-full overflow-hidden">
+<div class="h-full bg-academic-sage w-[68%]"></div>
+</div>
+</div>
+</div>
+<div class="col-span-2 flex items-center justify-end gap-3 font-label-md text-label-md">
+<span class="font-label-sm text-xs text-on-surface-variant cursor-wait">Processing...</span>
+<button class="text-error hover:underline text-xs">Cancel</button>
+</div>
+</div>
+<!-- Item 4: Linear-Models-Chapter-1.pdf -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-background/40 transition-colors">
+<div class="col-span-5 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary mt-0.5 text-lg" data-icon="description">description</span>
+<div>
+<h4 class="font-headline-sm text-base text-on-surface font-semibold tracking-tight">Linear-Models-Chapter-1.pdf</h4>
+<p class="font-body-sm text-xs text-on-surface-variant mt-0.5">Uploaded Sep 28 · Key: <span class="font-code-md">APPSTAT-LM-C1</span></p>
+</div>
+</div>
+<div class="col-span-2">
+<span class="font-body-md text-sm text-on-surface">Applied Statistics</span>
+</div>
+<div class="col-span-1 text-right font-code-md text-xs text-on-surface-variant">
+          56 pp.
+        </div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-label-sm bg-academic-sage text-primary-container border border-primary-container/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Indexed
+          </span>
+</div>
+<div class="col-span-2 flex items-center justify-end gap-3 font-label-md text-label-md">
+<button class="text-secondary hover:underline">Open in Reader</button>
+<button class="text-on-surface-variant hover:text-error transition-colors" title="Remove manuscript">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Archival Footnote and Synthesis Callout -->
+<div class="mt-8 flex items-center justify-between border-t border-outline-variant pt-4 text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-academic-sage"></span>
+<span>Local indexing engine online: LaTeX semantic tokenizer v2.4 (Memory allocation: 1.2 GB / 4.0 GB)</span>
+</div>
+<div>
+<span>Archival shelfmark: <code>LIB-OXF-FOLIO-88</code></span>
+</div>
+</div>
+</main>
+</body></html>

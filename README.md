@@ -34,7 +34,8 @@ limitations](#current-scope-and-limitations) for known caveats.
     recall flashcards from indexed document content. Overview and
     flashcards are generated when first requested and cached in SQLite.
 -   **Workspace focus:** Maximize the AI Tutor, Active Recall, or Concept Quiz panel and restore the previous workspace with the header control or Esc.
--   **Document removal:** Remove an uploaded PDF and its indexed text, overview, flashcards, and quiz source from the app. The original PDF is unchanged.
+-   **Document removal:** Remove an uploaded PDF and its indexed text, overview, flashcards, and quiz source from the app.
+
 -   **Concept quiz:** AI selects a question count based on a document's
     indexed chunks. The prompt targets 5–10 questions and backend
     validation accepts 3–10. Each has four options with individual
@@ -44,6 +45,10 @@ limitations](#current-scope-and-limitations) for known caveats.
 -   **Markdown and math:** The React interface supports Markdown, GitHub
     Flavored Markdown, and LaTeX-style math using `react-markdown`,
     `remark-gfm`, `remark-math`, `rehype-katex`, and KaTeX.
+
+### Local PDF storage and privacy
+
+Newly uploaded original PDFs are retained locally in `backend/uploads/` under an application-generated document ID so the Reader can render them after upload. The original filename is not used as a storage path. Removing a document also removes its retained PDF from this local backend storage. PDFs uploaded before local retention was introduced remain available through their extracted text when their original file is not present.
 
 ## Screenshots
 
